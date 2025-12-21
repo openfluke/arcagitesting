@@ -1,0 +1,127 @@
+{
+  "Attn": {
+    "name": "Attn",
+    "modes": {
+      "StepBP": {
+        "mean": 0,
+        "std_dev": 0,
+        "min": 0,
+        "max": 0
+      },
+      "StepTweenChain": {
+        "mean": 0,
+        "std_dev": 0,
+        "min": 0,
+        "max": 0
+      },
+      "TweenChain": {
+        "mean": 0,
+        "std_dev": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "best_mode": "",
+    "best_acc_mean": 0
+  },
+  "Attn+Dense": {
+    "name": "Attn+Dense",
+    "modes": {
+      "StepBP": {
+        "mean": 0,
+        "std_dev": 0,
+        "min": 0,
+        "max": 0
+      },
+      "StepTweenChain": {
+        "mean": 0,
+        "std_dev": 0,
+        "min": 0,
+        "max": 0
+      },
+      "TweenChain": {
+        "mean": 0,
+        "std_dev": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "best_mode": "",
+    "best_acc_mean": 0
+  },
+  "Conv+Dense": {
+    "name": "Conv+Dense",
+    "modes": {
+      "StepBP": {
+        "mean": 0,
+        "std_dev": 0,
+        "min": 0,
+        "max": 0
+      },
+      "StepTweenChain": {
+        "mean": 0,
+        "std_dev": 0,
+        "min": 0,
+        "max": 0
+      },
+      "TweenChain": {
+        "mean": 0,
+        "std_dev": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "best_mode": "",
+    "best_acc_mean": 0
+  },
+  "Conv2D": {
+    "name": "Conv2D",
+    "modes": {
+      "StepBP": {
+        "mean": 0,
+        "std_dev": 0,
+        "min": 0,
+        "max": 0
+      },
+      "StepTweenChain": {
+        "mean": 0,
+        "std_dev": 0,
+        "min": 0,
+        "max": 0
+      },
+      "TweenChain": {
+        "mean": 0,
+        "std_dev": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "best_mode": "",
+    "best_acc_mean": 0
+  },
+  "Dense": {
+    "name": "Dense",
+    "modes": {
+      "StepBP": {
+        "mean": 0,
+        "std_dev": 0,
+        "min": 0,
+        "max": 0
+      },
+      "StepTweenChain": {
+        "mean": 0,
+        "std_dev": 0,
+        "min": 0,
+        "max": 0
+      },
+      "TweenChain": {
+        "mean": 0,
+        "std_dev": 0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "best_mode": "",
+    "best_acc_mean": 0
+  }
+}

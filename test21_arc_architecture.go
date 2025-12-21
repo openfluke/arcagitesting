@@ -108,62 +108,68 @@ func main() {
 	fmt.Printf("Loaded %d tasks, %d samples\n\n", len(tasks), len(samples))
 
 	modes := []TrainingMode{ModeStepBP, ModeTweenChain, ModeStepTweenChain}
-	allResults := make(map[ArchType]map[TrainingMode][]float64)
+	allCellResults := make(map[ArchType]map[TrainingMode][]float64)
+	allTaskResults := make(map[ArchType]map[TrainingMode][]float64)
 	var mu sync.Mutex
 
-	// Track best overall as we go
+	// Track best overall (using TASK accuracy - official ARC metric)
 	var bestArch ArchType
 	var bestMode TrainingMode
-	bestAcc := 0.0
+	bestTaskAcc := 0.0
 
 	for _, arch := range allArchitectures {
-		allResults[arch] = make(map[TrainingMode][]float64)
+		allCellResults[arch] = make(map[TrainingMode][]float64)
+		allTaskResults[arch] = make(map[TrainingMode][]float64)
 
 		fmt.Printf("\n┌─────────────────────────────────────────────────────────────────────┐\n")
 		fmt.Printf("│ %-67s │\n", fmt.Sprintf("%s — Running %d trials per mode", arch, NumRuns))
 		fmt.Printf("└─────────────────────────────────────────────────────────────────────┘\n")
 
 		for _, mode := range modes {
-			results := runParallelTrials(samples, arch, mode, NumRuns)
+			cellResults, taskResults := runParallelTrials(samples, arch, mode, NumRuns)
 
 			mu.Lock()
-			allResults[arch][mode] = results
+			allCellResults[arch][mode] = cellResults
+			allTaskResults[arch][mode] = taskResults
 			mu.Unlock()
 
-			stat := calcStats(results)
+			cellStat := calcStats(cellResults)
+			taskStat := calcStats(taskResults)
 
-			// Check if this is new best
-			isNewBest := stat.Max > bestAcc
+			// Check if this is new best (using TASK accuracy)
+			isNewBest := taskStat.Max > bestTaskAcc
 			if isNewBest {
-				bestAcc = stat.Max
+				bestTaskAcc = taskStat.Max
 				bestArch = arch
 				bestMode = mode
 			}
 
 			// Include best indicator
 			bestIndicator := ""
-			if isNewBest {
+			if isNewBest && taskStat.Max > 0 {
 				bestIndicator = " ★ NEW BEST!"
 			}
 
-			fmt.Printf("  [%-14s] [%-12s] Acc: %5.1f%% (±%4.1f%%) | Best: %.0f%%%s\n",
-				arch, modeNames[mode], stat.Mean, stat.StdDev, stat.Max, bestIndicator)
+			// Show both Cell% and Task% (official ARC metric)
+			fmt.Printf("  [%-14s] [%-12s] Cell: %4.0f%% | Tasks Solved: %4.0f%% %s\n",
+				arch, modeNames[mode], cellStat.Max, taskStat.Max, bestIndicator)
 		}
 
 		// Show current leader after each architecture
-		fmt.Printf("  ▸ Current Leader: %s + %s = %.1f%%\n", bestArch, modeNames[bestMode], bestAcc)
+		fmt.Printf("  ▸ Current Leader: %s + %s = %.0f%% tasks solved\n", bestArch, modeNames[bestMode], bestTaskAcc)
 	}
 
-	printComparisonTable(allResults)
-	saveResults(allResults)
+	printComparisonTable(allCellResults, allTaskResults)
+	saveResults(allCellResults, allTaskResults)
 }
 
 // ============================================================================
 // Parallel Execution
 // ============================================================================
 
-func runParallelTrials(samples []Sample, arch ArchType, mode TrainingMode, numRuns int) []float64 {
-	results := make([]float64, numRuns)
+func runParallelTrials(samples []Sample, arch ArchType, mode TrainingMode, numRuns int) (cellResults []float64, taskResults []float64) {
+	cellResults = make([]float64, numRuns)
+	taskResults = make([]float64, numRuns)
 	var wg sync.WaitGroup
 	sem := make(chan struct{}, MaxConcurrent)
 
@@ -173,24 +179,26 @@ func runParallelTrials(samples []Sample, arch ArchType, mode TrainingMode, numRu
 			defer wg.Done()
 			defer func() {
 				if r := recover(); r != nil {
-					results[runIdx] = 0 // Mark as failed
+					cellResults[runIdx] = 0
+					taskResults[runIdx] = 0
 				}
 			}()
 			sem <- struct{}{}
 			defer func() { <-sem }()
 
-			acc := runSingleTrial(samples, arch, mode)
-			results[runIdx] = acc
+			cellAcc, taskAcc := runSingleTrial(samples, arch, mode)
+			cellResults[runIdx] = cellAcc
+			taskResults[runIdx] = taskAcc
 		}(i)
 	}
 	wg.Wait()
-	return results
+	return cellResults, taskResults
 }
 
-func runSingleTrial(samples []Sample, arch ArchType, mode TrainingMode) float64 {
+func runSingleTrial(samples []Sample, arch ArchType, mode TrainingMode) (cellAcc float64, taskAcc float64) {
 	net := createNetwork(arch)
 	if net == nil {
-		return 0
+		return 0, 0
 	}
 	numLayers := net.TotalLayers()
 
@@ -206,7 +214,8 @@ func runSingleTrial(samples []Sample, arch ArchType, mode TrainingMode) float64 
 		ts.Config.UseChainRule = true
 	}
 
-	bestAcc := 0.0
+	bestCellAcc := 0.0
+	bestTaskAcc := 0.0
 	sampleIdx := 0
 
 	for batch := 0; batch < MaxBatches; batch++ {
@@ -217,14 +226,18 @@ func runSingleTrial(samples []Sample, arch ArchType, mode TrainingMode) float64 
 			trainOneSample(net, sample, mode, numLayers, state, ts, LearningRate)
 		}
 
-		// Measure accuracy
-		acc := measureAccuracy(net, samples, mode, numLayers, state, ts)
-		if acc > bestAcc {
-			bestAcc = acc
+		// Measure both accuracies
+		cAcc := measureAccuracy(net, samples, mode, numLayers, state, ts)
+		tAcc := measureTaskAccuracy(net, samples, mode, numLayers, state, ts)
+		if cAcc > bestCellAcc {
+			bestCellAcc = cAcc
+		}
+		if tAcc > bestTaskAcc {
+			bestTaskAcc = tAcc
 		}
 	}
 
-	return bestAcc
+	return bestCellAcc, bestTaskAcc
 }
 
 func trainOneSample(net *nn.Network, sample Sample, mode TrainingMode, numLayers int, state *nn.StepState, ts *nn.TweenState, lr float32) {
@@ -309,6 +322,50 @@ func measureAccuracy(net *nn.Network, samples []Sample, mode TrainingMode, numLa
 		return 0
 	}
 	return float64(correct) / float64(total) * 100
+}
+
+// measureTaskAccuracy counts how many COMPLETE samples are 100% correct (official ARC metric)
+func measureTaskAccuracy(net *nn.Network, samples []Sample, mode TrainingMode, numLayers int, state *nn.StepState, ts *nn.TweenState) float64 {
+	solved := 0
+	for _, sample := range samples {
+		var output []float32
+		if mode == ModeStepBP || mode == ModeStepTweenChain {
+			state.SetInput(sample.Input)
+			for s := 0; s < numLayers; s++ {
+				net.StepForward(state)
+			}
+			output = state.GetOutput()
+		} else {
+			output = ts.ForwardPass(net, sample.Input)
+		}
+
+		allCorrect := true
+		for r := 0; r < sample.Height && allCorrect; r++ {
+			for c := 0; c < sample.Width && allCorrect; c++ {
+				idx := r*MaxGridSize + c
+				if idx < len(output) && idx < len(sample.Target) {
+					pred := int(math.Round(float64(output[idx]) * 9.0))
+					exp := int(math.Round(float64(sample.Target[idx]) * 9.0))
+					if pred < 0 {
+						pred = 0
+					}
+					if pred > 9 {
+						pred = 9
+					}
+					if pred != exp {
+						allCorrect = false
+					}
+				}
+			}
+		}
+		if allCorrect {
+			solved++
+		}
+	}
+	if len(samples) == 0 {
+		return 0
+	}
+	return float64(solved) / float64(len(samples)) * 100
 }
 
 func clipGrad(v, max float32) float32 {
@@ -610,9 +667,9 @@ func calcStats(values []float64) ModeStat {
 	return ModeStat{Mean: mean, StdDev: math.Sqrt(variance), Min: minV, Max: maxV}
 }
 
-func printComparisonTable(results map[ArchType]map[TrainingMode][]float64) {
+func printComparisonTable(cellResults, taskResults map[ArchType]map[TrainingMode][]float64) {
 	fmt.Println("\n╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║                                    ARC-AGI ARCHITECTURE COMPARISON (Best Accuracy %)                                          ║")
+	fmt.Println("║                    ARC-AGI ARCHITECTURE COMPARISON (Tasks Solved % - Official ARC Metric)                                   ║")
 	fmt.Println("╠═══════════════════╦═════════════════════════╦═════════════════════════╦═════════════════════════╦════════════════════════════╣")
 	fmt.Println("║ Architecture      ║ StepBP                  ║ TweenChain              ║ StepTweenChain          ║ Best                       ║")
 	fmt.Println("╠═══════════════════╬═════════════════════════╬═════════════════════════╬═════════════════════════╬════════════════════════════╣")
@@ -621,64 +678,65 @@ func printComparisonTable(results map[ArchType]map[TrainingMode][]float64) {
 
 	for _, arch := range allArchitectures {
 		bestMode := ""
-		bestMean := 0.0
+		bestMax := 0.0
 
 		stats := make([]ModeStat, 3)
 		for i, mode := range modes {
-			if vals, ok := results[arch][mode]; ok {
+			if vals, ok := taskResults[arch][mode]; ok {
 				stats[i] = calcStats(vals)
-				if stats[i].Mean > bestMean {
-					bestMean = stats[i].Mean
+				if stats[i].Max > bestMax {
+					bestMax = stats[i].Max
 					bestMode = modeNames[mode]
 				}
 			}
 		}
 
-		fmt.Printf("║ %-17s ║ %5.1f%% (±%4.1f%%)         ║ %5.1f%% (±%4.1f%%)         ║ %5.1f%% (±%4.1f%%)         ║ %-26s ║\n",
+		fmt.Printf("║ %-17s ║ %5.0f%% (max)             ║ %5.0f%% (max)             ║ %5.0f%% (max)             ║ %-26s ║\n",
 			arch,
-			stats[0].Mean, stats[0].StdDev,
-			stats[1].Mean, stats[1].StdDev,
-			stats[2].Mean, stats[2].StdDev,
+			stats[0].Max,
+			stats[1].Max,
+			stats[2].Max,
 			bestMode)
 	}
 
 	fmt.Println("╚═══════════════════╩═════════════════════════╩═════════════════════════╩═════════════════════════╩════════════════════════════╝")
 
-	// Find overall best
+	// Find overall best (task accuracy)
 	var bestArch ArchType
 	var bestMode TrainingMode
 	bestAcc := 0.0
-	for arch, modes := range results {
+	for arch, modes := range taskResults {
 		for mode, vals := range modes {
 			stat := calcStats(vals)
-			if stat.Mean > bestAcc {
-				bestAcc = stat.Mean
+			if stat.Max > bestAcc {
+				bestAcc = stat.Max
 				bestArch = arch
 				bestMode = mode
 			}
 		}
 	}
 
-	fmt.Printf("\n★ Best Overall: %s + %s = %.1f%% accuracy\n", bestArch, modeNames[bestMode], bestAcc)
+	fmt.Printf("\n★ Best Overall: %s + %s = %.0f%% tasks solved (official ARC metric)\n", bestArch, modeNames[bestMode], bestAcc)
+	fmt.Println("  Note: World record for efficient methods is 29.72% (NVIDIA TTT)")
 }
 
-func saveResults(results map[ArchType]map[TrainingMode][]float64) {
+func saveResults(cellResults, taskResults map[ArchType]map[TrainingMode][]float64) {
 	summaries := make(map[string]ArchSummary)
 
-	for arch, modes := range results {
+	for arch := range cellResults {
 		summary := ArchSummary{
 			Name:  string(arch),
 			Modes: make(map[string]ModeStat),
 		}
 
-		bestMean := 0.0
-		for mode, vals := range modes {
-			stat := calcStats(vals)
-			summary.Modes[modeNames[mode]] = stat
-			if stat.Mean > bestMean {
-				bestMean = stat.Mean
+		bestMax := 0.0
+		for mode := range cellResults[arch] {
+			taskStat := calcStats(taskResults[arch][mode])
+			summary.Modes[modeNames[mode]] = taskStat
+			if taskStat.Max > bestMax {
+				bestMax = taskStat.Max
 				summary.BestMode = modeNames[mode]
-				summary.BestAccMean = stat.Mean
+				summary.BestAccMean = taskStat.Max
 			}
 		}
 		summaries[string(arch)] = summary
