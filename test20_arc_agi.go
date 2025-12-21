@@ -9,24 +9,29 @@ import (
 	"path/filepath"
 	"sort"
 	"sync"
-	"time"
 
 	"github.com/openfluke/loom/nn"
 )
 
-// Test 20: ARC-AGI Learning Rate Diagnosis
-// Tests LR 0.001 (low), 0.01 (med), 0.05 (high) to find optimal training rate
+// Test 20: ARC-AGI Adaptive Training with Early Stopping
+// Trains in batches, measures accuracy, stops when threshold reached or no improvement
 
 const (
-	MaxGridSize    = 30
-	InputSize      = MaxGridSize * MaxGridSize
-	NumTasksToRun  = 10
-	TrainDuration  = 5 * time.Second
-	WindowDuration = 500 * time.Millisecond
+	MaxGridSize = 30
+	InputSize   = MaxGridSize * MaxGridSize
+	NumTasks    = 10
+
+	// Adaptive training params
+	BatchSize         = 200            // Train more samples per batch
+	MaxBatches        = 50             // Maximum training batches
+	AccuracyTarget    = 90.0           // Stop if accuracy reaches this
+	PatienceLimit     = 10             // More patience
+	LearningRateTween = float32(0.02)  // Slightly lower
+	LearningRateBP    = float32(0.005) // Higher for smaller net
 )
 
-var networkConfig = NetworkConfig{Name: "Medium", Layers: []int{128, 64}}
-var learningRates = []float32{0.001, 0.01, 0.05}
+// Smaller network - less capacity, faster to train
+var networkConfig = NetworkConfig{Name: "Small", Layers: []int{32, 16}}
 
 type NetworkConfig struct {
 	Name   string
@@ -47,8 +52,12 @@ var modeNames = map[TrainingMode]string{
 }
 
 type Result struct {
-	Adaptation *nn.AdaptationResult
-	Deviation  *nn.DeviationMetrics
+	Mode            string
+	FinalAccuracy   float64
+	BatchesTrained  int
+	StoppedEarly    bool
+	StopReason      string
+	AccuracyHistory []float64
 }
 
 type ARCTask struct {
@@ -63,11 +72,11 @@ type Sample struct {
 
 func main() {
 	fmt.Println("╔══════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║  Test 20: ARC-AGI - Learning Rate Diagnosis                              ║")
-	fmt.Println("║  Testing LR: 0.001 (underfit?), 0.01 (med), 0.05 (overfit?)              ║")
+	fmt.Println("║  Test 20: ARC-AGI - Adaptive Early Stopping                              ║")
+	fmt.Println("║  Train → Measure → Stop when good or stuck                               ║")
 	fmt.Println("╚══════════════════════════════════════════════════════════════════════════╝")
 
-	tasks, err := loadARCTasks("ARC-AGI/data/training", NumTasksToRun)
+	tasks, err := loadARCTasks("ARC-AGI/data/training", NumTasks)
 	if err != nil {
 		fmt.Printf("Failed: %v\n", err)
 		return
@@ -76,56 +85,49 @@ func main() {
 	fmt.Printf("Loaded %d tasks, %d samples\n\n", len(tasks), len(samples))
 
 	modes := []TrainingMode{ModeStepBP, ModeTweenChain, ModeStepTweenChain}
-	allResults := make(map[float32]map[TrainingMode]*Result)
+	results := make(map[TrainingMode]*Result)
+	networks := make(map[TrainingMode]*nn.Network)
 	var mu sync.Mutex
 	var wg sync.WaitGroup
 
-	for _, lr := range learningRates {
-		allResults[lr] = make(map[TrainingMode]*Result)
-		fmt.Printf("\n╔═══════════════════════════════════════════╗\n")
-		fmt.Printf("║  Learning Rate: %.4f                      ║\n", lr)
-		fmt.Printf("╚═══════════════════════════════════════════╝\n")
+	for _, mode := range modes {
+		wg.Add(1)
+		go func(m TrainingMode) {
+			defer wg.Done()
+			result, net := trainWithEarlyStopping(samples, m)
+			mu.Lock()
+			results[m] = result
+			networks[m] = net
+			mu.Unlock()
+		}(mode)
+	}
+	wg.Wait()
 
-		for _, mode := range modes {
-			wg.Add(1)
-			go func(rate float32, m TrainingMode) {
-				defer wg.Done()
-				result := runTraining(samples, m, rate)
-				mu.Lock()
-				allResults[rate][m] = result
-				mu.Unlock()
-				fmt.Printf("  [LR=%.4f] [%-12s] Acc:%5.1f%% | Dev:%5.1f%% | 0-10%%:%5.1f%% | 100%%+:%5.1f%%\n",
-					rate, modeNames[m], result.Adaptation.AvgAccuracy, result.Deviation.AverageDeviation,
-					getBucketPct(result, "0-10%"), getBucketPct(result, "100%+"))
-			}(lr, mode)
+	printResults(results)
+
+	// Show visual predictions for best mode
+	var bestMode TrainingMode
+	bestAcc := 0.0
+	for mode, r := range results {
+		if r.FinalAccuracy > bestAcc {
+			bestAcc = r.FinalAccuracy
+			bestMode = mode
 		}
-		wg.Wait()
 	}
-	printLRTable(allResults)
+	if net, ok := networks[bestMode]; ok {
+		showVisualPredictions(net, samples, bestMode, len(networkConfig.Layers)+1, results[bestMode])
+	}
 }
 
-func getBucketPct(r *Result, bucket string) float64 {
-	if r.Deviation.TotalSamples == 0 {
-		return 0
-	}
-	if b, ok := r.Deviation.Buckets[bucket]; ok {
-		return float64(b.Count) / float64(r.Deviation.TotalSamples) * 100
-	}
-	return 0
-}
-
-// ============================================================================
-// Training
-// ============================================================================
-
-func runTraining(samples []Sample, mode TrainingMode, lr float32) *Result {
+func trainWithEarlyStopping(samples []Sample, mode TrainingMode) (*Result, *nn.Network) {
 	net := createNetwork()
 	numLayers := len(networkConfig.Layers) + 1
-	evalCycles := 3
 
-	tracker := nn.NewAdaptationTracker(WindowDuration, TrainDuration)
-	tracker.SetModelInfo(networkConfig.Name, modeNames[mode])
-	deviationMetrics := nn.NewDeviationMetrics()
+	// Choose LR based on mode (StepBP needs lower to avoid explosion)
+	lr := LearningRateTween
+	if mode == ModeStepBP {
+		lr = LearningRateBP
+	}
 
 	var state *nn.StepState
 	usesStep := mode == ModeStepBP || mode == ModeStepTweenChain
@@ -139,66 +141,210 @@ func runTraining(samples []Sample, mode TrainingMode, lr float32) *Result {
 		ts.Config.UseChainRule = true
 	}
 
-	tracker.Start("LEARNING", 0)
-	start := time.Now()
+	result := &Result{Mode: modeNames[mode], AccuracyHistory: []float64{}}
+	bestAccuracy := 0.0
+	patienceCounter := 0
 	sampleIdx := 0
 
-	for time.Since(start) < TrainDuration {
-		sample := samples[sampleIdx%len(samples)]
-		sampleIdx++
+	fmt.Printf("  [%-14s] Starting training...\n", modeNames[mode])
 
-		var bestOutput []float32
-		bestDev := math.MaxFloat64
+	for batch := 0; batch < MaxBatches; batch++ {
+		// Training phase: train on BatchSize samples
+		for i := 0; i < BatchSize; i++ {
+			sample := samples[sampleIdx%len(samples)]
+			sampleIdx++
 
-		switch {
-		case usesStep:
-			for cycle := 0; cycle < evalCycles; cycle++ {
+			switch {
+			case usesStep:
 				state.SetInput(sample.Input)
 				for s := 0; s < numLayers; s++ {
 					net.StepForward(state)
 				}
 				output := state.GetOutput()
-				if dev := computeDeviation(sample, output); dev < bestDev {
-					bestDev = dev
-					bestOutput = append([]float32{}, output...)
-				}
-			}
-			evaluateSample(sample, bestOutput, deviationMetrics, sampleIdx)
-			tracker.RecordOutput(bestDev < 50)
 
-			output := state.GetOutput()
-			if mode == ModeStepBP {
-				grad := make([]float32, len(output))
-				for i := range output {
-					if i < len(sample.Target) {
-						grad[i] = clipGrad(output[i]-sample.Target[i], 1.0)
+				if mode == ModeStepBP {
+					grad := make([]float32, len(output))
+					for j := range output {
+						if j < len(sample.Target) {
+							grad[j] = clipGrad(output[j]-sample.Target[j], 0.5)
+						}
 					}
+					net.StepBackward(state, grad)
+					net.ApplyGradients(lr)
+				} else {
+					ts.ForwardPass(net, sample.Input)
+					applyTweenUpdate(ts, net, sample, output, lr)
 				}
-				net.StepBackward(state, grad)
-				net.ApplyGradients(lr)
-			} else {
-				ts.ForwardPass(net, sample.Input)
+
+			default:
+				output := ts.ForwardPass(net, sample.Input)
 				applyTweenUpdate(ts, net, sample, output, lr)
 			}
+		}
 
-		default:
-			for cycle := 0; cycle < evalCycles; cycle++ {
-				output := ts.ForwardPass(net, sample.Input)
-				if dev := computeDeviation(sample, output); dev < bestDev {
-					bestDev = dev
-					bestOutput = append([]float32{}, output...)
-				}
+		// Measurement phase: evaluate accuracy on all samples
+		accuracy := measureAccuracy(net, samples, mode, numLayers, state, ts)
+		result.AccuracyHistory = append(result.AccuracyHistory, accuracy)
+		result.BatchesTrained = batch + 1
+
+		// Check stopping conditions
+		if accuracy >= AccuracyTarget {
+			result.FinalAccuracy = accuracy
+			result.StoppedEarly = true
+			result.StopReason = fmt.Sprintf("Target %.0f%% reached", AccuracyTarget)
+			fmt.Printf("  [%-14s] ✓ Batch %3d: %.1f%% - TARGET REACHED!\n", modeNames[mode], batch+1, accuracy)
+			return result, net
+		}
+
+		if accuracy > bestAccuracy {
+			bestAccuracy = accuracy
+			patienceCounter = 0
+		} else {
+			patienceCounter++
+			if patienceCounter >= PatienceLimit {
+				result.FinalAccuracy = accuracy
+				result.StoppedEarly = true
+				result.StopReason = fmt.Sprintf("No improvement for %d batches", PatienceLimit)
+				fmt.Printf("  [%-14s] ✗ Batch %3d: %.1f%% - NO IMPROVEMENT, stopping\n", modeNames[mode], batch+1, accuracy)
+				return result, net
 			}
-			evaluateSample(sample, bestOutput, deviationMetrics, sampleIdx)
-			tracker.RecordOutput(bestDev < 50)
+		}
 
-			output := ts.ForwardPass(net, sample.Input)
-			applyTweenUpdate(ts, net, sample, output, lr)
+		if batch%10 == 9 {
+			fmt.Printf("  [%-14s]   Batch %3d: %.1f%% (best: %.1f%%)\n", modeNames[mode], batch+1, accuracy, bestAccuracy)
 		}
 	}
 
-	deviationMetrics.ComputeFinalMetrics()
-	return &Result{Adaptation: tracker.Finalize(), Deviation: deviationMetrics}
+	result.FinalAccuracy = measureAccuracy(net, samples, mode, numLayers, state, ts)
+	result.StopReason = "Max batches reached"
+	fmt.Printf("  [%-14s] ! Batch %3d: %.1f%% - MAX BATCHES\n", modeNames[mode], MaxBatches, result.FinalAccuracy)
+	return result, net
+}
+
+// Show visual grid predictions for a few samples
+func showVisualPredictions(net *nn.Network, samples []Sample, mode TrainingMode, numLayers int, res *Result) {
+	fmt.Println("\n╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
+	fmt.Printf("║  VISUAL PREDICTIONS (%s - %.1f%% accuracy)                                               ║\n", modeNames[mode], res.FinalAccuracy)
+	fmt.Println("╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════╝")
+
+	var state *nn.StepState
+	var ts *nn.TweenState
+	if mode == ModeStepBP || mode == ModeStepTweenChain {
+		state = net.InitStepState(InputSize)
+	} else {
+		ts = nn.NewTweenState(net, nil)
+	}
+
+	// Show first 3 samples
+	for i, sample := range samples {
+		if i >= 3 {
+			break
+		}
+
+		var output []float32
+		if mode == ModeStepBP || mode == ModeStepTweenChain {
+			state.SetInput(sample.Input)
+			for s := 0; s < numLayers; s++ {
+				net.StepForward(state)
+			}
+			output = state.GetOutput()
+		} else {
+			output = ts.ForwardPass(net, sample.Input)
+		}
+
+		fmt.Printf("\n  Sample %d (%dx%d):\n", i+1, sample.Height, sample.Width)
+
+		// Side by side: Expected | Predicted
+		fmt.Printf("  %s\n", "Expected              Predicted")
+		for r := 0; r < sample.Height && r < 8; r++ {
+			// Expected row
+			fmt.Print("  ")
+			for c := 0; c < sample.Width && c < 10; c++ {
+				idx := r*MaxGridSize + c
+				val := int(math.Round(float64(sample.Target[idx]) * 9.0))
+				fmt.Printf("%d ", val)
+			}
+			fmt.Print("     ")
+			// Predicted row
+			for c := 0; c < sample.Width && c < 10; c++ {
+				idx := r*MaxGridSize + c
+				val := int(math.Round(float64(output[idx]) * 9.0))
+				if val < 0 {
+					val = 0
+				}
+				if val > 9 {
+					val = 9
+				}
+				fmt.Printf("%d ", val)
+			}
+			fmt.Println()
+		}
+
+		// Count correct
+		correct := 0
+		for r := 0; r < sample.Height; r++ {
+			for c := 0; c < sample.Width; c++ {
+				idx := r*MaxGridSize + c
+				pred := int(math.Round(float64(output[idx]) * 9.0))
+				exp := int(math.Round(float64(sample.Target[idx]) * 9.0))
+				if pred < 0 {
+					pred = 0
+				}
+				if pred > 9 {
+					pred = 9
+				}
+				if pred == exp {
+					correct++
+				}
+			}
+		}
+		fmt.Printf("  Correct: %d/%d (%.1f%%)\n", correct, sample.Height*sample.Width, float64(correct)/float64(sample.Height*sample.Width)*100)
+	}
+}
+
+func measureAccuracy(net *nn.Network, samples []Sample, mode TrainingMode, numLayers int, state *nn.StepState, ts *nn.TweenState) float64 {
+	correct := 0
+	total := 0
+
+	for _, sample := range samples {
+		var output []float32
+		switch {
+		case mode == ModeStepBP || mode == ModeStepTweenChain:
+			state.SetInput(sample.Input)
+			for s := 0; s < numLayers; s++ {
+				net.StepForward(state)
+			}
+			output = state.GetOutput()
+		default:
+			output = ts.ForwardPass(net, sample.Input)
+		}
+
+		// Count correct cells
+		for r := 0; r < sample.Height; r++ {
+			for c := 0; c < sample.Width; c++ {
+				idx := r*MaxGridSize + c
+				if idx < len(output) && idx < len(sample.Target) {
+					pred := int(math.Round(float64(output[idx]) * 9.0))
+					exp := int(math.Round(float64(sample.Target[idx]) * 9.0))
+					if pred < 0 {
+						pred = 0
+					}
+					if pred > 9 {
+						pred = 9
+					}
+					if pred == exp {
+						correct++
+					}
+					total++
+				}
+			}
+		}
+	}
+
+	if total == 0 {
+		return 0
+	}
+	return float64(correct) / float64(total) * 100
 }
 
 func applyTweenUpdate(ts *nn.TweenState, net *nn.Network, sample Sample, output []float32, lr float32) {
@@ -224,40 +370,6 @@ func createNetwork() *nn.Network {
 	}
 	net.SetLayer(0, 0, len(networkConfig.Layers), nn.InitDenseLayer(networkConfig.Layers[len(networkConfig.Layers)-1], InputSize, nn.ActivationSigmoid))
 	return net
-}
-
-func computeDeviation(sample Sample, output []float32) float64 {
-	totalDev, count := 0.0, 0
-	for r := 0; r < sample.Height; r++ {
-		for c := 0; c < sample.Width; c++ {
-			idx := r*MaxGridSize + c
-			if idx < len(output) && idx < len(sample.Target) {
-				exp, act := float64(sample.Target[idx]), float64(output[idx])
-				if math.Abs(exp) < 1e-10 {
-					totalDev += math.Abs(act-exp) * 100
-				} else {
-					totalDev += math.Abs((act-exp)/exp) * 100
-				}
-				count++
-			}
-		}
-	}
-	if count == 0 {
-		return math.MaxFloat64
-	}
-	return totalDev / float64(count)
-}
-
-func evaluateSample(sample Sample, output []float32, metrics *nn.DeviationMetrics, sampleIdx int) {
-	for r := 0; r < sample.Height; r++ {
-		for c := 0; c < sample.Width; c++ {
-			idx := r*MaxGridSize + c
-			if idx < len(output) && idx < len(sample.Target) {
-				result := nn.EvaluatePrediction(sampleIdx*1000+idx, float64(sample.Target[idx]), float64(output[idx]))
-				metrics.UpdateMetrics(result)
-			}
-		}
-	}
 }
 
 func clipGrad(v, max float32) float32 {
@@ -342,34 +454,50 @@ func encodeGrid(grid [][]int) []float32 {
 // Output
 // ============================================================================
 
-func printLRTable(results map[float32]map[TrainingMode]*Result) {
-	fmt.Println("\n╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║                           LEARNING RATE COMPARISON (Deviation Buckets)                                        ║")
-	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
-	fmt.Println("║ LR / Mode        │   0-10% │  10-20% │  20-30% │  30-40% │  40-50% │ 50-100% │   100%+ │")
-	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
+func printResults(results map[TrainingMode]*Result) {
+	fmt.Println("\n╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
+	fmt.Println("║                              ADAPTIVE EARLY STOPPING RESULTS                                                  ║")
+	fmt.Println("╠══════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
+	fmt.Println("║ Mode             │ Final Acc │ Batches │ Stopped │ Reason                                    ║")
+	fmt.Println("╠══════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
 
-	buckets := []string{"0-10%", "10-20%", "20-30%", "30-40%", "40-50%", "50-100%", "100%+"}
 	modes := []TrainingMode{ModeStepBP, ModeTweenChain, ModeStepTweenChain}
-
-	// Sort learning rates
-	var lrs []float32
-	for lr := range results {
-		lrs = append(lrs, lr)
-	}
-	sort.Slice(lrs, func(i, j int) bool { return lrs[i] < lrs[j] })
-
-	for _, lr := range lrs {
-		for _, mode := range modes {
-			if r, ok := results[lr][mode]; ok {
-				fmt.Printf("║ %.3f/%-10s │", lr, modeNames[mode])
-				for _, b := range buckets {
-					fmt.Printf(" %5.1f%% │", getBucketPct(r, b))
-				}
-				fmt.Println()
+	for _, mode := range modes {
+		if r, ok := results[mode]; ok {
+			stoppedStr := "No"
+			if r.StoppedEarly {
+				stoppedStr = "Yes"
 			}
+			fmt.Printf("║ %-16s │   %5.1f%% │    %4d │   %-5s │ %-40s ║\n",
+				r.Mode, r.FinalAccuracy, r.BatchesTrained, stoppedStr, r.StopReason)
 		}
 	}
-	fmt.Println("╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════╝")
-	fmt.Println("  ↑ Higher 0-10% = better | ↑ Higher 100%+ = worse (model completely wrong)")
+	fmt.Println("╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════╝")
+
+	// Print training curves
+	fmt.Println("\n╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
+	fmt.Println("║                                    ACCURACY OVER BATCHES                                                      ║")
+	fmt.Println("╠══════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
+
+	// Sort modes
+	var sortedModes []TrainingMode
+	for m := range results {
+		sortedModes = append(sortedModes, m)
+	}
+	sort.Slice(sortedModes, func(i, j int) bool { return sortedModes[i] < sortedModes[j] })
+
+	for _, mode := range sortedModes {
+		r := results[mode]
+		fmt.Printf("║ %-14s │", r.Mode)
+		maxShow := 20
+		step := 1
+		if len(r.AccuracyHistory) > maxShow {
+			step = len(r.AccuracyHistory) / maxShow
+		}
+		for i := 0; i < len(r.AccuracyHistory) && i/step < maxShow; i += step {
+			fmt.Printf(" %4.0f", r.AccuracyHistory[i])
+		}
+		fmt.Println(" ║")
+	}
+	fmt.Println("╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════╝")
 }
