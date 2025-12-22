@@ -31,10 +31,10 @@ const (
 	MaxGridSize  = 30
 	InputSize    = MaxGridSize * MaxGridSize // 900
 	NumTasks     = 400
-	BatchSize    = 100
+	BatchSize    = 10
 	NumEpochs    = 1400
-	LearningRate = float32(0.01)
-	InitScale    = float32(0.5)
+	LearningRate = float32(0.1)
+	InitScale    = float32(0.9)
 	BudgetScale  = float32(0.8)
 
 	// Architecture params
@@ -102,6 +102,7 @@ func main() {
 	// Initialize training state
 	state := net.InitStepState(InputSize)
 	ts := nn.NewTweenState(net, nil)
+	ts.Config.UseChainRule = true
 	ts.Config.LinkBudgetScale = BudgetScale
 
 	results := &Results{

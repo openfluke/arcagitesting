@@ -33,7 +33,7 @@ const (
 	NumEpochs    = 1400
 	LearningRate = float32(0.01)
 	InitScale    = float32(0.5)
-	BudgetScale  = float32(0.8)
+	BudgetScale  = float32(1.8)
 
 	// Architecture params
 	DModel     = 64 // Embedding dimension
