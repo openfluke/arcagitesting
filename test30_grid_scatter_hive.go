@@ -107,7 +107,7 @@ func main() {
 	// Initialize training state with Chain Rule
 	state := net.InitStepState(InputSize)
 	ts := nn.NewTweenState(net, nil)
-	//ts.Config.UseChainRule = true
+	ts.Config.UseChainRule = true
 	ts.Config.LinkBudgetScale = BudgetScale
 
 	results := &Results{
