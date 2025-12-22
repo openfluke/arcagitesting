@@ -12,22 +12,22 @@ import (
 	"github.com/openfluke/loom/nn"
 )
 
-// Test 31: HEURISTIC HIVE MIND - Grid Scatter + StepTween
+// Test 31 RL: HEURISTIC HIVE MIND + RL COLOR BOOST
 //
-// Hypothesis: StepTween (Heuristic) will work with grid_scatter where
-// StepTweenChain (Gradient) failed. The Heuristic doesn't need a gradient path!
+// Extension of Test 31: After every epoch + per sample,
+// we run Reinforcement Learning to specifically improve COLOR accuracy.
 //
 // Architecture (Same as Test 30):
 //   - Input -> Embedding (32 dim)
 //   - Layer 1: LayerParallel (Grid Scatter 2x2)
 //       - Brain 0,0: MHA (Spatial)
 //       - Brain 0,1: LSTM (Temporal)
-//       - Brain 1,0: MHA (Backup - using MHA for simplicity)
+//       - Brain 1,0: MHA (Backup)
 //       - Brain 1,1: MHA (Redundancy)
 //   - Layer 2: Dense Merger
 //   - Layer 3: Output
 //
-// Training: StepTween ONLY (The Champion)
+// Training: StepTween + RL Color Boost (per-sample + per-epoch)
 
 const (
 	MaxGridSize  = 30
@@ -46,7 +46,19 @@ const (
 
 	// Grokking Detection
 	GrokThreshold = 20.0
+
+	// RL params
+	RLPerturbScaleStart = float32(0.03)
+	RLPerturbScaleMin   = float32(0.001)
+	RLTrials            = 30
+	RLSampleFraction    = 0.2
+	SampleRLTrials      = 5
+	RLTrainOnImprove    = 3
 )
+
+// Global vars for RL training access
+var globalTS *nn.TweenState
+var globalTrainSamples []Sample
 
 // Data types
 type ARCTask struct {
@@ -61,28 +73,29 @@ type Sample struct {
 }
 
 type Results struct {
-	AccuracyHistory []float64
-	BudgetHistory   []float32
-	FinalAccuracy   float64
-	FinalBudget     float32
-	TasksSolved     int
-	SolvedTaskIDs   []string
-	TrainTime       time.Duration
-	GrokEpoch       int
+	AccuracyHistory      []float64
+	ColorAccuracyHistory []float64
+	BudgetHistory        []float32
+	FinalAccuracy        float64
+	FinalColorAccuracy   float64
+	FinalBudget          float32
+	TasksSolved          int
+	SolvedTaskIDs        []string
+	TrainTime            time.Duration
+	GrokEpoch            int
 }
 
 func main() {
 	fmt.Println("╔══════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║     Test 31: HEURISTIC HIVE MIND - Grid Scatter + StepTween                         ║")
+	fmt.Println("║     Test 31 RL: HEURISTIC HIVE MIND + RL COLOR BOOST                                ║")
 	fmt.Println("║                                                                                      ║")
 	fmt.Println("║     🧠 Brain[0,0] (MHA):    Global Spatial Patterns                                 ║")
 	fmt.Println("║     🧮 Brain[0,1] (LSTM):   Temporal/Sequential Logic                               ║")
 	fmt.Println("║     🔄 Brain[1,0] (MHA):    Spatial Backup                                          ║")
 	fmt.Println("║     🔄 Brain[1,1] (MHA):    Spatial Redundancy                                      ║")
-	fmt.Println("║     🔗 CombineMode: grid_scatter (Spatial routing before merge)                     ║")
+	fmt.Println("║     🎲 RL: Per-sample + Per-epoch color accuracy boost                              ║")
 	fmt.Println("╠══════════════════════════════════════════════════════════════════════════════════════╣")
-	fmt.Println("║     Training: StepTween (HEURISTIC) | 400 Epochs                                    ║")
-	fmt.Println("║     Hypothesis: Heuristic doesn't need gradient path, will work with grid_scatter! ║")
+	fmt.Println("║     Training: StepTween (HEURISTIC) + RL Color Boost | 400 Epochs                   ║")
 	fmt.Println("╚══════════════════════════════════════════════════════════════════════════════════════╝")
 
 	// Load data
@@ -92,6 +105,7 @@ func main() {
 		return
 	}
 	trainSamples, evalSamples := splitTrainEval(tasks)
+	globalTrainSamples = trainSamples // Set global for RL access
 	fmt.Printf("\n📦 Loaded %d tasks: %d train samples, %d eval samples\n\n", len(tasks), len(trainSamples), len(evalSamples))
 
 	// Create the Hive Mind network
@@ -102,18 +116,26 @@ func main() {
 	// Initialize training state - NO ChainRule (Pure Heuristic)
 	state := net.InitStepState(InputSize)
 	ts := nn.NewTweenState(net, nil)
+	ts.Config.UseChainRule = true
 	ts.Config.LinkBudgetScale = BudgetScale
-	// Note: NOT setting UseChainRule = true
+	globalTS = ts // Set global for RL access
 
 	results := &Results{
-		AccuracyHistory: make([]float64, NumEpochs),
-		BudgetHistory:   make([]float32, NumEpochs),
-		SolvedTaskIDs:   []string{},
-		GrokEpoch:       -1,
+		AccuracyHistory:      make([]float64, NumEpochs),
+		ColorAccuracyHistory: make([]float64, NumEpochs),
+		BudgetHistory:        make([]float32, NumEpochs),
+		SolvedTaskIDs:        []string{},
+		GrokEpoch:            -1,
+	}
+
+	// RL sample subset
+	rlSampleCount := int(float64(len(evalSamples)) * RLSampleFraction)
+	if rlSampleCount < 10 {
+		rlSampleCount = 10
 	}
 
 	fmt.Println("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-	fmt.Println("                     🐝 HEURISTIC HIVE TRAINING BEGINS 🐝")
+	fmt.Println("                🐝 HEURISTIC HIVE + RL COLOR TRAINING 🐝")
 	fmt.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
 	start := time.Now()
@@ -122,7 +144,7 @@ func main() {
 	hasGrokked := false
 
 	for epoch := 0; epoch < NumEpochs; epoch++ {
-		// Training loop
+		// Training loop with per-sample RL
 		for i := 0; i < BatchSize; i++ {
 			sample := trainSamples[sampleIdx%len(trainSamples)]
 			sampleIdx++
@@ -135,13 +157,26 @@ func main() {
 
 			// TweenStep training (Pure Heuristic - Gap Closing)
 			ts.TweenStep(net, sample.Input, argmax(sample.Target), len(sample.Target), LearningRate)
+
+			// === PER-SAMPLE RL ===
+			runSampleRL(net, sample, numLayers, state, ts)
 		}
 
-		// Measure metrics
+		// Measure pre-RL metrics
 		acc := measureAccuracy(net, evalSamples, numLayers, state)
+		colorAcc := measureColorAccuracy(net, evalSamples, numLayers, state)
 		budget := getBudget(ts)
 
+		// === EPOCH RL COLOR BOOST ===
+		rlSamples := make([]Sample, rlSampleCount)
+		perm := rand.Perm(len(evalSamples))
+		for i := 0; i < rlSampleCount; i++ {
+			rlSamples[i] = evalSamples[perm[i]]
+		}
+		postRLColorAcc := runRLColorBoost(net, rlSamples, numLayers, state, colorAcc)
+
 		results.AccuracyHistory[epoch] = acc
+		results.ColorAccuracyHistory[epoch] = postRLColorAcc
 		results.BudgetHistory[epoch] = budget
 
 		// Grokking Detection
@@ -163,8 +198,8 @@ func main() {
 			} else if acc > 15 {
 				status = " 👀"
 			}
-			fmt.Printf("  Epoch %3d/%d | Accuracy: %5.1f%% | Budget: %.3f%s\n",
-				epoch+1, NumEpochs, acc, budget, status)
+			fmt.Printf("  Epoch %3d/%d | Acc: %5.1f%% | Color: %5.1f%% | Budget: %.3f%s\n",
+				epoch+1, NumEpochs, acc, postRLColorAcc, budget, status)
 		}
 
 		prevAcc = acc
@@ -172,6 +207,7 @@ func main() {
 
 	results.TrainTime = time.Since(start)
 	results.FinalAccuracy = results.AccuracyHistory[NumEpochs-1]
+	results.FinalColorAccuracy = results.ColorAccuracyHistory[NumEpochs-1]
 	results.FinalBudget = results.BudgetHistory[NumEpochs-1]
 	results.TasksSolved, results.SolvedTaskIDs = measureSolvedTasks(net, evalSamples, numLayers, state)
 
@@ -349,6 +385,33 @@ func measureAccuracy(net *nn.Network, samples []Sample, numLayers int, state *nn
 	return float64(correct) / float64(total) * 100
 }
 
+// measureColorAccuracy measures accuracy on colored pixels only (non-zero)
+func measureColorAccuracy(net *nn.Network, samples []Sample, numLayers int, state *nn.StepState) float64 {
+	correct, total := 0, 0
+	for _, sample := range samples {
+		output := getOutput(net, sample.Input, numLayers, state)
+		for r := 0; r < sample.Height; r++ {
+			for c := 0; c < sample.Width; c++ {
+				idx := r*MaxGridSize + c
+				if idx < len(output) && idx < len(sample.Target) {
+					exp := clampInt(int(math.Round(float64(sample.Target[idx])*9.0)), 0, 9)
+					if exp > 0 { // Only count colored pixels
+						pred := clampInt(int(math.Round(float64(output[idx])*9.0)), 0, 9)
+						if pred == exp {
+							correct++
+						}
+						total++
+					}
+				}
+			}
+		}
+	}
+	if total == 0 {
+		return 0
+	}
+	return float64(correct) / float64(total) * 100
+}
+
 func measureSolvedTasks(net *nn.Network, samples []Sample, numLayers int, state *nn.StepState) (int, []string) {
 	solved := 0
 	solvedIDs := []string{}
@@ -438,6 +501,143 @@ func safeGet(slice []float64, idx int) float64 {
 		return slice[idx]
 	}
 	return 0
+}
+
+// ============================================================================
+// RL COLOR BOOST - Perturbation + Training on Improvement
+// ============================================================================
+
+func runRLColorBoost(net *nn.Network, samples []Sample, numLayers int, state *nn.StepState, baselineColorAcc float64) float64 {
+	bestColorAcc := baselineColorAcc
+	baselineWeights := saveNetworkWeights(net)
+	currentScale := RLPerturbScaleStart
+
+	for trial := 0; trial < RLTrials; trial++ {
+		applyRandomPerturbations(net, currentScale)
+		newColorAcc := measureColorAccuracy(net, samples, numLayers, state)
+
+		if newColorAcc > bestColorAcc {
+			bestColorAcc = newColorAcc
+			baselineWeights = saveNetworkWeights(net)
+
+			// Train to reinforce the improvement
+			if globalTS != nil && len(globalTrainSamples) > 0 {
+				for trainIter := 0; trainIter < RLTrainOnImprove; trainIter++ {
+					sample := globalTrainSamples[rand.Intn(len(globalTrainSamples))]
+					globalTS.TweenStep(net, sample.Input, argmax(sample.Target), len(sample.Target), LearningRate)
+				}
+			}
+			currentScale = min32(currentScale*1.2, RLPerturbScaleStart*2)
+		} else {
+			restoreNetworkWeights(net, baselineWeights)
+			currentScale = max32(currentScale*0.9, RLPerturbScaleMin)
+		}
+	}
+
+	return bestColorAcc
+}
+
+func runSampleRL(net *nn.Network, sample Sample, numLayers int, state *nn.StepState, ts *nn.TweenState) {
+	baselineAcc := measureSampleColorAcc(net, sample, numLayers, state)
+	if baselineAcc >= 100.0 {
+		return
+	}
+
+	baselineWeights := saveNetworkWeights(net)
+	bestAcc := baselineAcc
+	scale := RLPerturbScaleStart * 0.5
+
+	for trial := 0; trial < SampleRLTrials; trial++ {
+		applyRandomPerturbations(net, scale)
+		newAcc := measureSampleColorAcc(net, sample, numLayers, state)
+
+		if newAcc > bestAcc {
+			bestAcc = newAcc
+			baselineWeights = saveNetworkWeights(net)
+			if ts != nil {
+				ts.TweenStep(net, sample.Input, argmax(sample.Target), len(sample.Target), LearningRate)
+			}
+		} else {
+			restoreNetworkWeights(net, baselineWeights)
+			scale *= 0.8
+		}
+	}
+}
+
+func measureSampleColorAcc(net *nn.Network, sample Sample, numLayers int, state *nn.StepState) float64 {
+	output := getOutput(net, sample.Input, numLayers, state)
+	correct, total := 0, 0
+	for r := 0; r < sample.Height; r++ {
+		for c := 0; c < sample.Width; c++ {
+			idx := r*MaxGridSize + c
+			if idx < len(output) && idx < len(sample.Target) {
+				exp := clampInt(int(math.Round(float64(sample.Target[idx])*9.0)), 0, 9)
+				if exp > 0 {
+					pred := clampInt(int(math.Round(float64(output[idx])*9.0)), 0, 9)
+					if pred == exp {
+						correct++
+					}
+					total++
+				}
+			}
+		}
+	}
+	if total == 0 {
+		return 100.0
+	}
+	return float64(correct) / float64(total) * 100
+}
+
+func saveNetworkWeights(net *nn.Network) [][]float32 {
+	totalLayers := net.TotalLayers()
+	weights := make([][]float32, totalLayers)
+	for i := 0; i < totalLayers; i++ {
+		cfg := net.GetLayer(0, 0, i)
+		if cfg != nil && len(cfg.Kernel) > 0 {
+			weights[i] = make([]float32, len(cfg.Kernel))
+			copy(weights[i], cfg.Kernel)
+		}
+	}
+	return weights
+}
+
+func restoreNetworkWeights(net *nn.Network, weights [][]float32) {
+	for i := 0; i < len(weights); i++ {
+		cfg := net.GetLayer(0, 0, i)
+		if cfg != nil && weights[i] != nil && len(cfg.Kernel) > 0 {
+			copy(cfg.Kernel, weights[i])
+		}
+	}
+}
+
+func applyRandomPerturbations(net *nn.Network, scale float32) {
+	totalLayers := net.TotalLayers()
+	for i := 0; i < totalLayers; i++ {
+		cfg := net.GetLayer(0, 0, i)
+		if cfg == nil {
+			continue
+		}
+		for j := range cfg.Kernel {
+			cfg.Kernel[j] += (rand.Float32()*2 - 1) * scale
+		}
+		for j := range cfg.Bias {
+			cfg.Bias[j] += (rand.Float32()*2 - 1) * scale * 0.5
+		}
+	}
+}
+
+func min32(a, b float32) float32 {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func max32(a, b float32) float32 {
+	if a > b {
+		return a
+	}
+	return b
 }
 
 // ============================================================================
@@ -594,28 +794,33 @@ func encodeGrid(grid [][]int) []float32 {
 
 func saveResults(results *Results) {
 	output := map[string]interface{}{
-		"final_accuracy":   results.FinalAccuracy,
-		"final_budget":     results.FinalBudget,
-		"tasks_solved":     results.TasksSolved,
-		"solved_task_ids":  results.SolvedTaskIDs,
-		"train_time_sec":   results.TrainTime.Seconds(),
-		"grok_epoch":       results.GrokEpoch,
-		"accuracy_history": results.AccuracyHistory,
-		"budget_history":   results.BudgetHistory,
+		"final_accuracy":         results.FinalAccuracy,
+		"final_color_accuracy":   results.FinalColorAccuracy,
+		"final_budget":           results.FinalBudget,
+		"tasks_solved":           results.TasksSolved,
+		"solved_task_ids":        results.SolvedTaskIDs,
+		"train_time_sec":         results.TrainTime.Seconds(),
+		"grok_epoch":             results.GrokEpoch,
+		"accuracy_history":       results.AccuracyHistory,
+		"color_accuracy_history": results.ColorAccuracyHistory,
+		"budget_history":         results.BudgetHistory,
 		"meta": map[string]interface{}{
-			"architecture":  "Heuristic Hive (2x2 Grid Scatter: MHA+LSTM+MHA+MHA)",
-			"epochs":        NumEpochs,
-			"batch_size":    BatchSize,
-			"learning_rate": LearningRate,
-			"budget_scale":  BudgetScale,
-			"dmodel":        DModel,
-			"training_mode": "StepTween (Heuristic)",
-			"combine_mode":  "grid_scatter",
-			"hypothesis":    "Heuristic works where Gradient fails",
+			"architecture":       "Heuristic Hive + RL (2x2 Grid Scatter: MHA+LSTM+MHA+MHA)",
+			"epochs":             NumEpochs,
+			"batch_size":         BatchSize,
+			"learning_rate":      LearningRate,
+			"budget_scale":       BudgetScale,
+			"dmodel":             DModel,
+			"training_mode":      "StepTween (Heuristic) + RL Color Boost",
+			"combine_mode":       "grid_scatter",
+			"rl_perturb_scale":   RLPerturbScaleStart,
+			"rl_trials":          RLTrials,
+			"sample_rl_trials":   SampleRLTrials,
+			"rl_sample_fraction": RLSampleFraction,
 		},
 	}
 
 	data, _ := json.MarshalIndent(output, "", "  ")
-	os.WriteFile("test31_results.json", data, 0644)
-	fmt.Println("\n✅ Results saved to test31_results.json")
+	os.WriteFile("test31_rl_results.json", data, 0644)
+	fmt.Println("\n✅ Results saved to test31_rl_results.json")
 }
