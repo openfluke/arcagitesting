@@ -32,8 +32,8 @@ const (
 	InputSize    = MaxGridSize * MaxGridSize // 900
 	NumTasks     = 400
 	BatchSize    = 100
-	NumEpochs    = 400
-	LearningRate = float32(0.001)
+	NumEpochs    = 1400
+	LearningRate = float32(0.0001)
 	InitScale    = float32(0.5)
 	BudgetScale  = float32(0.8)
 
