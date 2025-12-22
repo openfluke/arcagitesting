@@ -12,42 +12,37 @@ import (
 	"github.com/openfluke/loom/nn"
 )
 
-// Test 30: GRID SCATTER HIVE MIND - 2x2 Spatial Brain Architecture
+// Test 31: HEURISTIC HIVE MIND - Grid Scatter + StepTween
 //
-// Hypothesis: Spatially separating brains (grid_scatter) helps gradients flow
-// better than flat concatenation, potentially enabling faster Grokking.
+// Hypothesis: StepTween (Heuristic) will work with grid_scatter where
+// StepTweenChain (Gradient) failed. The Heuristic doesn't need a gradient path!
 //
-// Architecture:
-//   - Input: 30x30 Grid (900 floats) -> Embedding (32 dim)
-//   - Layer 1: LayerParallel with 'grid_scatter' (2x2 Hive)
-//       - Pos(0,0): MHA Brain (Spatial)
-//       - Pos(0,1): LSTM Brain (Temporal)
-//       - Pos(1,0): CNN Brain (Feature ID)
-//       - Pos(1,1): MHA Brain (Spatial Backup)
+// Architecture (Same as Test 30):
+//   - Input -> Embedding (32 dim)
+//   - Layer 1: LayerParallel (Grid Scatter 2x2)
+//       - Brain 0,0: MHA (Spatial)
+//       - Brain 0,1: LSTM (Temporal)
+//       - Brain 1,0: MHA (Backup - using MHA for simplicity)
+//       - Brain 1,1: MHA (Redundancy)
 //   - Layer 2: Dense Merger
-//   - Layer 3: Output (900)
+//   - Layer 3: Output
 //
-// Training: StepTweenChain (Gradient-based)
+// Training: StepTween ONLY (The Champion)
 
 const (
 	MaxGridSize  = 30
 	InputSize    = MaxGridSize * MaxGridSize // 900
 	NumTasks     = 400
 	BatchSize    = 100
-	NumEpochs    = 1400
-	LearningRate = float32(0.01)
+	NumEpochs    = 400
+	LearningRate = float32(0.001)
 	InitScale    = float32(0.5)
-	BudgetScale  = float32(1.2)
+	BudgetScale  = float32(0.8)
 
 	// Architecture params (smaller per brain)
-	DModel     = 32 // Smaller to fit 4 brains
+	DModel     = 32
 	NumHeads   = 4
 	LSTMHidden = 32
-
-	// CNN Brain Params
-	ConvFilters  = 4
-	ConvKernel   = 3
-	ConvGridSize = 6 // DModel=32 interpreted as 6x5=30 (close fit) -> actually 32/4=8, use 4x8=32
 
 	// Grokking Detection
 	GrokThreshold = 20.0
@@ -73,21 +68,21 @@ type Results struct {
 	TasksSolved     int
 	SolvedTaskIDs   []string
 	TrainTime       time.Duration
-	GrokEpoch       int // -1 if no grokking detected
+	GrokEpoch       int
 }
 
 func main() {
 	fmt.Println("╔══════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║     Test 30: GRID SCATTER HIVE MIND - 2x2 Spatial Brain Architecture                ║")
+	fmt.Println("║     Test 31: HEURISTIC HIVE MIND - Grid Scatter + StepTween                         ║")
 	fmt.Println("║                                                                                      ║")
 	fmt.Println("║     🧠 Brain[0,0] (MHA):    Global Spatial Patterns                                 ║")
 	fmt.Println("║     🧮 Brain[0,1] (LSTM):   Temporal/Sequential Logic                               ║")
-	fmt.Println("║     👁️ Brain[1,0] (CNN):    Local Feature Detection                                 ║")
-	fmt.Println("║     🔄 Brain[1,1] (MHA):    Spatial Backup / Redundancy                             ║")
+	fmt.Println("║     🔄 Brain[1,0] (MHA):    Spatial Backup                                          ║")
+	fmt.Println("║     🔄 Brain[1,1] (MHA):    Spatial Redundancy                                      ║")
 	fmt.Println("║     🔗 CombineMode: grid_scatter (Spatial routing before merge)                     ║")
 	fmt.Println("╠══════════════════════════════════════════════════════════════════════════════════════╣")
-	fmt.Println("║     Training: StepTweenChain (Gradient-based) | 400 Epochs                          ║")
-	fmt.Println("║     Goal: Does spatial separation enable faster Grokking than flat concat?          ║")
+	fmt.Println("║     Training: StepTween (HEURISTIC) | 400 Epochs                                    ║")
+	fmt.Println("║     Hypothesis: Heuristic doesn't need gradient path, will work with grid_scatter! ║")
 	fmt.Println("╚══════════════════════════════════════════════════════════════════════════════════════╝")
 
 	// Load data
@@ -104,11 +99,11 @@ func main() {
 	numLayers := net.TotalLayers()
 	fmt.Printf("🏗️  Created Hive Mind Network: %d layers\n", numLayers)
 
-	// Initialize training state with Chain Rule
+	// Initialize training state - NO ChainRule (Pure Heuristic)
 	state := net.InitStepState(InputSize)
 	ts := nn.NewTweenState(net, nil)
-	ts.Config.UseChainRule = true
 	ts.Config.LinkBudgetScale = BudgetScale
+	// Note: NOT setting UseChainRule = true
 
 	results := &Results{
 		AccuracyHistory: make([]float64, NumEpochs),
@@ -118,7 +113,7 @@ func main() {
 	}
 
 	fmt.Println("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-	fmt.Println("                     🐝 HIVE MIND TRAINING BEGINS 🐝")
+	fmt.Println("                     🐝 HEURISTIC HIVE TRAINING BEGINS 🐝")
 	fmt.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
 	start := time.Now()
@@ -137,11 +132,9 @@ func main() {
 			for s := 0; s < numLayers; s++ {
 				net.StepForward(state)
 			}
-			output := state.GetOutput()
 
-			// ChainRule training path
-			ts.ForwardPass(net, sample.Input)
-			applyChainRuleUpdate(ts, net, sample, output, LearningRate)
+			// TweenStep training (Pure Heuristic - Gap Closing)
+			ts.TweenStep(net, sample.Input, argmax(sample.Target), len(sample.Target), LearningRate)
 		}
 
 		// Measure metrics
@@ -158,14 +151,14 @@ func main() {
 			fmt.Println()
 			fmt.Println("  ╔═══════════════════════════════════════════════════════════════════════╗")
 			fmt.Printf("  ║  🐝🐝🐝 GROKKING DETECTED 🐝🐝🐝  Epoch %d: %.1f%% → %.1f%%  ║\n", epoch+1, prevAcc, acc)
-			fmt.Println("  ║      The Hive Mind has awakened! Grid Scatter is working!            ║")
+			fmt.Println("  ║      The Heuristic Hive has awakened!                                ║")
 			fmt.Println("  ╚═══════════════════════════════════════════════════════════════════════╝")
 			fmt.Println()
 		}
 
 		if (epoch+1)%20 == 0 {
 			status := ""
-			if hasGrokked && acc > 40 {
+			if hasGrokked && acc > 50 {
 				status = " 🔥"
 			} else if acc > 15 {
 				status = " 👀"
@@ -190,27 +183,10 @@ func main() {
 }
 
 // ============================================================================
-// Chain Rule Training
-// ============================================================================
-
-func applyChainRuleUpdate(ts *nn.TweenState, net *nn.Network, sample Sample, output []float32, lr float32) {
-	outputGrad := make([]float32, len(output))
-	for i := range output {
-		if i < len(sample.Target) {
-			outputGrad[i] = sample.Target[i] - output[i]
-		}
-	}
-	ts.ChainGradients[net.TotalLayers()] = outputGrad
-	ts.BackwardTargets[net.TotalLayers()] = sample.Target
-	ts.TweenWeightsChainRule(net, lr)
-}
-
-// ============================================================================
 // HIVE MIND NETWORK ARCHITECTURE (Grid Scatter 2x2)
 // ============================================================================
 
 func createHiveMindNetwork() *nn.Network {
-	// Total layers: Input Embed + Parallel(GridScatter) + Merger + Output = 4 layers
 	totalLayers := 4
 	net := nn.NewNetwork(InputSize, 1, 1, totalLayers)
 	net.BatchSize = 1
@@ -228,10 +204,8 @@ func createHiveMindNetwork() *nn.Network {
 	net.SetLayer(0, 0, layerIdx, parallelLayer)
 	layerIdx++
 
-	// Layer 2: Merger
-	// Each brain outputs DModel=32, and we have 4 brains in a 2x2 grid
-	// Grid scatter reorganizes them spatially, but total output is still 4*DModel = 128
-	mergerInputSize := DModel * 4 // 4 brains * 32 each
+	// Layer 2: Merger (4 brains * 32 each = 128 -> 32)
+	mergerInputSize := DModel * 4
 	mergerLayer := nn.InitDenseLayer(mergerInputSize, DModel, nn.ActivationLeakyReLU)
 	scaleWeights(mergerLayer.Kernel, InitScale)
 	net.SetLayer(0, 0, layerIdx, mergerLayer)
@@ -246,10 +220,9 @@ func createHiveMindNetwork() *nn.Network {
 }
 
 func createGridScatterHive() nn.LayerConfig {
-	// Create the four brains
 	brain00 := createMHABrain()  // Pos(0,0): Spatial
 	brain01 := createLSTMBrain() // Pos(0,1): Temporal
-	brain10 := createMHABrain()  // Pos(1,0): Spatial Backup (using MHA instead of CNN for simplicity)
+	brain10 := createMHABrain()  // Pos(1,0): Spatial Backup
 	brain11 := createMHABrain()  // Pos(1,1): Redundancy
 
 	parallel := nn.LayerConfig{
@@ -265,10 +238,10 @@ func createGridScatterHive() nn.LayerConfig {
 			brain11,
 		},
 		GridPositions: []nn.GridPosition{
-			{BranchIndex: 0, TargetRow: 0, TargetCol: 0, TargetLayer: 0}, // MHA -> (0,0)
-			{BranchIndex: 1, TargetRow: 0, TargetCol: 1, TargetLayer: 0}, // LSTM -> (0,1)
-			{BranchIndex: 2, TargetRow: 1, TargetCol: 0, TargetLayer: 0}, // MHA2 -> (1,0)
-			{BranchIndex: 3, TargetRow: 1, TargetCol: 1, TargetLayer: 0}, // MHA3 -> (1,1)
+			{BranchIndex: 0, TargetRow: 0, TargetCol: 0, TargetLayer: 0},
+			{BranchIndex: 1, TargetRow: 0, TargetCol: 1, TargetLayer: 0},
+			{BranchIndex: 2, TargetRow: 1, TargetCol: 0, TargetLayer: 0},
+			{BranchIndex: 3, TargetRow: 1, TargetCol: 1, TargetLayer: 0},
 		},
 	}
 
@@ -473,7 +446,7 @@ func safeGet(slice []float64, idx int) float64 {
 
 func printResults(results *Results) {
 	fmt.Println("\n╔══════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║                      🐝 HIVE MIND - FINAL RESULTS 🐝                                 ║")
+	fmt.Println("║                      🐝 HEURISTIC HIVE - FINAL RESULTS 🐝                            ║")
 	fmt.Println("╠══════════════════════════════════════════════════════════════════════════════════════╣")
 	fmt.Printf("║                                                                                      ║\n")
 	fmt.Printf("║   Final Accuracy:     %5.1f%%                                                        ║\n", results.FinalAccuracy)
@@ -482,7 +455,7 @@ func printResults(results *Results) {
 	fmt.Printf("║   Training Time:      %.1fs                                                          ║\n", results.TrainTime.Seconds())
 
 	if results.GrokEpoch > 0 {
-		fmt.Printf("║   🐝 Grok Epoch:      %d (Spatial separation worked!)                               ║\n", results.GrokEpoch)
+		fmt.Printf("║   🐝 Grok Epoch:      %d                                                             ║\n", results.GrokEpoch)
 	} else {
 		fmt.Printf("║   😴 Grok Epoch:      NEVER                                                          ║\n")
 	}
@@ -493,7 +466,7 @@ func printResults(results *Results) {
 	fmt.Println("╠════════════════════╦═════════╦═════════╦═════════╦═════════╦═════════════════════════╣")
 	fmt.Println("║     Epoch          ║   80    ║   160   ║   240   ║   320   ║   400                   ║")
 	fmt.Println("╠════════════════════╬═════════╬═════════╬═════════╬═════════╬═════════════════════════╣")
-	fmt.Printf("║ GridScatter Hive   ║ %5.1f%% ║ %5.1f%% ║ %5.1f%% ║ %5.1f%% ║ %5.1f%%                 ║\n",
+	fmt.Printf("║ Heuristic Hive     ║ %5.1f%% ║ %5.1f%% ║ %5.1f%% ║ %5.1f%% ║ %5.1f%%                 ║\n",
 		safeGet(results.AccuracyHistory, 79), safeGet(results.AccuracyHistory, 159),
 		safeGet(results.AccuracyHistory, 239), safeGet(results.AccuracyHistory, 319),
 		results.FinalAccuracy)
@@ -501,20 +474,27 @@ func printResults(results *Results) {
 
 	// Comparison
 	fmt.Println("\n╔══════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║                        GRID SCATTER HYPOTHESIS VERDICT                               ║")
+	fmt.Println("║                        HEURISTIC HIVE HYPOTHESIS VERDICT                             ║")
 	fmt.Println("╠══════════════════════════════════════════════════════════════════════════════════════╣")
-	fmt.Println("║  Baseline (Test 27 Bicameral StepTween): Grokked at ~Epoch 140                       ║")
+	fmt.Println("║  Baseline (Test 27 Bicameral): 53.2% | Test 30 (Grid+Chain): 6.8%                    ║")
 	fmt.Println("║  ─────────────────────────────────────────────────────────────────────────────────── ║")
 
-	if results.GrokEpoch > 0 && results.GrokEpoch < 140 {
-		fmt.Printf("║  ✨ HYPOTHESIS CONFIRMED: Grid Scatter Grokked EARLIER (Epoch %d < 140)!            ║\n", results.GrokEpoch)
-		fmt.Println("║     → Spatial routing helps gradients flow more efficiently!                        ║")
-	} else if results.GrokEpoch > 0 {
-		fmt.Printf("║  ⚡ PARTIAL: Grokking occurred but not earlier (Epoch %d >= 140)                    ║\n", results.GrokEpoch)
-	} else if results.FinalAccuracy > 15 {
-		fmt.Println("║  📊 SLOW LEARNING: Some progress but no clear grok transition                       ║")
+	if results.FinalAccuracy > 53.2 {
+		fmt.Println("║  ✨ BREAKTHROUGH: Heuristic Hive BEATS all baselines!                               ║")
+		fmt.Println("║     → Grid Scatter + StepTween is the winning combination!                          ║")
+	} else if results.FinalAccuracy > 45 {
+		fmt.Println("║  ⚡ COMPETITIVE: Heuristic Hive matches baseline performance.                       ║")
+		fmt.Println("║     → Proves Heuristic works where Gradient fails with grid_scatter.                ║")
+	} else if results.FinalAccuracy > 20 {
+		fmt.Println("║  📊 LEARNING: Significant improvement over Test 30 (6.8%).                          ║")
+		fmt.Println("║     → Confirms Heuristic is viable with grid_scatter.                               ║")
 	} else {
-		fmt.Println("║  ❌ HYPOTHESIS REJECTED: Grid Scatter with ChainRule didn't help                    ║")
+		fmt.Println("║  ❌ UNEXPECTED: Heuristic also struggled with grid_scatter.                         ║")
+		fmt.Println("║     → May indicate a fundamental issue with the architecture.                       ║")
+	}
+
+	if results.TasksSolved > 2 {
+		fmt.Printf("║  🎯 Tasks Solved: %d (MORE than baseline 2!)                                         ║\n", results.TasksSolved)
 	}
 
 	fmt.Println("╚══════════════════════════════════════════════════════════════════════════════════════╝")
@@ -623,21 +603,19 @@ func saveResults(results *Results) {
 		"accuracy_history": results.AccuracyHistory,
 		"budget_history":   results.BudgetHistory,
 		"meta": map[string]interface{}{
-			"architecture":  "Hive Mind (2x2 Grid Scatter: MHA+LSTM+MHA+MHA)",
+			"architecture":  "Heuristic Hive (2x2 Grid Scatter: MHA+LSTM+MHA+MHA)",
 			"epochs":        NumEpochs,
 			"batch_size":    BatchSize,
 			"learning_rate": LearningRate,
 			"budget_scale":  BudgetScale,
 			"dmodel":        DModel,
-			"training_mode": "StepTweenChain (Gradient)",
+			"training_mode": "StepTween (Heuristic)",
 			"combine_mode":  "grid_scatter",
-			"hypothesis":    "Spatial separation enables faster Grokking",
+			"hypothesis":    "Heuristic works where Gradient fails",
 		},
 	}
 
 	data, _ := json.MarshalIndent(output, "", "  ")
-	os.WriteFile("test30_results.json", data, 0644)
-	fmt.Println("\n✅ Results saved to test30_results.json")
+	os.WriteFile("test31_results.json", data, 0644)
+	fmt.Println("\n✅ Results saved to test31_results.json")
 }
-
-var _ = argmax // suppress unused warning
