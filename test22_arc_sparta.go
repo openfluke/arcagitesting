@@ -80,9 +80,9 @@ type ModeStat struct {
 
 func main() {
 	fmt.Println("╔══════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║  Test 22: ARC-AGI Full SPARTA                                            ║")
+	fmt.Println("║  Test 22: ARC-AGI Full SPARTA (with Train/Eval Split)                    ║")
 	fmt.Println("║  All Modes × All Depths × All Architectures                              ║")
-	fmt.Println("║  Output: % Tasks Solved (Official ARC Metric)                            ║")
+	fmt.Println("║  Training on Train data, Evaluating on Test/Holdout data                ║")
 	fmt.Println("╚══════════════════════════════════════════════════════════════════════════╝")
 
 	tasks, err := loadARCTasks("ARC-AGI/data/training", NumTasks)
@@ -90,8 +90,8 @@ func main() {
 		fmt.Printf("Failed: %v\n", err)
 		return
 	}
-	samples := flattenTasksToSamples(tasks)
-	fmt.Printf("Loaded %d tasks, %d samples\n\n", len(tasks), len(samples))
+	trainSamples, evalSamples := splitTrainEval(tasks)
+	fmt.Printf("Loaded %d tasks: %d train samples, %d eval samples\n\n", len(tasks), len(trainSamples), len(evalSamples))
 
 	// Track global best
 	var globalBestArch ArchType
@@ -111,28 +111,29 @@ func main() {
 			fmt.Printf("└───────────────────────────────────────────────────────────────────────────┘\n")
 
 			for _, mode := range allModes {
-				cellAcc, _ := runTrials(samples, arch, depth, mode, NumRuns)
-				allResults[configName][mode] = cellAcc
+				trainAcc, evalAcc := runTrials(trainSamples, evalSamples, arch, depth, mode, NumRuns)
+				allResults[configName][mode] = evalAcc
 
-				// Check for new global best
-				isNewBest := cellAcc > globalBestAcc
+				// Check for new global best (using EVAL accuracy)
+				isNewBest := evalAcc > globalBestAcc
 				if isNewBest {
-					globalBestAcc = cellAcc
+					globalBestAcc = evalAcc
 					globalBestArch = arch
 					globalBestMode = mode
 					globalBestDepth = depth
 				}
 
 				bestMarker := ""
-				if isNewBest && cellAcc > 15 {
+				if isNewBest && evalAcc > 15 {
 					bestMarker = " ★ NEW BEST!"
 				}
 
-				fmt.Printf("  [%-12s] Cell: %4.0f%%%s\n",
-					modeNames[mode], cellAcc, bestMarker)
+				// Show both train and eval accuracy
+				fmt.Printf("  [%-12s] Train: %4.0f%% | Eval: %4.0f%%%s\n",
+					modeNames[mode], trainAcc, evalAcc, bestMarker)
 			}
 
-			fmt.Printf("  ▸ Leader: %s-%dL + %s = %.0f%% cells\n",
+			fmt.Printf("  ▸ Leader: %s-%dL + %s = %.0f%% eval\n",
 				globalBestArch, globalBestDepth, modeNames[globalBestMode], globalBestAcc)
 		}
 	}
@@ -145,13 +146,13 @@ func main() {
 // Training
 // ============================================================================
 
-func runTrials(samples []Sample, arch ArchType, depth int, mode TrainingMode, numRuns int) (avgCellAcc, maxTaskAcc float64) {
+func runTrials(trainSamples, evalSamples []Sample, arch ArchType, depth int, mode TrainingMode, numRuns int) (avgTrainAcc, avgEvalAcc float64) {
 	var wg sync.WaitGroup
 	sem := make(chan struct{}, MaxConcurrent)
 	var mu sync.Mutex
 
-	cellAccs := make([]float64, numRuns)
-	taskAccs := make([]float64, numRuns)
+	trainAccs := make([]float64, numRuns)
+	evalAccs := make([]float64, numRuns)
 
 	for i := 0; i < numRuns; i++ {
 		wg.Add(1)
@@ -159,35 +160,32 @@ func runTrials(samples []Sample, arch ArchType, depth int, mode TrainingMode, nu
 			defer wg.Done()
 			defer func() {
 				if r := recover(); r != nil {
-					cellAccs[idx] = 0
-					taskAccs[idx] = 0
+					trainAccs[idx] = 0
+					evalAccs[idx] = 0
 				}
 			}()
 			sem <- struct{}{}
 			defer func() { <-sem }()
 
-			c, t := runSingleTrial(samples, arch, depth, mode)
+			trainA, evalA := runSingleTrial(trainSamples, evalSamples, arch, depth, mode)
 			mu.Lock()
-			cellAccs[idx] = c
-			taskAccs[idx] = t
+			trainAccs[idx] = trainA
+			evalAccs[idx] = evalA
 			mu.Unlock()
 		}(i)
 	}
 	wg.Wait()
 
-	// Calculate avg cell and max task
-	sum := 0.0
-	maxTask := 0.0
+	// Calculate avg for both
+	trainSum, evalSum := 0.0, 0.0
 	for i := 0; i < numRuns; i++ {
-		sum += cellAccs[i]
-		if taskAccs[i] > maxTask {
-			maxTask = taskAccs[i]
-		}
+		trainSum += trainAccs[i]
+		evalSum += evalAccs[i]
 	}
-	return sum / float64(numRuns), maxTask
+	return trainSum / float64(numRuns), evalSum / float64(numRuns)
 }
 
-func runSingleTrial(samples []Sample, arch ArchType, depth int, mode TrainingMode) (cellAcc, taskAcc float64) {
+func runSingleTrial(trainSamples, evalSamples []Sample, arch ArchType, depth int, mode TrainingMode) (trainAcc, evalAcc float64) {
 	net := createNetwork(arch, depth)
 	if net == nil {
 		return 0, 0
@@ -210,25 +208,30 @@ func runSingleTrial(samples []Sample, arch ArchType, depth int, mode TrainingMod
 		}
 	}
 
-	bestCell, bestTask := 0.0, 0.0
+	bestTrain, bestEval := 0.0, 0.0
 	sampleIdx := 0
 
 	for batch := 0; batch < MaxBatches; batch++ {
+		// Train on TRAIN samples
 		for i := 0; i < BatchSize; i++ {
-			sample := samples[sampleIdx%len(samples)]
+			sample := trainSamples[sampleIdx%len(trainSamples)]
 			sampleIdx++
 			trainOneSample(net, sample, mode, numLayers, state, ts, LearningRate)
 		}
-		c := measureCellAccuracy(net, samples, mode, numLayers, state, ts)
-		t := measureTaskAccuracy(net, samples, mode, numLayers, state, ts)
-		if c > bestCell {
-			bestCell = c
+		// Measure on TRAIN samples
+		trainA := measureCellAccuracy(net, trainSamples, mode, numLayers, state, ts)
+		if trainA > bestTrain {
+			bestTrain = trainA
 		}
-		if t > bestTask {
-			bestTask = t
+		// Measure on EVAL samples (holdout)
+		if len(evalSamples) > 0 {
+			evalA := measureCellAccuracy(net, evalSamples, mode, numLayers, state, ts)
+			if evalA > bestEval {
+				bestEval = evalA
+			}
 		}
 	}
-	return bestCell, bestTask
+	return bestTrain, bestEval
 }
 
 func trainOneSample(net *nn.Network, sample Sample, mode TrainingMode, numLayers int, state *nn.StepState, ts *nn.TweenState, lr float32) {
@@ -584,17 +587,38 @@ func loadARCTasks(dir string, maxTasks int) ([]*ARCTask, error) {
 	return tasks, nil
 }
 
-func flattenTasksToSamples(tasks []*ARCTask) []Sample {
-	var samples []Sample
+// splitTrainEval creates separate train and eval sample sets
+// Uses task.Test for eval if available, otherwise holds out 20% of train data
+func splitTrainEval(tasks []*ARCTask) (trainSamples, evalSamples []Sample) {
 	for _, task := range tasks {
+		// Add Train samples to training set
 		for _, pair := range task.Train {
-			samples = append(samples, Sample{
+			if len(pair.Output) == 0 || len(pair.Output[0]) == 0 {
+				continue
+			}
+			trainSamples = append(trainSamples, Sample{
+				Input: encodeGrid(pair.Input), Target: encodeGrid(pair.Output),
+				Height: len(pair.Output), Width: len(pair.Output[0]),
+			})
+		}
+		// Add Test samples to eval set
+		for _, pair := range task.Test {
+			if len(pair.Output) == 0 || len(pair.Output[0]) == 0 {
+				continue
+			}
+			evalSamples = append(evalSamples, Sample{
 				Input: encodeGrid(pair.Input), Target: encodeGrid(pair.Output),
 				Height: len(pair.Output), Width: len(pair.Output[0]),
 			})
 		}
 	}
-	return samples
+	// If no test data, holdout 20% of train for eval
+	if len(evalSamples) == 0 && len(trainSamples) > 5 {
+		holdout := len(trainSamples) / 5
+		evalSamples = trainSamples[len(trainSamples)-holdout:]
+		trainSamples = trainSamples[:len(trainSamples)-holdout]
+	}
+	return trainSamples, evalSamples
 }
 
 func encodeGrid(grid [][]int) []float32 {

@@ -1,122 +1,74 @@
 {
-  "Attn+Dense-3L": {
-    "NormalBP": 0,
-    "StepBP": 0,
-    "StepTween": 0,
-    "StepTweenChain": 0,
-    "Tween": 0,
-    "TweenChain": 0
-  },
-  "Attn+Dense-5L": {
-    "NormalBP": 0,
-    "StepBP": 0,
-    "StepTween": 0,
-    "StepTweenChain": 0,
-    "Tween": 0,
-    "TweenChain": 0
-  },
-  "Attn+Dense-7L": {
-    "NormalBP": 0,
-    "StepBP": 0,
-    "StepTween": 0,
-    "StepTweenChain": 0,
-    "Tween": 0,
-    "TweenChain": 0
-  },
   "Attn-3L": {
-    "NormalBP": 0,
-    "StepBP": 0,
-    "StepTween": 0,
-    "StepTweenChain": 0,
-    "Tween": 0,
-    "TweenChain": 0
+    "NormalBP": 9.343434343434344,
+    "StepBP": 9.343434343434344,
+    "StepTween": 57.4915824915825,
+    "StepTweenChain": 9.343434343434344,
+    "Tween": 9.343434343434344,
+    "TweenChain": 9.343434343434344
   },
   "Attn-5L": {
-    "NormalBP": 0,
-    "StepBP": 0,
-    "StepTween": 0,
-    "StepTweenChain": 0,
-    "Tween": 0,
-    "TweenChain": 0
+    "NormalBP": 9.343434343434344,
+    "StepBP": 9.343434343434344,
+    "StepTween": 57.4915824915825,
+    "StepTweenChain": 9.343434343434344,
+    "Tween": 9.427609427609427,
+    "TweenChain": 9.343434343434344
   },
   "Attn-7L": {
-    "NormalBP": 0,
-    "StepBP": 0,
-    "StepTween": 0,
-    "StepTweenChain": 0,
-    "Tween": 0,
-    "TweenChain": 0
-  },
-  "Conv+Dense-3L": {
-    "NormalBP": 0,
-    "StepBP": 0,
-    "StepTween": 0,
-    "StepTweenChain": 0,
-    "Tween": 0,
-    "TweenChain": 0
-  },
-  "Conv+Dense-5L": {
-    "NormalBP": 0,
-    "StepBP": 0,
-    "StepTween": 0,
-    "StepTweenChain": 0,
-    "Tween": 0,
-    "TweenChain": 0
-  },
-  "Conv+Dense-7L": {
-    "NormalBP": 0,
-    "StepBP": 0,
-    "StepTween": 0,
-    "StepTweenChain": 0,
-    "Tween": 0,
-    "TweenChain": 0
+    "NormalBP": 9.343434343434344,
+    "StepBP": 9.343434343434344,
+    "StepTween": 57.07070707070707,
+    "StepTweenChain": 9.343434343434344,
+    "Tween": 9.343434343434344,
+    "TweenChain": 9.343434343434344
   },
   "Conv2D-3L": {
-    "NormalBP": 0,
-    "StepBP": 0,
-    "StepTween": 0,
-    "StepTweenChain": 0,
-    "Tween": 0,
-    "TweenChain": 0
+    "NormalBP": 52.69360269360269,
+    "StepBP": 44.444444444444436,
+    "StepTween": 52.35690235690236,
+    "StepTweenChain": 9.51178451178451,
+    "Tween": 52.02020202020202,
+    "TweenChain": 9.51178451178451
   },
   "Conv2D-5L": {
-    "NormalBP": 0,
-    "StepBP": 0,
-    "StepTween": 0,
-    "StepTweenChain": 0,
-    "Tween": 0,
-    "TweenChain": 0
+    "NormalBP": 53.53535353535354,
+    "StepBP": 31.48148148148148,
+    "StepTween": 55.89225589225589,
+    "StepTweenChain": 9.343434343434344,
+    "Tween": 55.80808080808081,
+    "TweenChain": 9.343434343434344
   },
   "Conv2D-7L": {
-    "NormalBP": 0,
-    "StepBP": 0,
-    "StepTween": 0,
-    "StepTweenChain": 0,
-    "Tween": 0,
-    "TweenChain": 0
+    "NormalBP": 53.53535353535354,
+    "StepBP": 30.976430976430976,
+    "StepTween": 55.89225589225589,
+    "StepTweenChain": 9.427609427609427,
+    "Tween": 55.80808080808081,
+    "TweenChain": 9.25925925925926
   },
   "Dense-3L": {
-    "NormalBP": 0,
-    "StepBP": 0,
-    "StepTween": 0,
-    "StepTweenChain": 0,
-    "Tween": 0,
-    "TweenChain": 0
+    "NormalBP": 51.59932659932661,
+    "StepBP": 54.882154882154886,
+    "StepTween": 54.37710437710438,
+    "StepTweenChain": 8.754208754208754,
+    "Tween": 54.71380471380471,
+    "TweenChain": 8.417508417508417
   },
   "Dense-5L": {
-    "NormalBP": 0,
-    "StepBP": 0,
-    "StepTween": 0,
-    "StepTweenChain": 0,
-    "Tween": 0,
-    "TweenChain": 0
+    "NormalBP": 51.01010101010101,
+    "StepBP": 47.89562289562289,
+    "StepTween": 56.06060606060606,
+    "StepTweenChain": 8.922558922558922,
+    "Tween": 55.80808080808081,
+    "TweenChain": 8.922558922558922
   },
   "Dense-7L": {
-    "NormalBP": 0,
-    "StepBP": 0,
-    "StepTween": 0,
-    "StepTweenChain": 0,
-    "Tween": 0,
-    "TweenChain": 0
+    "NormalBP": 49.83164983164983,
+    "StepBP": 33.16498316498316,
+    "StepTween": 56.14478114478115,
+    "StepTweenChain": 9.09090909090909,
+    "Tween": 55.89225589225589,
+    "TweenChain": 9.25925925925926
   }
 }
