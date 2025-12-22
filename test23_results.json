@@ -1,344 +1,344 @@
 {
-  "Attn-3L": {
+  "Attn-11L": {
     "NormalBP": {
-      "eval_bench": 7.052865612648222,
-      "final_eval": 7.052865612648221,
-      "final_train": 8.543622990377067,
-      "train_time": 19.486538432
+      "eval_bench": 7.086391869000565,
+      "final_eval": 7.086391869000565,
+      "final_train": 8.534901299531935,
+      "train_time": 24.89737422
     },
     "StepBP": {
-      "eval_bench": 7.03522021456804,
-      "final_eval": 7.0352202145680405,
-      "final_train": 8.54580341308835,
-      "train_time": 53.560075849
+      "eval_bench": 7.075804630152457,
+      "final_eval": 7.075804630152456,
+      "final_train": 8.537081722243219,
+      "train_time": 199.801509033
     },
     "StepTween": {
       "eval_bench": 53.867871259175594,
       "final_eval": 53.8678712591756,
       "final_train": 54.456057214291945,
-      "train_time": 45.583419685
+      "train_time": 181.869659011
     },
     "StepTweenChn": {
-      "eval_bench": 7.031691134952005,
-      "final_eval": 7.031691134952005,
-      "final_train": 8.532720876820653,
-      "train_time": 44.990038224
+      "eval_bench": 7.086391869000565,
+      "final_eval": 7.086391869000565,
+      "final_train": 8.534901299531935,
+      "train_time": 186.473009099
     },
     "Tween": {
       "eval_bench": 52.332721626199884,
       "final_eval": 52.332721626199884,
       "final_train": 52.44788789720034,
-      "train_time": 22.296316541
+      "train_time": 27.478280112
     },
     "TweenChain": {
-      "eval_bench": 7.031691134952005,
-      "final_eval": 7.031691134952005,
-      "final_train": 8.532720876820653,
-      "train_time": 17.682803018
+      "eval_bench": 7.086391869000565,
+      "final_eval": 7.086391869000565,
+      "final_train": 8.534901299531935,
+      "train_time": 21.626433528
     }
   },
-  "Attn-5L": {
+  "Attn-13L": {
     "NormalBP": {
-      "eval_bench": 7.052865612648222,
-      "final_eval": 7.052865612648221,
-      "final_train": 8.543622990377067,
-      "train_time": 21.475756434
+      "eval_bench": 7.086391869000565,
+      "final_eval": 7.086391869000565,
+      "final_train": 8.534901299531935,
+      "train_time": 26.549410708
     },
     "StepBP": {
-      "eval_bench": 7.03522021456804,
-      "final_eval": 7.0352202145680405,
-      "final_train": 8.54580341308835,
-      "train_time": 92.511513168
-    },
-    "StepTween": {
-      "eval_bench": 53.86845943911161,
-      "final_eval": 53.8678712591756,
-      "final_train": 54.456057214291945,
-      "train_time": 79.614181398
-    },
-    "StepTweenChn": {
-      "eval_bench": 7.031691134952005,
-      "final_eval": 7.031691134952005,
-      "final_train": 8.532720876820653,
-      "train_time": 81.46747018
-    },
-    "Tween": {
-      "eval_bench": 52.0415725578769,
-      "final_eval": 52.041572557876904,
-      "final_train": 52.08666453469779,
-      "train_time": 24.235427716
-    },
-    "TweenChain": {
-      "eval_bench": 7.031691134952005,
-      "final_eval": 7.031691134952005,
-      "final_train": 8.532720876820653,
-      "train_time": 19.453194905
-    }
-  },
-  "Attn-7L": {
-    "NormalBP": {
-      "eval_bench": 7.052865612648222,
-      "final_eval": 7.052865612648221,
-      "final_train": 8.543622990377067,
-      "train_time": 29.220997947
-    },
-    "StepBP": {
-      "eval_bench": 7.03522021456804,
-      "final_eval": 7.0352202145680405,
-      "final_train": 8.54580341308835,
-      "train_time": 148.05909242
+      "eval_bench": 7.075804630152457,
+      "final_eval": 7.075804630152456,
+      "final_train": 8.537081722243219,
+      "train_time": 247.978914124
     },
     "StepTween": {
       "eval_bench": 53.867871259175594,
       "final_eval": 53.8678712591756,
       "final_train": 54.456057214291945,
-      "train_time": 133.015305268
+      "train_time": 228.192190762
     },
     "StepTweenChn": {
-      "eval_bench": 7.031691134952005,
-      "final_eval": 7.031691134952005,
-      "final_train": 8.532720876820653,
-      "train_time": 135.890476524
+      "eval_bench": 7.086391869000565,
+      "final_eval": 7.086391869000565,
+      "final_train": 8.534901299531935,
+      "train_time": 233.291715632
     },
     "Tween": {
-      "eval_bench": 52.08921513269339,
-      "final_eval": 52.08921513269339,
-      "final_train": 52.12518533593046,
-      "train_time": 33.084664682
+      "eval_bench": 52.64857425183512,
+      "final_eval": 52.64857425183512,
+      "final_train": 52.863621827484955,
+      "train_time": 29.518510983
     },
     "TweenChain": {
-      "eval_bench": 7.031691134952005,
-      "final_eval": 7.031691134952005,
-      "final_train": 8.532720876820653,
-      "train_time": 25.738799559
+      "eval_bench": 7.086391869000565,
+      "final_eval": 7.086391869000565,
+      "final_train": 8.534901299531935,
+      "train_time": 22.947074728
     }
   },
-  "Conv2D-3L": {
+  "Attn-9L": {
     "NormalBP": {
-      "eval_bench": 50.90167984189723,
-      "final_eval": 50.90167984189723,
-      "final_train": 51.04151524842283,
-      "train_time": 153.631233288
+      "eval_bench": 7.086391869000565,
+      "final_eval": 7.086391869000565,
+      "final_train": 8.534901299531935,
+      "train_time": 23.125797747
     },
     "StepBP": {
-      "eval_bench": 44.52463297571993,
-      "final_eval": 44.52463297571993,
-      "final_train": 44.625984824257934,
-      "train_time": 378.498590527
+      "eval_bench": 7.075804630152457,
+      "final_eval": 7.075804630152456,
+      "final_train": 8.537081722243219,
+      "train_time": 155.752539922
     },
     "StepTween": {
-      "eval_bench": 52.91501976284585,
-      "final_eval": 52.91501976284585,
-      "final_train": 53.19359246445911,
-      "train_time": 355.501871259
+      "eval_bench": 53.867871259175594,
+      "final_eval": 53.8678712591756,
+      "final_train": 54.456057214291945,
+      "train_time": 139.799768699
     },
     "StepTweenChn": {
-      "eval_bench": 7.065217391304348,
-      "final_eval": 7.065217391304348,
-      "final_train": 8.522545570834666,
-      "train_time": 324.937573166
+      "eval_bench": 7.086391869000565,
+      "final_eval": 7.086391869000565,
+      "final_train": 8.534901299531935,
+      "train_time": 143.977864391
     },
     "Tween": {
-      "eval_bench": 52.925607001693955,
-      "final_eval": 52.925607001693955,
-      "final_train": 53.19213884931825,
-      "train_time": 144.562929024
+      "eval_bench": 52.40506775832862,
+      "final_eval": 52.40506775832863,
+      "final_train": 52.54091926621508,
+      "train_time": 25.948670903
     },
     "TweenChain": {
-      "eval_bench": 7.0440429136081315,
-      "final_eval": 7.0440429136081315,
-      "final_train": 8.502921766433118,
-      "train_time": 125.302741086
+      "eval_bench": 7.086391869000565,
+      "final_eval": 7.086391869000565,
+      "final_train": 8.534901299531935,
+      "train_time": 20.189104192
     }
   },
-  "Conv2D-5L": {
+  "Conv2D-11L": {
     "NormalBP": {
-      "eval_bench": 50.63170525127047,
-      "final_eval": 50.63170525127047,
-      "final_train": 50.85835974067506,
-      "train_time": 170.13503919
+      "eval_bench": 46.73560135516657,
+      "final_eval": 46.73560135516657,
+      "final_train": 46.974300084309675,
+      "train_time": 156.658297332
     },
     "StepBP": {
-      "eval_bench": 33.09747317899492,
-      "final_eval": 33.09747317899492,
-      "final_train": 33.7914643718929,
-      "train_time": 666.848172808
+      "eval_bench": 37.98524844720497,
+      "final_eval": 37.98524844720497,
+      "final_train": 38.25406285431869,
+      "train_time": 1148.771721862
     },
     "StepTween": {
-      "eval_bench": 52.742094861660085,
-      "final_eval": 52.742094861660085,
-      "final_train": 52.992266767450644,
-      "train_time": 599.112907289
-    },
-    "StepTweenChn": {
-      "eval_bench": 7.068746470920384,
-      "final_eval": 7.068746470920384,
-      "final_train": 8.517457917841673,
-      "train_time": 590.523415924
-    },
-    "Tween": {
-      "eval_bench": 52.74385940146809,
-      "final_eval": 52.74385940146809,
-      "final_train": 52.992993575021075,
-      "train_time": 168.095294258
-    },
-    "TweenChain": {
-      "eval_bench": 7.088156408808582,
-      "final_eval": 7.088156408808582,
-      "final_train": 8.526179608686805,
-      "train_time": 134.13067654
-    }
-  },
-  "Conv2D-7L": {
-    "NormalBP": {
-      "eval_bench": 51.79983060417843,
-      "final_eval": 51.79983060417843,
-      "final_train": 51.965287670436375,
-      "train_time": 164.362369398
-    },
-    "StepBP": {
-      "eval_bench": 23.754234895539245,
-      "final_eval": 23.754234895539245,
-      "final_train": 24.356775300171527,
-      "train_time": 839.671692385
-    },
-    "StepTween": {
-      "eval_bench": 52.72974308300396,
-      "final_eval": 52.72974308300395,
-      "final_train": 53.007529726429624,
-      "train_time": 766.644585012
-    },
-    "StepTweenChn": {
-      "eval_bench": 7.03698475437606,
-      "final_eval": 7.036984754376059,
-      "final_train": 8.508736226996541,
-      "train_time": 782.409443007
-    },
-    "Tween": {
       "eval_bench": 52.726214003387916,
       "final_eval": 52.726214003387916,
-      "final_train": 52.984271884175946,
-      "train_time": 159.459733058
-    },
-    "TweenChain": {
-      "eval_bench": 7.03522021456804,
-      "final_eval": 7.0352202145680405,
-      "final_train": 8.550891066081343,
-      "train_time": 137.212028962
-    }
-  },
-  "Dense-3L": {
-    "NormalBP": {
-      "eval_bench": 43.00359966120836,
-      "final_eval": 43.003599661208355,
-      "final_train": 42.00293630258452,
-      "train_time": 24.479401561
-    },
-    "StepBP": {
-      "eval_bench": 28.14970355731226,
-      "final_eval": 28.149703557312257,
-      "final_train": 27.851992906358113,
-      "train_time": 71.110129152
-    },
-    "StepTween": {
-      "eval_bench": 52.922077922077925,
-      "final_eval": 52.922077922077925,
-      "final_train": 53.20086054016338,
-      "train_time": 60.111403306
+      "final_train": 52.977003808471665,
+      "train_time": 1102.402194766
     },
     "StepTweenChn": {
-      "eval_bench": 7.1693252399774146,
-      "final_eval": 7.1693252399774146,
-      "final_train": 9.36055469953775,
-      "train_time": 55.721919325
+      "eval_bench": 7.107566346696781,
+      "final_eval": 7.107566346696781,
+      "final_train": 8.508009419426113,
+      "train_time": 1075.382822962
     },
     "Tween": {
-      "eval_bench": 52.87443534726143,
-      "final_eval": 52.87443534726144,
-      "final_train": 53.14198912695874,
-      "train_time": 27.729065061
+      "eval_bench": 52.7738565782044,
+      "final_eval": 52.7738565782044,
+      "final_train": 52.979184231182956,
+      "train_time": 156.855596379
     },
     "TweenChain": {
-      "eval_bench": 8.591544325239978,
-      "final_eval": 8.591544325239978,
-      "final_train": 9.606942465912725,
-      "train_time": 21.071277107
+      "eval_bench": 7.112859966120834,
+      "final_eval": 7.112859966120835,
+      "final_train": 8.508009419426113,
+      "train_time": 122.752551276
     }
   },
-  "Dense-5L": {
+  "Conv2D-13L": {
     "NormalBP": {
-      "eval_bench": 43.66353754940712,
-      "final_eval": 43.66353754940712,
-      "final_train": 42.9274355321685,
-      "train_time": 24.148585229
+      "eval_bench": 49.78296160361378,
+      "final_eval": 49.78296160361378,
+      "final_train": 49.970927697182894,
+      "train_time": 153.635461857
     },
     "StepBP": {
-      "eval_bench": 35.74604743083004,
-      "final_eval": 35.74604743083004,
-      "final_train": 35.75675204232927,
-      "train_time": 97.58652245
+      "eval_bench": 42.53599661208357,
+      "final_eval": 42.53599661208357,
+      "final_train": 42.663604384103266,
+      "train_time": 1325.824785873
     },
     "StepTween": {
-      "eval_bench": 52.876199887069454,
-      "final_eval": 52.876199887069454,
-      "final_train": 53.11364363171207,
-      "train_time": 92.613869855
+      "eval_bench": 52.925607001693955,
+      "final_eval": 52.925607001693955,
+      "final_train": 53.1776026979097,
+      "train_time": 1313.558301488
     },
     "StepTweenChn": {
-      "eval_bench": 7.128740824392999,
-      "final_eval": 7.128740824392999,
-      "final_train": 9.002238567316917,
-      "train_time": 87.777081302
+      "eval_bench": 7.116389045736871,
+      "final_eval": 7.116389045736872,
+      "final_train": 8.53998895252493,
+      "train_time": 1271.255842463
     },
     "Tween": {
-      "eval_bench": 52.881493506493506,
-      "final_eval": 52.881493506493506,
-      "final_train": 53.115824054423356,
-      "train_time": 27.249724889
+      "eval_bench": 52.832086391869005,
+      "final_eval": 52.832086391869005,
+      "final_train": 53.08965898188796,
+      "train_time": 155.285359946
     },
     "TweenChain": {
-      "eval_bench": 7.259316770186335,
-      "final_eval": 7.259316770186336,
-      "final_train": 8.671541122772334,
-      "train_time": 20.531885369
+      "eval_bench": 7.082862789384528,
+      "final_eval": 7.082862789384528,
+      "final_train": 8.502194958862692,
+      "train_time": 127.891962406
     }
   },
-  "Dense-7L": {
+  "Conv2D-9L": {
     "NormalBP": {
-      "eval_bench": 49.69649915302089,
-      "final_eval": 49.69649915302089,
-      "final_train": 49.70055528098381,
-      "train_time": 30.645018896
+      "eval_bench": 48.93421795595709,
+      "final_eval": 48.93421795595709,
+      "final_train": 48.57981800738436,
+      "train_time": 166.22859091
     },
     "StepBP": {
-      "eval_bench": 39.075734048560136,
-      "final_eval": 39.075734048560136,
-      "final_train": 39.22071692298747,
-      "train_time": 161.706917983
+      "eval_bench": 35.57841614906832,
+      "final_eval": 35.57841614906832,
+      "final_train": 35.31703346222054,
+      "train_time": 948.190481523
     },
     "StepTween": {
-      "eval_bench": 52.922077922077925,
-      "final_eval": 52.922077922077925,
-      "final_train": 53.14271593452917,
-      "train_time": 157.036403585
+      "eval_bench": 52.79679559570864,
+      "final_eval": 52.79679559570864,
+      "final_train": 53.02133907026776,
+      "train_time": 953.642582299
     },
     "StepTweenChn": {
-      "eval_bench": 8.261575381140599,
-      "final_eval": 8.261575381140599,
-      "final_train": 10.552519115039102,
-      "train_time": 151.937785553
+      "eval_bench": 7.082862789384528,
+      "final_eval": 7.082862789384528,
+      "final_train": 8.503648574003547,
+      "train_time": 926.759026862
     },
     "Tween": {
-      "eval_bench": 52.91149068322981,
-      "final_eval": 52.911490683229815,
-      "final_train": 53.122365322557194,
-      "train_time": 34.908066535
+      "eval_bench": 52.76856295878034,
+      "final_eval": 52.76856295878035,
+      "final_train": 53.00680291885921,
+      "train_time": 158.257759023
     },
     "TweenChain": {
-      "eval_bench": 7.89455110107284,
-      "final_eval": 7.89455110107284,
-      "final_train": 9.742128674012267,
-      "train_time": 27.160554108
+      "eval_bench": 7.121682665160926,
+      "final_eval": 7.121682665160926,
+      "final_train": 8.523999185975521,
+      "train_time": 123.298034037
+    }
+  },
+  "Dense-11L": {
+    "NormalBP": {
+      "eval_bench": 46.39328063241106,
+      "final_eval": 46.39328063241106,
+      "final_train": 47.491060266883736,
+      "train_time": 31.855369788
+    },
+    "StepBP": {
+      "eval_bench": 29.42193675889328,
+      "final_eval": 29.42193675889328,
+      "final_train": 29.242375788586212,
+      "train_time": 267.882256037
+    },
+    "StepTween": {
+      "eval_bench": 53.01383399209485,
+      "final_eval": 53.01383399209486,
+      "final_train": 53.24301537924819,
+      "train_time": 262.627240839
+    },
+    "StepTweenChn": {
+      "eval_bench": 9.2285431959345,
+      "final_eval": 9.2285431959345,
+      "final_train": 10.281419891269588,
+      "train_time": 257.331043517
+    },
+    "Tween": {
+      "eval_bench": 53.05088932806324,
+      "final_eval": 53.05088932806324,
+      "final_train": 53.29897956217112,
+      "train_time": 35.495119203
+    },
+    "TweenChain": {
+      "eval_bench": 9.412055335968379,
+      "final_eval": 9.412055335968379,
+      "final_train": 10.724772509230455,
+      "train_time": 27.55503934
+    }
+  },
+  "Dense-13L": {
+    "NormalBP": {
+      "eval_bench": 43.50472896668549,
+      "final_eval": 43.50472896668549,
+      "final_train": 43.91153298252755,
+      "train_time": 29.85735972
+    },
+    "StepBP": {
+      "eval_bench": 26.95687464709204,
+      "final_eval": 26.95687464709204,
+      "final_train": 26.48559467395412,
+      "train_time": 301.724314495
+    },
+    "StepTween": {
+      "eval_bench": 52.9591332580463,
+      "final_eval": 52.9591332580463,
+      "final_train": 53.22121115213536,
+      "train_time": 294.715552259
+    },
+    "StepTweenChn": {
+      "eval_bench": 7.7604460756634674,
+      "final_eval": 7.7604460756634674,
+      "final_train": 9.43832310957351,
+      "train_time": 288.211568664
+    },
+    "Tween": {
+      "eval_bench": 52.992659514398646,
+      "final_eval": 52.992659514398646,
+      "final_train": 53.25173707009332,
+      "train_time": 33.670691971
+    },
+    "TweenChain": {
+      "eval_bench": 7.038749294184076,
+      "final_eval": 7.038749294184077,
+      "final_train": 9.10326481960636,
+      "train_time": 25.482266538
+    }
+  },
+  "Dense-9L": {
+    "NormalBP": {
+      "eval_bench": 40.647939017504235,
+      "final_eval": 40.647939017504235,
+      "final_train": 42.115591476000816,
+      "train_time": 29.242001662
+    },
+    "StepBP": {
+      "eval_bench": 27.341544325239976,
+      "final_eval": 27.341544325239976,
+      "final_train": 26.633136610750935,
+      "train_time": 175.404017134
+    },
+    "StepTween": {
+      "eval_bench": 53.08970920383964,
+      "final_eval": 53.08970920383964,
+      "final_train": 53.326598249847365,
+      "train_time": 169.530152216
+    },
+    "StepTweenChn": {
+      "eval_bench": 7.393421795595709,
+      "final_eval": 7.3934217955957084,
+      "final_train": 9.527720440736111,
+      "train_time": 165.57924975
+    },
+    "Tween": {
+      "eval_bench": 52.93795878035008,
+      "final_eval": 52.93795878035008,
+      "final_train": 53.16815419949415,
+      "train_time": 32.997816765
+    },
+    "TweenChain": {
+      "eval_bench": 8.626835121400338,
+      "final_eval": 8.626835121400338,
+      "final_train": 10.01758874320435,
+      "train_time": 25.86097595
     }
   }
 }
