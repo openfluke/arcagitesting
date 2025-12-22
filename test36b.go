@@ -12,46 +12,47 @@ import (
 	"github.com/openfluke/loom/nn"
 )
 
-// Test 37: SCALED HIVE - 4x4 "City" Architecture
+// Test 36b: MULTI-POINT HIVE - Granular Error Correction
 //
-// Breakthrough: Test 36 solved 3 tasks by focusing on colored pixels.
-// Now we scale up to see if more capacity = more tasks solved.
+// Change from Test 36:
+// Instead of training on ONE random pixel per sample (which implies others are 0),
+// we scan the entire grid and apply 'TweenStep' to EVERY pixel that has significant error.
 //
-// Architecture: "The City" - 4x4 Grid (16 Brains)
-//   - DModel: 128 (High Bandwidth)
-//   - Grid: 4 Rows x 4 Cols
-//   - Brain Types: Interleaved MHA, LSTM, CNN for diverse capabilities
+// Logic:
+//   1. Forward Pass -> Get Output.
+//   2. For every pixel i in 0..900:
+//      Diff = Abs(Target[i] - Output[i])
+//      If Diff < 0.1: Continue (Good enough, don't touch)
+//      Weight = (Target[i] > 0) ? 10.0 : 0.1
+//      TweenStep(i, LR * Weight * Diff)
 //
-// Training: Weighted Heuristic (same as Test 36)
-//   - Background (0): Weight = 0.1
-//   - Colors (1-9):   Weight = 10.0
+// Expected Result:
+//   - No more "All Black" collapse.
+//   - Color pixels get strong, consistent reinforcement.
+//   - Background pixels are only suppressed if they are wrongly active.
 
 const (
 	MaxGridSize = 30
 	InputSize   = MaxGridSize * MaxGridSize
 	NumTasks    = 400
-	BatchSize   = 100
+	BatchSize   = 50 // Reduced batch size because we do more ops per sample
 	NumEpochs   = 600
 
 	LearningRate = float32(0.001)
 	BudgetScale  = float32(0.8)
 
-	// Weights for class imbalance
-	WeightBackground = float32(0.1)
-	WeightColor      = float32(10.0)
+	// Weights
+	WeightBackground = float32(0.1)  // Weak suppression
+	WeightColor      = float32(10.0) // Strong excitation
 
-	// Scaled Architecture - "The City"
-	DModel       = 128 // High bandwidth
-	NumHeads     = 8   // More heads for 128 dim
-	LSTMHidden   = 128
-	ConvGridSize = 11 // 11x11 = 121 < 128, fits in DModel
-	ConvFilters  = 16
+	// Architecture
+	DModel       = 64
+	NumHeads     = 4
+	LSTMHidden   = 64
+	ConvGridSize = 8
+	ConvFilters  = 8
 	ConvKernel   = 3
 	InitScale    = float32(0.5)
-
-	// Grid dimensions
-	GridRows = 4
-	GridCols = 4
 )
 
 // Data types
@@ -79,12 +80,12 @@ type Results struct {
 
 func main() {
 	fmt.Println("╔══════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║     Test 37: SCALED HIVE - 4x4 'City' Architecture (16 Brains)                      ║")
+	fmt.Println("║     Test 36b: MULTI-POINT HIVE (Granular Error Correction)                          ║")
 	fmt.Println("║                                                                                      ║")
-	fmt.Println("║     🏙️  DModel: 128 | Grid: 4x4 = 16 Brains | Interleaved MHA/LSTM/CNN              ║")
-	fmt.Println("║     ⚖️  Weighted Training: Background=0.1, Colors=10.0                               ║")
+	fmt.Println("║     Strategy: Iterate all pixels. Only train if Error > 0.1.                        ║")
+	fmt.Println("║     Weights:  Color errors get 10x LR. Background errors get 0.1x LR.               ║")
 	fmt.Println("╠══════════════════════════════════════════════════════════════════════════════════════╣")
-	fmt.Println("║     Goal: Solve MORE than 3 tasks with increased capacity                           ║")
+	fmt.Println("║     Goal: Fix the 'All Black' collapse by consistently reinforcing color pixels.    ║")
 	fmt.Println("╚══════════════════════════════════════════════════════════════════════════════════════╝")
 
 	tasks, err := loadARCTasks("ARC-AGI/data/training", NumTasks)
@@ -95,14 +96,13 @@ func main() {
 	trainSamples, evalSamples := splitTrainEval(tasks)
 	fmt.Printf("\n📦 Loaded %d tasks.\n", len(tasks))
 
-	// Create 4x4 City Network
-	net := createCityNetwork()
+	// Create Hive Mind Network (Reuse Architecture)
+	net := createHiveMindNetwork()
 	numLayers := net.TotalLayers()
 	state := net.InitStepState(InputSize)
-	fmt.Printf("🏙️  Created City Network: %d layers, 16 brains\n", numLayers)
 
 	ts := nn.NewTweenState(net, nil)
-	ts.Config.UseChainRule = false
+	ts.Config.UseChainRule = false // Heuristic
 	ts.Config.LinkBudgetScale = BudgetScale
 
 	results := &Results{
@@ -113,25 +113,30 @@ func main() {
 	}
 
 	fmt.Println("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-	fmt.Println("                     🏙️ CITY TRAINING (4x4 SCALED HIVE) 🏙️")
+	fmt.Println("                     🎯 MULTI-POINT TRAINING START 🎯")
 	fmt.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
 	start := time.Now()
 	sampleIdx := 0
 
 	for epoch := 0; epoch < NumEpochs; epoch++ {
+		// Training loop
 		for i := 0; i < BatchSize; i++ {
 			sample := trainSamples[sampleIdx%len(trainSamples)]
 			sampleIdx++
 
+			// 1. Forward Pass (To calculate errors)
 			state.SetInput(sample.Input)
 			for s := 0; s < numLayers; s++ {
 				net.StepForward(state)
 			}
+			output := state.GetOutput()
 
-			weightedTweenStep(ts, net, sample, LearningRate)
+			// 2. Multi-Point Tween Application
+			applyMultiPointTween(ts, net, sample, output, LearningRate)
 		}
 
+		// Metrics
 		acc := measureAccuracy(net, evalSamples, numLayers, state)
 		wAcc := measureWeightedAccuracy(net, evalSamples, numLayers, state)
 		budget := getBudget(ts)
@@ -141,7 +146,7 @@ func main() {
 		results.BudgetHistory[epoch] = budget
 
 		if (epoch+1)%1 == 0 {
-			fmt.Printf("  Epoch %3d/%d | Acc: %5.1f%% | Weighted Acc: %5.1f%% | Budget: %.3f\n",
+			fmt.Printf("  Epoch %3d/%d | Acc: %5.1f%% | Color Acc: %5.1f%% | Budget: %.3f\n",
 				epoch+1, NumEpochs, acc, wAcc, budget)
 		}
 	}
@@ -155,57 +160,64 @@ func main() {
 	saveResults(results)
 }
 
-// weightedTweenStep - same as Test 36
-func weightedTweenStep(ts *nn.TweenState, net *nn.Network, sample Sample, lr float32) {
-	colorIndices := []int{}
-	bgIndices := []int{}
+// === THE FIX: Multi-Point Tween Logic ===
 
-	for i, t := range sample.Target {
-		if t > 0.05 {
-			colorIndices = append(colorIndices, i)
-		} else {
-			bgIndices = append(bgIndices, i)
+func applyMultiPointTween(ts *nn.TweenState, net *nn.Network, sample Sample, output []float32, baseLR float32) {
+	// Instead of random sampling, iterate valid pixels
+	target := sample.Target
+
+	// We scan the grid. If a pixel is WRONG, we apply a TweenStep fix.
+	for i := 0; i < len(target); i++ {
+		tVal := target[i]
+		oVal := output[i]
+
+		// Calculate Error magnitude
+		diff := float32(math.Abs(float64(tVal - oVal)))
+
+		// DEADBAND: If error is small, don't train. This prevents "jitter" and over-fitting background.
+		if diff < 0.1 {
+			continue
 		}
-	}
 
-	if len(colorIndices) > 0 {
-		idx := colorIndices[rand.Intn(len(colorIndices))]
-		ts.TweenStep(net, sample.Input, idx, len(sample.Target), lr*WeightColor)
-	}
+		// Determine Weight
+		// If Target is Color (>0.05), we care A LOT (10.0)
+		// If Target is BG, we care a little (0.1)
+		weight := WeightBackground
+		if tVal > 0.05 {
+			weight = WeightColor
+		}
 
-	if len(bgIndices) > 0 && rand.Float32() < 0.1 {
-		idx := bgIndices[rand.Intn(len(bgIndices))]
-		ts.TweenStep(net, sample.Input, idx, len(sample.Target), lr*WeightBackground)
+		// Calculate Effective LR for this specific pixel
+		// LR * Weight * Error Magnitude (Bigger error = Bigger push)
+		stepLR := baseLR * weight * diff
+
+		// Apply Heuristic Update to this specific pixel index
+		ts.TweenStep(net, sample.Input, i, len(target), stepLR)
 	}
 }
 
-// === THE CITY NETWORK (4x4 Grid) ===
+// === NETWORK ARCHITECTURE (Same as Test 35/36) ===
 
-func createCityNetwork() *nn.Network {
+func createHiveMindNetwork() *nn.Network {
 	totalLayers := 4
 	net := nn.NewNetwork(InputSize, 1, 1, totalLayers)
 	net.BatchSize = 1
 	layerIdx := 0
 
-	// Layer 0: Input Embedding (900 -> 128)
 	inputLayer := nn.InitDenseLayer(InputSize, DModel, nn.ActivationLeakyReLU)
 	scaleWeights(inputLayer.Kernel, InitScale)
 	net.SetLayer(0, 0, layerIdx, inputLayer)
 	layerIdx++
 
-	// Layer 1: 4x4 Grid Scatter (16 Brains)
-	parallelLayer := createCityGrid()
+	parallelLayer := createGridScatterHive()
 	net.SetLayer(0, 0, layerIdx, parallelLayer)
 	layerIdx++
 
-	// Layer 2: Merger (16 * 128 = 2048 -> 128)
-	mergerInputSize := GridRows * GridCols * DModel
-	mergerLayer := nn.InitDenseLayer(mergerInputSize, DModel, nn.ActivationLeakyReLU)
+	mergerLayer := nn.InitDenseLayer(DModel*4, DModel, nn.ActivationLeakyReLU)
 	scaleWeights(mergerLayer.Kernel, InitScale)
 	net.SetLayer(0, 0, layerIdx, mergerLayer)
 	layerIdx++
 
-	// Layer 3: Output (128 -> 900)
 	outputLayer := nn.InitDenseLayer(DModel, InputSize, nn.ActivationSigmoid)
 	scaleWeights(outputLayer.Kernel, InitScale)
 	net.SetLayer(0, 0, layerIdx, outputLayer)
@@ -213,124 +225,70 @@ func createCityNetwork() *nn.Network {
 	return net
 }
 
-func createCityGrid() nn.LayerConfig {
-	// Generate 16 brains with interleaved types
-	// Pattern: MHA, LSTM, CNN, MHA, LSTM, CNN, ...
-	branches := make([]nn.LayerConfig, GridRows*GridCols)
-	positions := make([]nn.GridPosition, GridRows*GridCols)
-
-	brainTypes := []string{"MHA", "LSTM", "CNN"}
-
-	for row := 0; row < GridRows; row++ {
-		for col := 0; col < GridCols; col++ {
-			idx := row*GridCols + col
-			brainType := brainTypes[idx%3] // Interleave
-
-			switch brainType {
-			case "MHA":
-				branches[idx] = createMHABrain()
-			case "LSTM":
-				branches[idx] = createLSTMBrain()
-			case "CNN":
-				branches[idx] = createCNNBrain()
-			}
-
-			positions[idx] = nn.GridPosition{
-				BranchIndex: idx,
-				TargetRow:   row,
-				TargetCol:   col,
-				TargetLayer: 0,
-			}
-		}
-	}
-
+func createGridScatterHive() nn.LayerConfig {
 	return nn.LayerConfig{
 		Type:             nn.LayerParallel,
 		CombineMode:      "grid_scatter",
-		GridOutputRows:   GridRows,
-		GridOutputCols:   GridCols,
+		GridOutputRows:   2,
+		GridOutputCols:   2,
 		GridOutputLayers: 1,
-		ParallelBranches: branches,
-		GridPositions:    positions,
+		ParallelBranches: []nn.LayerConfig{
+			createMHABrain(), createLSTMBrain(), createCNNBrain(), createMHABrain(),
+		},
+		GridPositions: []nn.GridPosition{
+			{0, 0, 0, 0}, {1, 0, 1, 0}, {2, 1, 0, 0}, {3, 1, 1, 0},
+		},
 	}
 }
 
+// === BRAIN FACTORIES ===
 func createMHABrain() nn.LayerConfig {
-	headDim := DModel / NumHeads
-	mha := nn.LayerConfig{
-		Type:      nn.LayerMultiHeadAttention,
-		DModel:    DModel,
-		NumHeads:  NumHeads,
-		SeqLength: 1,
-	}
-	mha.QWeights = make([]float32, DModel*DModel)
-	mha.KWeights = make([]float32, DModel*DModel)
-	mha.VWeights = make([]float32, DModel*DModel)
-	mha.OutputWeight = make([]float32, DModel*DModel)
-	mha.QBias = make([]float32, DModel)
-	mha.KBias = make([]float32, DModel)
-	mha.VBias = make([]float32, DModel)
-	mha.OutputBias = make([]float32, DModel)
-	qkScale := InitScale / float32(math.Sqrt(float64(headDim)))
-	outScale := InitScale / float32(math.Sqrt(float64(DModel)))
-	initRandom(mha.QWeights, qkScale)
-	initRandom(mha.KWeights, qkScale)
-	initRandom(mha.VWeights, qkScale)
-	initRandom(mha.OutputWeight, outScale)
+	mha := nn.LayerConfig{Type: nn.LayerMultiHeadAttention, DModel: DModel, NumHeads: NumHeads, SeqLength: 1}
+	initMHAWeights(&mha)
 	return mha
 }
-
 func createLSTMBrain() nn.LayerConfig {
-	lstm := nn.LayerConfig{
-		Type:         nn.LayerLSTM,
-		RNNInputSize: DModel,
-		HiddenSize:   LSTMHidden,
-		SeqLength:    1,
-		OutputHeight: DModel,
-	}
+	lstm := nn.LayerConfig{Type: nn.LayerLSTM, RNNInputSize: DModel, HiddenSize: LSTMHidden, SeqLength: 1, OutputHeight: DModel}
 	initLSTMWeights(&lstm)
 	return lstm
 }
-
 func createCNNBrain() nn.LayerConfig {
-	cnn := nn.LayerConfig{
-		Type:          nn.LayerConv2D,
-		InputHeight:   ConvGridSize,
-		InputWidth:    ConvGridSize,
-		InputChannels: 1,
-		Filters:       ConvFilters,
-		KernelSize:    ConvKernel,
-		Stride:        1,
-		Padding:       1,
-		OutputHeight:  ConvGridSize,
-		OutputWidth:   ConvGridSize,
-		Activation:    nn.ActivationLeakyReLU,
-	}
-	fanIn := ConvKernel * ConvKernel
-	kernelSize := ConvFilters * ConvKernel * ConvKernel
-	cnn.Kernel = make([]float32, kernelSize)
-	cnn.Bias = make([]float32, ConvFilters)
-	scale := InitScale / float32(math.Sqrt(float64(fanIn)))
-	initRandom(cnn.Kernel, scale)
+	cnn := nn.LayerConfig{Type: nn.LayerConv2D, InputHeight: ConvGridSize, InputWidth: ConvGridSize, InputChannels: 1, Filters: ConvFilters, KernelSize: ConvKernel, Stride: 1, Padding: 1, OutputHeight: ConvGridSize, OutputWidth: ConvGridSize, Activation: nn.ActivationLeakyReLU}
+	initCNNWeights(&cnn)
 	return cnn
 }
 
+// === WEIGHT INIT & UTILS ===
+func initMHAWeights(cfg *nn.LayerConfig) {
+	cfg.QWeights = make([]float32, DModel*DModel)
+	cfg.KWeights = make([]float32, DModel*DModel)
+	cfg.VWeights = make([]float32, DModel*DModel)
+	cfg.OutputWeight = make([]float32, DModel*DModel)
+	cfg.QBias = make([]float32, DModel)
+	cfg.KBias = make([]float32, DModel)
+	cfg.VBias = make([]float32, DModel)
+	cfg.OutputBias = make([]float32, DModel)
+	scale := InitScale / float32(math.Sqrt(float64(DModel/NumHeads)))
+	initRandom(cfg.QWeights, scale)
+	initRandom(cfg.KWeights, scale)
+	initRandom(cfg.VWeights, scale)
+	initRandom(cfg.OutputWeight, scale)
+}
 func initLSTMWeights(cfg *nn.LayerConfig) {
-	inputSize := cfg.RNNInputSize
-	hiddenSize := cfg.HiddenSize
-	cfg.WeightIH_i = make([]float32, hiddenSize*inputSize)
-	cfg.WeightIH_f = make([]float32, hiddenSize*inputSize)
-	cfg.WeightIH_g = make([]float32, hiddenSize*inputSize)
-	cfg.WeightIH_o = make([]float32, hiddenSize*inputSize)
-	cfg.WeightHH_i = make([]float32, hiddenSize*hiddenSize)
-	cfg.WeightHH_f = make([]float32, hiddenSize*hiddenSize)
-	cfg.WeightHH_g = make([]float32, hiddenSize*hiddenSize)
-	cfg.WeightHH_o = make([]float32, hiddenSize*hiddenSize)
-	cfg.BiasH_i = make([]float32, hiddenSize)
-	cfg.BiasH_f = make([]float32, hiddenSize)
-	cfg.BiasH_g = make([]float32, hiddenSize)
-	cfg.BiasH_o = make([]float32, hiddenSize)
-	scale := InitScale / float32(math.Sqrt(float64(hiddenSize)))
+	h, i := cfg.HiddenSize, cfg.RNNInputSize
+	cfg.WeightIH_i = make([]float32, h*i)
+	cfg.WeightIH_f = make([]float32, h*i)
+	cfg.WeightIH_g = make([]float32, h*i)
+	cfg.WeightIH_o = make([]float32, h*i)
+	cfg.WeightHH_i = make([]float32, h*h)
+	cfg.WeightHH_f = make([]float32, h*h)
+	cfg.WeightHH_g = make([]float32, h*h)
+	cfg.WeightHH_o = make([]float32, h*h)
+	cfg.BiasH_i = make([]float32, h)
+	cfg.BiasH_f = make([]float32, h)
+	cfg.BiasH_g = make([]float32, h)
+	cfg.BiasH_o = make([]float32, h)
+	scale := InitScale / float32(math.Sqrt(float64(h)))
 	initRandom(cfg.WeightIH_i, scale)
 	initRandom(cfg.WeightIH_f, scale)
 	initRandom(cfg.WeightIH_g, scale)
@@ -339,12 +297,18 @@ func initLSTMWeights(cfg *nn.LayerConfig) {
 	initRandom(cfg.WeightHH_f, scale)
 	initRandom(cfg.WeightHH_g, scale)
 	initRandom(cfg.WeightHH_o, scale)
-	for i := range cfg.BiasH_f {
-		cfg.BiasH_f[i] = 1.0
+	for j := range cfg.BiasH_f {
+		cfg.BiasH_f[j] = 1.0
 	}
 }
-
-// === METRICS ===
+func initCNNWeights(cfg *nn.LayerConfig) {
+	fanIn := ConvKernel * ConvKernel
+	kernelSize := ConvFilters * ConvKernel * ConvKernel
+	cfg.Kernel = make([]float32, kernelSize)
+	cfg.Bias = make([]float32, ConvFilters)
+	scale := InitScale / float32(math.Sqrt(float64(fanIn)))
+	initRandom(cfg.Kernel, scale)
+}
 
 func measureAccuracy(net *nn.Network, samples []Sample, numLayers int, state *nn.StepState) float64 {
 	correct, total := 0, 0
@@ -382,7 +346,7 @@ func measureWeightedAccuracy(net *nn.Network, samples []Sample, numLayers int, s
 		for i := range output {
 			if i < len(sample.Target) {
 				exp := clampInt(int(math.Round(float64(sample.Target[i])*9.0)), 0, 9)
-				if exp > 0 {
+				if exp > 0 { // Color only
 					pred := clampInt(int(math.Round(float64(output[i])*9.0)), 0, 9)
 					if pred == exp {
 						correct++
@@ -434,21 +398,16 @@ func getBudget(ts *nn.TweenState) float32 {
 	}
 	return 0.5
 }
-
-// === HELPERS ===
-
 func scaleWeights(weights []float32, scale float32) {
 	for i := range weights {
 		weights[i] *= scale
 	}
 }
-
 func initRandom(slice []float32, scale float32) {
 	for i := range slice {
 		slice[i] = (rand.Float32()*2 - 1) * scale
 	}
 }
-
 func clampInt(v, min, max int) int {
 	if v < min {
 		return min
@@ -457,6 +416,18 @@ func clampInt(v, min, max int) int {
 		return max
 	}
 	return v
+}
+func argmax(s []float32) int {
+	if len(s) == 0 {
+		return 0
+	}
+	maxI, maxV := 0, s[0]
+	for i, v := range s {
+		if v > maxV {
+			maxV, maxI = v, i
+		}
+	}
+	return maxI
 }
 
 func loadARCTasks(dir string, maxTasks int) ([]*ARCTask, error) {
@@ -498,26 +469,19 @@ func encodeGrid(grid [][]int) []float32 {
 	}
 	return encoded
 }
-
 func splitTrainEval(tasks []*ARCTask) (trainSamples, evalSamples []Sample) {
 	for _, task := range tasks {
 		for _, pair := range task.Train {
 			if len(pair.Output) == 0 {
 				continue
 			}
-			trainSamples = append(trainSamples, Sample{
-				Input: encodeGrid(pair.Input), Target: encodeGrid(pair.Output),
-				Height: len(pair.Output), Width: len(pair.Output[0]), TaskID: task.ID,
-			})
+			trainSamples = append(trainSamples, Sample{Input: encodeGrid(pair.Input), Target: encodeGrid(pair.Output), Height: len(pair.Output), Width: len(pair.Output[0]), TaskID: task.ID})
 		}
 		for _, pair := range task.Test {
 			if len(pair.Output) == 0 {
 				continue
 			}
-			evalSamples = append(evalSamples, Sample{
-				Input: encodeGrid(pair.Input), Target: encodeGrid(pair.Output),
-				Height: len(pair.Output), Width: len(pair.Output[0]), TaskID: task.ID,
-			})
+			evalSamples = append(evalSamples, Sample{Input: encodeGrid(pair.Input), Target: encodeGrid(pair.Output), Height: len(pair.Output), Width: len(pair.Output[0]), TaskID: task.ID})
 		}
 	}
 	holdout := len(trainSamples) / 5
@@ -528,54 +492,18 @@ func splitTrainEval(tasks []*ARCTask) (trainSamples, evalSamples []Sample) {
 
 func printResults(results *Results) {
 	fmt.Println("\n╔══════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║                      🏙️ SCALED HIVE (4x4 CITY) - FINAL RESULTS 🏙️                    ║")
-	fmt.Println("╠══════════════════════════════════════════════════════════════════════════════════════╣")
-	fmt.Printf("║   Final Accuracy:           %5.1f%%                                                  ║\n", results.FinalAccuracy)
-	fmt.Printf("║   Weighted Accuracy (Color): %5.1f%%                                                  ║\n", results.FinalWeightedAccuracy)
-	fmt.Printf("║   Tasks Solved:             %d                                                        ║\n", results.TasksSolved)
-	fmt.Printf("║   Training Time:            %.1fs                                                     ║\n", results.TrainTime.Seconds())
-	fmt.Println("╠══════════════════════════════════════════════════════════════════════════════════════╣")
-
-	if results.TasksSolved > 3 {
-		fmt.Println("║   🎉 SUCCESS: Beat the Test 36 baseline of 3 tasks!                                 ║")
-	} else {
-		fmt.Println("║   📊 Result: Did not beat Test 36 baseline (3 tasks)                                ║")
-	}
+	fmt.Printf("║   Final Accuracy:       %5.1f%%                                                      ║\n", results.FinalAccuracy)
+	fmt.Printf("║   Color Accuracy:       %5.1f%%                                                      ║\n", results.FinalWeightedAccuracy)
+	fmt.Printf("║   Tasks Solved:         %d                                                            ║\n", results.TasksSolved)
 	fmt.Println("╚══════════════════════════════════════════════════════════════════════════════════════╝")
-
 	if len(results.SolvedTaskIDs) > 0 {
-		fmt.Println("\n📋 Solved Task IDs:")
-		for i, id := range results.SolvedTaskIDs {
-			if i >= 15 {
-				fmt.Printf("   ... and %d more\n", len(results.SolvedTaskIDs)-15)
-				break
-			}
-			fmt.Printf("   - %s\n", id)
-		}
+		fmt.Println("Solved IDs:", results.SolvedTaskIDs)
 	}
 }
 
 func saveResults(results *Results) {
-	output := map[string]interface{}{
-		"final_accuracy":            results.FinalAccuracy,
-		"final_weighted_accuracy":   results.FinalWeightedAccuracy,
-		"tasks_solved":              results.TasksSolved,
-		"solved_task_ids":           results.SolvedTaskIDs,
-		"train_time_sec":            results.TrainTime.Seconds(),
-		"accuracy_history":          results.AccuracyHistory,
-		"weighted_accuracy_history": results.WeightedAccuracyHistory,
-		"meta": map[string]interface{}{
-			"architecture":      "4x4 City Grid (16 Brains)",
-			"dmodel":            DModel,
-			"grid_size":         fmt.Sprintf("%dx%d", GridRows, GridCols),
-			"training_mode":     "Weighted StepTween",
-			"weight_background": WeightBackground,
-			"weight_color":      WeightColor,
-			"epochs":            NumEpochs,
-			"learning_rate":     LearningRate,
-		},
-	}
+	output := map[string]interface{}{"final_accuracy": results.FinalAccuracy, "color_accuracy": results.FinalWeightedAccuracy, "tasks_solved": results.TasksSolved, "solved_ids": results.SolvedTaskIDs}
 	data, _ := json.MarshalIndent(output, "", "  ")
-	os.WriteFile("test37_results.json", data, 0644)
-	fmt.Println("\n✅ Results saved to test37_results.json")
+	os.WriteFile("test36b_results.json", data, 0644)
+	fmt.Println("\n✅ Results saved.")
 }
