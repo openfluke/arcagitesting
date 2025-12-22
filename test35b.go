@@ -29,7 +29,7 @@ const (
 	InputSize   = MaxGridSize * MaxGridSize
 	NumTasks    = 400
 	BatchSize   = 100
-	NumEpochs   = 60
+	NumEpochs   = 1600
 
 	// Phase 1 Params (Heuristic)
 	Phase1Epochs = 200
@@ -37,8 +37,8 @@ const (
 	Scale_Heur   = float32(0.8)
 
 	// Phase 2 Params (Gradient)
-	LR_Gradient = float32(0.0001) // 10x smaller for fine-tuning
-	Scale_Grad  = float32(2.0)    // High scale to drive weak gradients
+	LR_Gradient = float32(0.00001) // 10x smaller for fine-tuning
+	Scale_Grad  = float32(2.0)     // High scale to drive weak gradients
 
 	// Architecture - DModel must be >= ConvGridSize^2 for CNN branch
 	DModel       = 64 // Embedding dimension
@@ -97,7 +97,7 @@ func main() {
 
 	// Init TweenState (starts in Heuristic mode)
 	ts := nn.NewTweenState(net, nil)
-	ts.Config.UseChainRule = false // Start Heuristic
+	ts.Config.UseChainRule = true // Start Heuristic
 	ts.Config.LinkBudgetScale = Scale_Heur
 
 	results := &Results{
@@ -466,6 +466,6 @@ func printResults(results *Results) {
 func saveResults(results *Results) {
 	output := map[string]interface{}{"final_accuracy": results.FinalAccuracy, "tasks_solved": results.TasksSolved, "solved_task_ids": results.SolvedTaskIDs}
 	data, _ := json.MarshalIndent(output, "", "  ")
-	os.WriteFile("test35_results.json", data, 0644)
+	os.WriteFile("test35b_results.json", data, 0644)
 	fmt.Println("\n✅ Results saved.")
 }
