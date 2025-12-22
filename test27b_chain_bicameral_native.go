@@ -31,7 +31,7 @@ const (
 	NumTasks     = 400
 	BatchSize    = 100
 	NumEpochs    = 1400
-	LearningRate = float32(0.0001)
+	LearningRate = float32(0.01)
 	InitScale    = float32(0.5)
 	BudgetScale  = float32(0.8)
 
