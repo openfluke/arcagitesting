@@ -12,17 +12,17 @@ import (
 	"github.com/openfluke/loom/nn"
 )
 
-// Test 35: QUINTUPLE GRID SCATTER HIVE - 5 Sequential 2x2 Spatial Brain Layers
+// Test 35: DUAL MEGA HIVE - 2 Sequential 2x2 Spatial Brain Layers (5x Bigger)
 //
-// Based on Test 30's Grid Scatter architecture, but stacking 5 parallel layers
-// in sequence to create a deep hierarchical hive mind.
+// Based on Test 30's Grid Scatter architecture, but with only 2 parallel layers
+// where each brain is 5x larger for more capacity per hive.
 //
 // Architecture:
-//   - Input: 30x30 Grid (900 floats) -> Embedding (32 dim)
-//   - Layer 1-5: 5x LayerParallel with 'grid_scatter' (2x2 Hive each)
+//   - Input: 30x30 Grid (900 floats) -> Embedding (160 dim)
+//   - Layer 1-2: 2x LayerParallel with 'grid_scatter' (2x2 Hive each, 5x bigger brains)
 //       - Each layer: Pos(0,0): MHA | Pos(0,1): LSTM | Pos(1,0): MHA | Pos(1,1): MHA
-//   - Layer 6: Dense Merger
-//   - Layer 7: Output (900)
+//   - Layer 3: Dense Merger
+//   - Layer 4: Output (900)
 //
 // Training: StepTweenChain (Gradient-based)
 
@@ -32,17 +32,17 @@ const (
 	NumTasks     = 400
 	BatchSize    = 100
 	NumEpochs    = 1400
-	LearningRate = float32(1000.5)
-	InitScale    = float32(0.5)
-	BudgetScale  = float32(1.2)
+	LearningRate = float32(0.5)
+	InitScale    = float32(1000.5)
+	BudgetScale  = float32(100000.2)
 
-	// Architecture params (smaller per brain)
-	DModel     = 32 // Smaller to fit 4 brains per layer
-	NumHeads   = 4
-	LSTMHidden = 32
+	// Architecture params (5x bigger brains)
+	DModel     = 160 // 5x bigger (was 32)
+	NumHeads   = 16  // Scaled proportionally
+	LSTMHidden = 160 // 5x bigger
 
 	// Number of stacked parallel layers
-	NumParallelLayers = 5
+	NumParallelLayers = 2 // Only 2 hives, but each is 5x bigger
 
 	// Grokking Detection
 	GrokThreshold = 20.0
@@ -73,18 +73,18 @@ type Results struct {
 
 func main() {
 	fmt.Println("╔══════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║     Test 35: QUINTUPLE GRID SCATTER HIVE - 5 Sequential 2x2 Brain Layers            ║")
+	fmt.Println("║     Test 35: DUAL MEGA HIVE - 2 Sequential 2x2 Brain Layers (5x Bigger)             ║")
 	fmt.Println("║                                                                                      ║")
-	fmt.Println("║     🧠 Each Layer has 4 Brains in a 2x2 Grid:                                       ║")
+	fmt.Println("║     🧠 Each Layer has 4 MEGA Brains in a 2x2 Grid (DModel=160):                     ║")
 	fmt.Println("║        - Brain[0,0] (MHA):  Global Spatial Patterns                                 ║")
 	fmt.Println("║        - Brain[0,1] (LSTM): Temporal/Sequential Logic                               ║")
 	fmt.Println("║        - Brain[1,0] (MHA):  Spatial Backup                                          ║")
 	fmt.Println("║        - Brain[1,1] (MHA):  Redundancy                                              ║")
 	fmt.Println("║     🔗 CombineMode: grid_scatter (Spatial routing)                                  ║")
-	fmt.Println("║     📚 Depth: 5 Parallel Layers Stacked Sequentially                                ║")
+	fmt.Println("║     📚 Depth: 2 Parallel Layers (5x bigger each)                                    ║")
 	fmt.Println("╠══════════════════════════════════════════════════════════════════════════════════════╣")
 	fmt.Println("║     Training: StepTweenChain (Gradient-based) | 1400 Epochs                         ║")
-	fmt.Println("║     Goal: Does stacking 5 grid_scatter layers create emergent behavior?             ║")
+	fmt.Println("║     Goal: Do bigger brains (5x) with fewer layers (2) work better?                  ║")
 	fmt.Println("╚══════════════════════════════════════════════════════════════════════════════════════╝")
 
 	// Load data
@@ -99,7 +99,7 @@ func main() {
 	// Create the Quintuple Hive Mind network
 	net := createQuintupleHiveMindNetwork()
 	numLayers := net.TotalLayers()
-	fmt.Printf("🏗️  Created Quintuple Hive Mind Network: %d layers (5 parallel hives)\n", numLayers)
+	fmt.Printf("🏗️  Created Dual Mega Hive Network: %d layers (2 parallel hives, 5x bigger)\n", numLayers)
 
 	// Initialize training state with Chain Rule
 	state := net.InitStepState(InputSize)
@@ -115,7 +115,7 @@ func main() {
 	}
 
 	fmt.Println("\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-	fmt.Println("                     🐝🐝🐝🐝🐝 QUINTUPLE HIVE MIND TRAINING 🐝🐝🐝🐝🐝")
+	fmt.Println("                     🐝🐝 DUAL MEGA HIVE TRAINING 🐝🐝")
 	fmt.Println("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
 	start := time.Now()
@@ -154,13 +154,13 @@ func main() {
 			results.GrokEpoch = epoch + 1
 			fmt.Println()
 			fmt.Println("  ╔═══════════════════════════════════════════════════════════════════════╗")
-			fmt.Printf("  ║  🐝🐝🐝🐝🐝 GROKKING DETECTED 🐝🐝🐝🐝🐝  Epoch %d: %.1f%% → %.1f%%  ║\n", epoch+1, prevAcc, acc)
-			fmt.Println("  ║      The Quintuple Hive Mind has awakened!                            ║")
+			fmt.Printf("  ║  🐝🐝 GROKKING DETECTED 🐝🐝  Epoch %d: %.1f%% → %.1f%%               ║\n", epoch+1, prevAcc, acc)
+			fmt.Println("  ║      The Dual Mega Hive has awakened!                                 ║")
 			fmt.Println("  ╚═══════════════════════════════════════════════════════════════════════╝")
 			fmt.Println()
 		}
 
-		if (epoch+1)%20 == 0 {
+		if (epoch+1)%1 == 0 {
 			status := ""
 			if hasGrokked && acc > 40 {
 				status = " 🔥"
