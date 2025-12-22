@@ -1,0 +1,12 @@
+{
+  "final_accuracy": 53.20969791078487,
+  "meta": {
+    "architecture": "Deep Hive (Stacked 2x2)",
+    "training": "StepTween (Heuristic)"
+  },
+  "solved_task_ids": [
+    "27a28665",
+    "de1cd16c"
+  ],
+  "tasks_solved": 2
+}
