@@ -39,7 +39,7 @@ const (
 )
 
 var allArchitectures = []ArchType{ArchDense, ArchConv2D, ArchAttn}
-var allDepths = []int{3, 5, 7}
+var allDepths = []int{9, 11, 13}
 
 type TrainingMode int
 
@@ -103,22 +103,21 @@ func main() {
 	var mu sync.Mutex
 	var wg sync.WaitGroup
 
-	// PHASE 1: Training all configurations
+	// PHASE 1: Training section by section (6 modes in parallel per section)
 	fmt.Println("╔══════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║  PHASE 1: TRAINING (all architectures × depths × modes)                 ║")
+	fmt.Println("║  PHASE 1: TRAINING (6 modes in parallel per architecture section)       ║")
 	fmt.Println("╚══════════════════════════════════════════════════════════════════════════╝")
 
 	for _, arch := range allArchitectures {
 		for _, depth := range allDepths {
 			configName := fmt.Sprintf("%s-%dL", arch, depth)
-			mu.Lock()
 			allResults[configName] = make(map[TrainingMode]*ConfigResult)
-			mu.Unlock()
 
 			fmt.Printf("\n┌───────────────────────────────────────────────────────────────────────────┐\n")
 			fmt.Printf("│ %-73s │\n", configName)
 			fmt.Printf("└───────────────────────────────────────────────────────────────────────────┘\n")
 
+			// Run all 6 modes in parallel FOR THIS SECTION
 			for _, mode := range allModes {
 				wg.Add(1)
 				go func(a ArchType, d int, cn string, m TrainingMode) {
@@ -132,13 +131,15 @@ func main() {
 					allResults[cn][m] = result
 					mu.Unlock()
 
-					fmt.Printf("  [%-12s] %s Train: %4.0f%% | Eval: %4.0f%% | EvalBench: %4.0f%% (%.1fs)\n",
-						modeNames[m], cn, result.FinalTrain, result.FinalEval, result.EvalBenchAvg, result.TrainTime.Seconds())
+					fmt.Printf("  [%-12s] %s Train: %4.0f%% | Eval: %4.0f%% | Tasks: %d/%d (%.1fs)\n",
+						modeNames[m], cn, result.FinalTrain, result.FinalEval, result.TasksSolved, result.TotalTasks, result.TrainTime.Seconds())
 				}(arch, depth, configName, mode)
 			}
+			// Wait for this section to complete before moving to next
 			wg.Wait()
 		}
 	}
+	fmt.Println("\n✓ All configurations complete!")
 
 	// Print training timeline like test17
 	printTrainingTimeline(allResults)
