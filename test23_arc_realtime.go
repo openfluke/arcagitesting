@@ -23,10 +23,10 @@ import (
 const (
 	MaxGridSize  = 30
 	InputSize    = MaxGridSize * MaxGridSize // 900
-	NumTasks     = 10
-	NumBatches   = 20 // Training batches
-	BatchSize    = 50 // Samples per batch
-	EvalRounds   = 5  // Evaluation rounds
+	NumTasks     = 400                       // Full ARC-AGI training set
+	NumBatches   = 50                        // More batches for larger dataset
+	BatchSize    = 100                       // Larger batches
+	EvalRounds   = 3                         // Fewer rounds for speed
 	LearningRate = float32(0.01)
 )
 
