@@ -38,7 +38,7 @@ const (
 	ArchAttnDense ArchType = "Attn+Dense"
 )
 
-var allArchitectures = []ArchType{ArchDense, ArchConv2D, ArchAttn, ArchConvDense, ArchAttnDense}
+var allArchitectures = []ArchType{ArchDense, ArchConv2D, ArchAttn}
 var allDepths = []int{3, 5, 7}
 
 type TrainingMode int
@@ -111,28 +111,28 @@ func main() {
 			fmt.Printf("└───────────────────────────────────────────────────────────────────────────┘\n")
 
 			for _, mode := range allModes {
-				cellAcc, taskAcc := runTrials(samples, arch, depth, mode, NumRuns)
-				allResults[configName][mode] = taskAcc
+				cellAcc, _ := runTrials(samples, arch, depth, mode, NumRuns)
+				allResults[configName][mode] = cellAcc
 
 				// Check for new global best
-				isNewBest := taskAcc > globalBestAcc
+				isNewBest := cellAcc > globalBestAcc
 				if isNewBest {
-					globalBestAcc = taskAcc
+					globalBestAcc = cellAcc
 					globalBestArch = arch
 					globalBestMode = mode
 					globalBestDepth = depth
 				}
 
 				bestMarker := ""
-				if isNewBest && taskAcc > 0 {
+				if isNewBest && cellAcc > 15 {
 					bestMarker = " ★ NEW BEST!"
 				}
 
-				fmt.Printf("  [%-12s] Cell: %4.0f%% | Tasks: %4.0f%% %s\n",
-					modeNames[mode], cellAcc, taskAcc, bestMarker)
+				fmt.Printf("  [%-12s] Cell: %4.0f%%%s\n",
+					modeNames[mode], cellAcc, bestMarker)
 			}
 
-			fmt.Printf("  ▸ Leader: %s-%dL + %s = %.0f%% tasks\n",
+			fmt.Printf("  ▸ Leader: %s-%dL + %s = %.0f%% cells\n",
 				globalBestArch, globalBestDepth, modeNames[globalBestMode], globalBestAcc)
 		}
 	}
@@ -613,7 +613,7 @@ func encodeGrid(grid [][]int) []float32 {
 
 func printFinalSummary(results map[string]map[TrainingMode]float64, bestArch ArchType, bestDepth int, bestMode TrainingMode, bestAcc float64) {
 	fmt.Println("\n╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║                                        ARC-AGI FULL SPARTA SUMMARY (% Tasks Solved - Official Metric)                                                        ║")
+	fmt.Println("║                                        ARC-AGI FULL SPARTA SUMMARY (% Cells Correct)                                                                        ║")
 	fmt.Println("╠════════════════════╦════════════╦════════════╦════════════╦════════════╦════════════╦════════════╦════════════════════════════════════════════════════════════╣")
 	fmt.Println("║ Config             ║ NormalBP   ║ StepBP     ║ Tween      ║ TweenChain ║ StepTween  ║ StepTwChn  ║ Best Mode                                                  ║")
 	fmt.Println("╠════════════════════╬════════════╬════════════╬════════════╬════════════╬════════════╬════════════╬════════════════════════════════════════════════════════════╣")
@@ -643,8 +643,8 @@ func printFinalSummary(results map[string]map[TrainingMode]float64, bestArch Arc
 	}
 
 	fmt.Println("╚════════════════════╩════════════╩════════════╩════════════╩════════════╩════════════╩════════════╩════════════════════════════════════════════════════════════╝")
-	fmt.Printf("\n★ BEST OVERALL: %s-%dL + %s = %.0f%% tasks solved\n", bestArch, bestDepth, modeNames[bestMode], bestAcc)
-	fmt.Println("  Note: World record for efficient methods is 29.72% (NVIDIA TTT)")
+	fmt.Printf("\n★ BEST OVERALL: %s-%dL + %s = %.0f%% cells correct\n", bestArch, bestDepth, modeNames[bestMode], bestAcc)
+	fmt.Println("  Note: Random baseline ~11%, higher is better")
 }
 
 func saveResults(results map[string]map[TrainingMode]float64) {

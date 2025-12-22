@@ -1,0 +1,122 @@
+{
+  "Attn+Dense-3L": {
+    "NormalBP": 0,
+    "StepBP": 0,
+    "StepTween": 0,
+    "StepTweenChain": 0,
+    "Tween": 0,
+    "TweenChain": 0
+  },
+  "Attn+Dense-5L": {
+    "NormalBP": 0,
+    "StepBP": 0,
+    "StepTween": 0,
+    "StepTweenChain": 0,
+    "Tween": 0,
+    "TweenChain": 0
+  },
+  "Attn+Dense-7L": {
+    "NormalBP": 0,
+    "StepBP": 0,
+    "StepTween": 0,
+    "StepTweenChain": 0,
+    "Tween": 0,
+    "TweenChain": 0
+  },
+  "Attn-3L": {
+    "NormalBP": 0,
+    "StepBP": 0,
+    "StepTween": 0,
+    "StepTweenChain": 0,
+    "Tween": 0,
+    "TweenChain": 0
+  },
+  "Attn-5L": {
+    "NormalBP": 0,
+    "StepBP": 0,
+    "StepTween": 0,
+    "StepTweenChain": 0,
+    "Tween": 0,
+    "TweenChain": 0
+  },
+  "Attn-7L": {
+    "NormalBP": 0,
+    "StepBP": 0,
+    "StepTween": 0,
+    "StepTweenChain": 0,
+    "Tween": 0,
+    "TweenChain": 0
+  },
+  "Conv+Dense-3L": {
+    "NormalBP": 0,
+    "StepBP": 0,
+    "StepTween": 0,
+    "StepTweenChain": 0,
+    "Tween": 0,
+    "TweenChain": 0
+  },
+  "Conv+Dense-5L": {
+    "NormalBP": 0,
+    "StepBP": 0,
+    "StepTween": 0,
+    "StepTweenChain": 0,
+    "Tween": 0,
+    "TweenChain": 0
+  },
+  "Conv+Dense-7L": {
+    "NormalBP": 0,
+    "StepBP": 0,
+    "StepTween": 0,
+    "StepTweenChain": 0,
+    "Tween": 0,
+    "TweenChain": 0
+  },
+  "Conv2D-3L": {
+    "NormalBP": 0,
+    "StepBP": 0,
+    "StepTween": 0,
+    "StepTweenChain": 0,
+    "Tween": 0,
+    "TweenChain": 0
+  },
+  "Conv2D-5L": {
+    "NormalBP": 0,
+    "StepBP": 0,
+    "StepTween": 0,
+    "StepTweenChain": 0,
+    "Tween": 0,
+    "TweenChain": 0
+  },
+  "Conv2D-7L": {
+    "NormalBP": 0,
+    "StepBP": 0,
+    "StepTween": 0,
+    "StepTweenChain": 0,
+    "Tween": 0,
+    "TweenChain": 0
+  },
+  "Dense-3L": {
+    "NormalBP": 0,
+    "StepBP": 0,
+    "StepTween": 0,
+    "StepTweenChain": 0,
+    "Tween": 0,
+    "TweenChain": 0
+  },
+  "Dense-5L": {
+    "NormalBP": 0,
+    "StepBP": 0,
+    "StepTween": 0,
+    "StepTweenChain": 0,
+    "Tween": 0,
+    "TweenChain": 0
+  },
+  "Dense-7L": {
+    "NormalBP": 0,
+    "StepBP": 0,
+    "StepTween": 0,
+    "StepTweenChain": 0,
+    "Tween": 0,
+    "TweenChain": 0
+  }
+}
