@@ -1,0 +1,38 @@
+{
+  "NormalBP": {
+    "avg_eval": 38.52889667250438,
+    "final_eval": 38.528896672504374,
+    "final_train": 42.676973148901546,
+    "train_time": 1.852273322
+  },
+  "StepBP": {
+    "avg_eval": 33.800350262697016,
+    "final_eval": 33.80035026269702,
+    "final_train": 34.29617575264442,
+    "train_time": 5.975271783
+  },
+  "StepTween": {
+    "avg_eval": 42.73204903677759,
+    "final_eval": 42.73204903677758,
+    "final_train": 42.39218877135883,
+    "train_time": 4.157624503
+  },
+  "StepTweenChn": {
+    "avg_eval": 4.3782837127845875,
+    "final_eval": 4.378283712784588,
+    "final_train": 3.9056143205858422,
+    "train_time": 3.056984505
+  },
+  "Tween": {
+    "avg_eval": 42.64448336252189,
+    "final_eval": 42.64448336252189,
+    "final_train": 42.35150528885273,
+    "train_time": 2.383399819
+  },
+  "TweenChain": {
+    "avg_eval": 4.3782837127845875,
+    "final_eval": 4.378283712784588,
+    "final_train": 3.6615134255492268,
+    "train_time": 0.845910792
+  }
+}
