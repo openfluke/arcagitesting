@@ -1,38 +1,344 @@
 {
-  "NormalBP": {
-    "avg_eval": 38.52889667250438,
-    "final_eval": 38.528896672504374,
-    "final_train": 42.676973148901546,
-    "train_time": 1.852273322
+  "Attn-3L": {
+    "NormalBP": {
+      "eval_bench": 1.4331210191082804,
+      "final_eval": 1.4331210191082804,
+      "final_train": 1.256281407035176,
+      "train_time": 1.139859914
+    },
+    "StepBP": {
+      "eval_bench": 1.4331210191082804,
+      "final_eval": 1.4331210191082804,
+      "final_train": 1.256281407035176,
+      "train_time": 3.410064882
+    },
+    "StepTween": {
+      "eval_bench": 61.231422505307854,
+      "final_eval": 68.41825902335457,
+      "final_train": 69.84924623115577,
+      "train_time": 2.013695518
+    },
+    "StepTweenChn": {
+      "eval_bench": 1.4331210191082804,
+      "final_eval": 1.4331210191082804,
+      "final_train": 1.256281407035176,
+      "train_time": 1.597537025
+    },
+    "Tween": {
+      "eval_bench": 5.148619957537155,
+      "final_eval": 5.148619957537155,
+      "final_train": 4.3072505384063176,
+      "train_time": 1.500252404
+    },
+    "TweenChain": {
+      "eval_bench": 1.4331210191082804,
+      "final_eval": 1.4331210191082804,
+      "final_train": 1.256281407035176,
+      "train_time": 0.725014653
+    }
   },
-  "StepBP": {
-    "avg_eval": 33.800350262697016,
-    "final_eval": 33.80035026269702,
-    "final_train": 34.29617575264442,
-    "train_time": 5.975271783
+  "Attn-5L": {
+    "NormalBP": {
+      "eval_bench": 1.4331210191082804,
+      "final_eval": 1.4331210191082804,
+      "final_train": 1.256281407035176,
+      "train_time": 1.2621641000000001
+    },
+    "StepBP": {
+      "eval_bench": 1.4331210191082804,
+      "final_eval": 1.4331210191082804,
+      "final_train": 1.256281407035176,
+      "train_time": 4.57568842
+    },
+    "StepTween": {
+      "eval_bench": 61.36942675159236,
+      "final_eval": 66.0828025477707,
+      "final_train": 66.99569274946158,
+      "train_time": 2.931324416
+    },
+    "StepTweenChn": {
+      "eval_bench": 1.4331210191082804,
+      "final_eval": 1.4331210191082804,
+      "final_train": 1.256281407035176,
+      "train_time": 2.357720563
+    },
+    "Tween": {
+      "eval_bench": 5.201698513800425,
+      "final_eval": 5.201698513800425,
+      "final_train": 4.899497487437186,
+      "train_time": 1.6333748460000002
+    },
+    "TweenChain": {
+      "eval_bench": 1.4331210191082804,
+      "final_eval": 1.4331210191082804,
+      "final_train": 1.256281407035176,
+      "train_time": 0.763932991
+    }
   },
-  "StepTween": {
-    "avg_eval": 42.73204903677759,
-    "final_eval": 42.73204903677758,
-    "final_train": 42.39218877135883,
-    "train_time": 4.157624503
+  "Attn-7L": {
+    "NormalBP": {
+      "eval_bench": 1.4331210191082804,
+      "final_eval": 1.4331210191082804,
+      "final_train": 1.256281407035176,
+      "train_time": 1.369477495
+    },
+    "StepBP": {
+      "eval_bench": 1.4331210191082804,
+      "final_eval": 1.4331210191082804,
+      "final_train": 1.256281407035176,
+      "train_time": 5.618368589
+    },
+    "StepTween": {
+      "eval_bench": 67.81316348195328,
+      "final_eval": 69.85138004246284,
+      "final_train": 71.80545585068198,
+      "train_time": 3.831840214
+    },
+    "StepTweenChn": {
+      "eval_bench": 1.4331210191082804,
+      "final_eval": 1.4331210191082804,
+      "final_train": 1.256281407035176,
+      "train_time": 3.1620164649999998
+    },
+    "Tween": {
+      "eval_bench": 4.723991507430998,
+      "final_eval": 4.723991507430998,
+      "final_train": 4.217516152189519,
+      "train_time": 1.807775424
+    },
+    "TweenChain": {
+      "eval_bench": 1.4331210191082804,
+      "final_eval": 1.4331210191082804,
+      "final_train": 1.256281407035176,
+      "train_time": 0.816399584
+    }
   },
-  "StepTweenChn": {
-    "avg_eval": 4.3782837127845875,
-    "final_eval": 4.378283712784588,
-    "final_train": 3.9056143205858422,
-    "train_time": 3.056984505
+  "Conv2D-3L": {
+    "NormalBP": {
+      "eval_bench": 66.98513800424628,
+      "final_eval": 66.98513800424628,
+      "final_train": 68.26992103374013,
+      "train_time": 9.064546711
+    },
+    "StepBP": {
+      "eval_bench": 67.83439490445859,
+      "final_eval": 67.83439490445859,
+      "final_train": 69.56209619526203,
+      "train_time": 20.516065531
+    },
+    "StepTween": {
+      "eval_bench": 24.097664543524417,
+      "final_eval": 24.097664543524417,
+      "final_train": 21.33883704235463,
+      "train_time": 12.304356815
+    },
+    "StepTweenChn": {
+      "eval_bench": 1.6454352441613591,
+      "final_eval": 1.645435244161359,
+      "final_train": 1.256281407035176,
+      "train_time": 8.827074027
+    },
+    "Tween": {
+      "eval_bench": 13.694267515923567,
+      "final_eval": 13.694267515923567,
+      "final_train": 15.829145728643216,
+      "train_time": 7.907605143
+    },
+    "TweenChain": {
+      "eval_bench": 1.5392781316348196,
+      "final_eval": 1.5392781316348196,
+      "final_train": 1.256281407035176,
+      "train_time": 2.8665889509999998
+    }
   },
-  "Tween": {
-    "avg_eval": 42.64448336252189,
-    "final_eval": 42.64448336252189,
-    "final_train": 42.35150528885273,
-    "train_time": 2.383399819
+  "Conv2D-5L": {
+    "NormalBP": {
+      "eval_bench": 66.40127388535032,
+      "final_eval": 66.40127388535032,
+      "final_train": 67.5699928212491,
+      "train_time": 9.043636448
+    },
+    "StepBP": {
+      "eval_bench": 37.15498938428875,
+      "final_eval": 37.15498938428875,
+      "final_train": 37.34745154343144,
+      "train_time": 25.39235648
+    },
+    "StepTween": {
+      "eval_bench": 66.29511677282377,
+      "final_eval": 66.29511677282377,
+      "final_train": 70.44149318018664,
+      "train_time": 17.323037039
+    },
+    "StepTweenChn": {
+      "eval_bench": 1.48619957537155,
+      "final_eval": 1.48619957537155,
+      "final_train": 1.2921751615218953,
+      "train_time": 13.477620712
+    },
+    "Tween": {
+      "eval_bench": 34.50106157112526,
+      "final_eval": 34.50106157112526,
+      "final_train": 37.97559224694903,
+      "train_time": 8.170931081
+    },
+    "TweenChain": {
+      "eval_bench": 1.5392781316348196,
+      "final_eval": 1.5392781316348196,
+      "final_train": 1.256281407035176,
+      "train_time": 3.002537578
+    }
   },
-  "TweenChain": {
-    "avg_eval": 4.3782837127845875,
-    "final_eval": 4.378283712784588,
-    "final_train": 3.6615134255492268,
-    "train_time": 0.845910792
+  "Conv2D-7L": {
+    "NormalBP": {
+      "eval_bench": 66.0828025477707,
+      "final_eval": 66.0828025477707,
+      "final_train": 67.21105527638191,
+      "train_time": 9.10841477
+    },
+    "StepBP": {
+      "eval_bench": 29.35244161358811,
+      "final_eval": 29.35244161358811,
+      "final_train": 30.61737257717157,
+      "train_time": 28.553210994
+    },
+    "StepTween": {
+      "eval_bench": 69.00212314225053,
+      "final_eval": 69.00212314225053,
+      "final_train": 70.80043072505384,
+      "train_time": 22.05020541
+    },
+    "StepTweenChn": {
+      "eval_bench": 1.48619957537155,
+      "final_eval": 1.48619957537155,
+      "final_train": 1.256281407035176,
+      "train_time": 17.59259919
+    },
+    "Tween": {
+      "eval_bench": 56.05095541401274,
+      "final_eval": 56.05095541401274,
+      "final_train": 63.28068916008615,
+      "train_time": 8.126887558
+    },
+    "TweenChain": {
+      "eval_bench": 1.7515923566878981,
+      "final_eval": 1.7515923566878981,
+      "final_train": 1.256281407035176,
+      "train_time": 3.000708462
+    }
+  },
+  "Dense-3L": {
+    "NormalBP": {
+      "eval_bench": 65.81740976645435,
+      "final_eval": 65.81740976645435,
+      "final_train": 68.07250538406318,
+      "train_time": 1.511465168
+    },
+    "StepBP": {
+      "eval_bench": 64.06581740976645,
+      "final_eval": 64.06581740976645,
+      "final_train": 65.93682699210336,
+      "train_time": 4.620985174
+    },
+    "StepTween": {
+      "eval_bench": 68.20594479830149,
+      "final_eval": 68.20594479830149,
+      "final_train": 64.5908111988514,
+      "train_time": 2.783661272
+    },
+    "StepTweenChn": {
+      "eval_bench": 2.6539278131634823,
+      "final_eval": 2.6539278131634823,
+      "final_train": 2.2074659009332374,
+      "train_time": 1.9466297510000001
+    },
+    "Tween": {
+      "eval_bench": 65.97664543524417,
+      "final_eval": 65.97664543524417,
+      "final_train": 60.91170136396266,
+      "train_time": 2.078055362
+    },
+    "TweenChain": {
+      "eval_bench": 2.91932059447983,
+      "final_eval": 2.91932059447983,
+      "final_train": 2.1177315147164393,
+      "train_time": 0.824442491
+    }
+  },
+  "Dense-5L": {
+    "NormalBP": {
+      "eval_bench": 64.11889596602973,
+      "final_eval": 64.11889596602973,
+      "final_train": 64.33955491744436,
+      "train_time": 1.380191064
+    },
+    "StepBP": {
+      "eval_bench": 66.18895966029724,
+      "final_eval": 66.18895966029724,
+      "final_train": 65.95477386934674,
+      "train_time": 4.760047318
+    },
+    "StepTween": {
+      "eval_bench": 58.22717622080679,
+      "final_eval": 58.2271762208068,
+      "final_train": 56.981335247666905,
+      "train_time": 3.192737304
+    },
+    "StepTweenChn": {
+      "eval_bench": 1.7515923566878981,
+      "final_eval": 1.7515923566878981,
+      "final_train": 1.7587939698492463,
+      "train_time": 2.427144859
+    },
+    "Tween": {
+      "eval_bench": 60.77494692144374,
+      "final_eval": 60.77494692144374,
+      "final_train": 59.76310122038765,
+      "train_time": 1.798168145
+    },
+    "TweenChain": {
+      "eval_bench": 2.0700636942675157,
+      "final_eval": 2.0700636942675157,
+      "final_train": 1.4178033022254126,
+      "train_time": 0.649393708
+    }
+  },
+  "Dense-7L": {
+    "NormalBP": {
+      "eval_bench": 63.163481953290876,
+      "final_eval": 63.16348195329087,
+      "final_train": 62.74228284278536,
+      "train_time": 1.624883442
+    },
+    "StepBP": {
+      "eval_bench": 36.836518046709124,
+      "final_eval": 36.836518046709124,
+      "final_train": 37.13208901651113,
+      "train_time": 6.510829321
+    },
+    "StepTween": {
+      "eval_bench": 72.13375796178345,
+      "final_eval": 72.13375796178345,
+      "final_train": 74.49748743718592,
+      "train_time": 4.712658601
+    },
+    "StepTweenChn": {
+      "eval_bench": 2.7600849256900215,
+      "final_eval": 2.7600849256900215,
+      "final_train": 2.3151471643933954,
+      "train_time": 3.775969586
+    },
+    "Tween": {
+      "eval_bench": 67.83439490445859,
+      "final_eval": 67.83439490445859,
+      "final_train": 69.86719310839914,
+      "train_time": 2.206305261
+    },
+    "TweenChain": {
+      "eval_bench": 1.48619957537155,
+      "final_eval": 1.48619957537155,
+      "final_train": 1.7049533381191675,
+      "train_time": 0.877125965
+    }
   }
 }

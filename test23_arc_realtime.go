@@ -13,23 +13,33 @@ import (
 	"github.com/openfluke/loom/nn"
 )
 
-// Test 23: ARC-AGI Real-Time Benchmark
+// Test 23: ARC-AGI Multi-Architecture Real-Time Benchmark
 //
-// Shows training progress live across all batches, then benchmarks
-// trained models against eval data with mode switching.
-//
-// Phase 1: TRAINING - Shows accuracy per batch, all modes in parallel
-// Phase 2: EVAL BENCHMARK - Tests trained models on eval data over multiple rounds
+// Combines test22's architecture variety with test18's real-time display.
+// Networks: Dense, Conv2D, Attn with 3, 5, 7 layers
+// Modes: NormalBP, StepBP, Tween, TweenChain, StepTween, StepTweenChain
+// Shows training progress per batch then eval benchmark
 
 const (
 	MaxGridSize  = 30
 	InputSize    = MaxGridSize * MaxGridSize // 900
 	NumTasks     = 10
-	NumBatches   = 30 // Training batches
+	NumBatches   = 20 // Training batches
 	BatchSize    = 50 // Samples per batch
-	EvalRounds   = 10 // Evaluation rounds switching between modes
+	EvalRounds   = 5  // Evaluation rounds
 	LearningRate = float32(0.01)
 )
+
+type ArchType string
+
+const (
+	ArchDense  ArchType = "Dense"
+	ArchConv2D ArchType = "Conv2D"
+	ArchAttn   ArchType = "Attn"
+)
+
+var allArchitectures = []ArchType{ArchDense, ArchConv2D, ArchAttn}
+var allDepths = []int{3, 5, 7}
 
 type TrainingMode int
 
@@ -50,7 +60,6 @@ var modeNames = map[TrainingMode]string{
 	ModeStepTween:      "StepTween",
 	ModeStepTweenChain: "StepTweenChn",
 }
-
 var allModes = []TrainingMode{ModeNormalBP, ModeStepBP, ModeTween, ModeTweenChain, ModeStepTween, ModeStepTweenChain}
 
 // Data types
@@ -64,24 +73,21 @@ type Sample struct {
 	Height, Width int
 }
 
-type TrainingProgress struct {
-	BatchAccuracies []float64 // Accuracy after each batch
-	EvalAccuracies  []float64 // Eval accuracy after each batch
-	FinalTrainAcc   float64
-	FinalEvalAcc    float64
+type ConfigResult struct {
+	TrainAccuracies []float64 // Per-batch train accuracy (cells)
+	EvalAccuracies  []float64 // Per-batch eval accuracy (cells)
+	FinalTrain      float64
+	FinalEval       float64
+	EvalBenchAvg    float64
+	TasksSolved     int // Number of tasks 100% correct
+	TotalTasks      int // Total tasks tested
 	TrainTime       time.Duration
-}
-
-type EvalResult struct {
-	RoundAccuracies []float64 // Accuracy per eval round
-	AvgAccuracy     float64
 }
 
 func main() {
 	fmt.Println("╔══════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║  Test 23: ARC-AGI Real-Time Benchmark                                    ║")
-	fmt.Println("║  Phase 1: Training with live progress                                   ║")
-	fmt.Println("║  Phase 2: Eval benchmark with mode switching                            ║")
+	fmt.Println("║  Test 23: ARC-AGI Multi-Architecture Real-Time Benchmark                ║")
+	fmt.Println("║  Dense/Conv2D/Attn × 3/5/7 Layers × All Training Modes                  ║")
 	fmt.Println("╚══════════════════════════════════════════════════════════════════════════╝")
 
 	tasks, err := loadARCTasks("ARC-AGI/data/training", NumTasks)
@@ -92,58 +98,72 @@ func main() {
 	trainSamples, evalSamples := splitTrainEval(tasks)
 	fmt.Printf("Loaded %d tasks: %d train, %d eval samples\n\n", len(tasks), len(trainSamples), len(evalSamples))
 
-	// Phase 1: Training
-	fmt.Println("╔══════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║  PHASE 1: TRAINING                                                       ║")
-	fmt.Println("╚══════════════════════════════════════════════════════════════════════════╝")
-
-	allProgress := make(map[TrainingMode]*TrainingProgress)
-	trainedNets := make(map[TrainingMode]*nn.Network)
+	// Results storage: config -> mode -> result
+	allResults := make(map[string]map[TrainingMode]*ConfigResult)
 	var mu sync.Mutex
 	var wg sync.WaitGroup
 
-	for _, mode := range allModes {
-		wg.Add(1)
-		go func(m TrainingMode) {
-			defer wg.Done()
-			net, progress := runTrainingWithProgress(trainSamples, evalSamples, m)
-			mu.Lock()
-			trainedNets[m] = net
-			allProgress[m] = progress
-			mu.Unlock()
-		}(mode)
-	}
-	wg.Wait()
-
-	// Print training timeline
-	printTrainingTimeline(allProgress)
-
-	// Phase 2: Eval Benchmark
-	fmt.Println("\n╔══════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║  PHASE 2: EVAL BENCHMARK (switching between modes each round)           ║")
+	// PHASE 1: Training all configurations
+	fmt.Println("╔══════════════════════════════════════════════════════════════════════════╗")
+	fmt.Println("║  PHASE 1: TRAINING (all architectures × depths × modes)                 ║")
 	fmt.Println("╚══════════════════════════════════════════════════════════════════════════╝")
 
-	evalResults := make(map[TrainingMode]*EvalResult)
-	for _, mode := range allModes {
-		evalResults[mode] = runEvalBenchmark(trainedNets[mode], evalSamples, mode)
+	for _, arch := range allArchitectures {
+		for _, depth := range allDepths {
+			configName := fmt.Sprintf("%s-%dL", arch, depth)
+			mu.Lock()
+			allResults[configName] = make(map[TrainingMode]*ConfigResult)
+			mu.Unlock()
+
+			fmt.Printf("\n┌───────────────────────────────────────────────────────────────────────────┐\n")
+			fmt.Printf("│ %-73s │\n", configName)
+			fmt.Printf("└───────────────────────────────────────────────────────────────────────────┘\n")
+
+			for _, mode := range allModes {
+				wg.Add(1)
+				go func(a ArchType, d int, cn string, m TrainingMode) {
+					defer wg.Done()
+					net, result := runTraining(trainSamples, evalSamples, a, d, m)
+
+					// Eval benchmark phase
+					result.EvalBenchAvg, result.TasksSolved, result.TotalTasks = runEvalBenchmark(net, evalSamples, m)
+
+					mu.Lock()
+					allResults[cn][m] = result
+					mu.Unlock()
+
+					fmt.Printf("  [%-12s] %s Train: %4.0f%% | Eval: %4.0f%% | EvalBench: %4.0f%% (%.1fs)\n",
+						modeNames[m], cn, result.FinalTrain, result.FinalEval, result.EvalBenchAvg, result.TrainTime.Seconds())
+				}(arch, depth, configName, mode)
+			}
+			wg.Wait()
+		}
 	}
 
-	printEvalTimeline(evalResults)
-	printFinalSummary(allProgress, evalResults)
-	saveResults(allProgress, evalResults)
+	// Print training timeline like test17
+	printTrainingTimeline(allResults)
+
+	// Print summary tables
+	printArchitectureComparison(allResults)
+	printModeComparison(allResults)
+	printBestOverall(allResults)
+	saveResults(allResults)
 }
 
 // ============================================================================
 // Training
 // ============================================================================
 
-func runTrainingWithProgress(trainSamples, evalSamples []Sample, mode TrainingMode) (*nn.Network, *TrainingProgress) {
+func runTraining(trainSamples, evalSamples []Sample, arch ArchType, depth int, mode TrainingMode) (*nn.Network, *ConfigResult) {
 	start := time.Now()
-	net := createNetwork()
+	net := createNetwork(arch, depth)
+	if net == nil {
+		return nil, &ConfigResult{}
+	}
 	numLayers := net.TotalLayers()
 
-	progress := &TrainingProgress{
-		BatchAccuracies: make([]float64, NumBatches),
+	result := &ConfigResult{
+		TrainAccuracies: make([]float64, NumBatches),
 		EvalAccuracies:  make([]float64, NumBatches),
 	}
 
@@ -169,24 +189,23 @@ func runTrainingWithProgress(trainSamples, evalSamples []Sample, mode TrainingMo
 			sampleIdx++
 			trainOneSample(net, sample, mode, numLayers, state, ts, LearningRate)
 		}
-		// Measure accuracy on both train and eval
-		progress.BatchAccuracies[batch] = measureAccuracy(net, trainSamples, mode, numLayers, state, ts)
+		result.TrainAccuracies[batch] = measureAccuracy(net, trainSamples, mode, numLayers, state, ts)
 		if len(evalSamples) > 0 {
-			progress.EvalAccuracies[batch] = measureAccuracy(net, evalSamples, mode, numLayers, state, ts)
+			result.EvalAccuracies[batch] = measureAccuracy(net, evalSamples, mode, numLayers, state, ts)
 		}
-		fmt.Printf("  [%-12s] Batch %2d/%d: Train %4.0f%% | Eval %4.0f%%\n",
-			modeNames[mode], batch+1, NumBatches, progress.BatchAccuracies[batch], progress.EvalAccuracies[batch])
 	}
 
-	progress.FinalTrainAcc = progress.BatchAccuracies[NumBatches-1]
-	progress.FinalEvalAcc = progress.EvalAccuracies[NumBatches-1]
-	progress.TrainTime = time.Since(start)
+	result.FinalTrain = result.TrainAccuracies[NumBatches-1]
+	result.FinalEval = result.EvalAccuracies[NumBatches-1]
+	result.TrainTime = time.Since(start)
 
-	return net, progress
+	return net, result
 }
 
-func runEvalBenchmark(net *nn.Network, evalSamples []Sample, mode TrainingMode) *EvalResult {
-	result := &EvalResult{RoundAccuracies: make([]float64, EvalRounds)}
+func runEvalBenchmark(net *nn.Network, evalSamples []Sample, mode TrainingMode) (avgAcc float64, tasksSolved, totalTasks int) {
+	if net == nil {
+		return 0, 0, 0
+	}
 	numLayers := net.TotalLayers()
 
 	var state *nn.StepState
@@ -201,14 +220,35 @@ func runEvalBenchmark(net *nn.Network, evalSamples []Sample, mode TrainingMode) 
 		ts = nn.NewTweenState(net, nil)
 	}
 
+	// Measure cell accuracy
 	totalAcc := 0.0
 	for round := 0; round < EvalRounds; round++ {
-		acc := measureAccuracy(net, evalSamples, mode, numLayers, state, ts)
-		result.RoundAccuracies[round] = acc
-		totalAcc += acc
+		totalAcc += measureAccuracy(net, evalSamples, mode, numLayers, state, ts)
 	}
-	result.AvgAccuracy = totalAcc / float64(EvalRounds)
-	return result
+	avgAcc = totalAcc / float64(EvalRounds)
+
+	// Measure task-level accuracy (100% correct grids)
+	totalTasks = len(evalSamples)
+	for _, sample := range evalSamples {
+		output := getOutput(net, sample.Input, mode, numLayers, state, ts)
+		all_correct := true
+		for r := 0; r < sample.Height && all_correct; r++ {
+			for c := 0; c < sample.Width && all_correct; c++ {
+				idx := r*MaxGridSize + c
+				if idx < len(output) && idx < len(sample.Target) {
+					pred := clampInt(int(math.Round(float64(output[idx])*9.0)), 0, 9)
+					exp := clampInt(int(math.Round(float64(sample.Target[idx])*9.0)), 0, 9)
+					if pred != exp {
+						all_correct = false
+					}
+				}
+			}
+		}
+		if all_correct {
+			tasksSolved++
+		}
+	}
+	return avgAcc, tasksSolved, totalTasks
 }
 
 func trainOneSample(net *nn.Network, sample Sample, mode TrainingMode, numLayers int, state *nn.StepState, ts *nn.TweenState, lr float32) {
@@ -267,9 +307,8 @@ func applyTweenUpdate(ts *nn.TweenState, net *nn.Network, sample Sample, output 
 			outputGrad[i] = sample.Target[i] - output[i]
 		}
 	}
-	totalLayers := net.TotalLayers()
-	ts.ChainGradients[totalLayers] = outputGrad
-	ts.BackwardTargets[totalLayers] = sample.Target
+	ts.ChainGradients[net.TotalLayers()] = outputGrad
+	ts.BackwardTargets[net.TotalLayers()] = sample.Target
 	ts.TweenWeightsChainRule(net, lr)
 }
 
@@ -314,97 +353,248 @@ func getOutput(net *nn.Network, input []float32, mode TrainingMode, numLayers in
 }
 
 // ============================================================================
-// Network
+// Network Factories
 // ============================================================================
 
-func createNetwork() *nn.Network {
-	net := nn.NewNetwork(InputSize, 1, 1, 5)
+func createNetwork(arch ArchType, depth int) *nn.Network {
+	switch arch {
+	case ArchDense:
+		return createDenseNet(depth)
+	case ArchConv2D:
+		return createConv2DNet(depth)
+	case ArchAttn:
+		return createAttnNet(depth)
+	}
+	return nil
+}
+
+func createDenseNet(depth int) *nn.Network {
+	net := nn.NewNetwork(InputSize, 1, 1, depth)
 	net.BatchSize = 1
-	net.SetLayer(0, 0, 0, nn.InitDenseLayer(InputSize, 128, nn.ActivationLeakyReLU))
-	net.SetLayer(0, 0, 1, nn.InitDenseLayer(128, 64, nn.ActivationLeakyReLU))
-	net.SetLayer(0, 0, 2, nn.InitDenseLayer(64, 64, nn.ActivationLeakyReLU))
-	net.SetLayer(0, 0, 3, nn.InitDenseLayer(64, 32, nn.ActivationLeakyReLU))
-	net.SetLayer(0, 0, 4, nn.InitDenseLayer(32, InputSize, nn.ActivationSigmoid))
+	sizes := []int{128, 64, 48, 32}
+	net.SetLayer(0, 0, 0, nn.InitDenseLayer(InputSize, sizes[0], nn.ActivationLeakyReLU))
+	for i := 1; i < depth-1; i++ {
+		inS := sizes[(i-1)%len(sizes)]
+		outS := sizes[i%len(sizes)]
+		net.SetLayer(0, 0, i, nn.InitDenseLayer(inS, outS, nn.ActivationLeakyReLU))
+	}
+	lastH := sizes[(depth-2)%len(sizes)]
+	net.SetLayer(0, 0, depth-1, nn.InitDenseLayer(lastH, InputSize, nn.ActivationSigmoid))
 	return net
+}
+
+func createConv2DNet(depth int) *nn.Network {
+	net := nn.NewNetwork(InputSize, 1, 1, depth)
+	net.BatchSize = 1
+	conv := nn.LayerConfig{
+		Type: nn.LayerConv2D, InputHeight: 30, InputWidth: 30, InputChannels: 1,
+		Filters: 8, KernelSize: 3, Stride: 1, Padding: 1,
+		OutputHeight: 30, OutputWidth: 30, Activation: nn.ActivationLeakyReLU,
+	}
+	conv.Kernel = make([]float32, 8*1*3*3)
+	conv.Bias = make([]float32, 8)
+	initRandom(conv.Kernel, 0.2)
+	net.SetLayer(0, 0, 0, conv)
+	for i := 1; i < depth-1; i++ {
+		if i == 1 {
+			net.SetLayer(0, 0, i, nn.InitDenseLayer(7200, 64, nn.ActivationLeakyReLU))
+		} else {
+			net.SetLayer(0, 0, i, nn.InitDenseLayer(64, 64, nn.ActivationLeakyReLU))
+		}
+	}
+	net.SetLayer(0, 0, depth-1, nn.InitDenseLayer(64, InputSize, nn.ActivationSigmoid))
+	return net
+}
+
+func createAttnNet(depth int) *nn.Network {
+	dModel := 64
+	net := nn.NewNetwork(InputSize, 1, 1, depth)
+	net.BatchSize = 1
+	net.SetLayer(0, 0, 0, nn.InitDenseLayer(InputSize, dModel, nn.ActivationLeakyReLU))
+	for i := 1; i < depth-1; i++ {
+		if i%2 == 1 {
+			net.SetLayer(0, 0, i, createMHA(dModel))
+		} else {
+			net.SetLayer(0, 0, i, nn.InitDenseLayer(dModel, dModel, nn.ActivationLeakyReLU))
+		}
+	}
+	net.SetLayer(0, 0, depth-1, nn.InitDenseLayer(dModel, InputSize, nn.ActivationSigmoid))
+	return net
+}
+
+func createMHA(dModel int) nn.LayerConfig {
+	headDim := dModel / 4
+	mha := nn.LayerConfig{Type: nn.LayerMultiHeadAttention, DModel: dModel, NumHeads: 4}
+	mha.QWeights = make([]float32, dModel*dModel)
+	mha.KWeights = make([]float32, dModel*dModel)
+	mha.VWeights = make([]float32, dModel*dModel)
+	mha.OutputWeight = make([]float32, dModel*dModel)
+	mha.QBias = make([]float32, dModel)
+	mha.KBias = make([]float32, dModel)
+	mha.VBias = make([]float32, dModel)
+	mha.OutputBias = make([]float32, dModel)
+	initRandom(mha.QWeights, 0.1/float32(math.Sqrt(float64(headDim))))
+	initRandom(mha.KWeights, 0.1/float32(math.Sqrt(float64(headDim))))
+	initRandom(mha.VWeights, 0.1/float32(math.Sqrt(float64(headDim))))
+	initRandom(mha.OutputWeight, 0.1/float32(math.Sqrt(float64(dModel))))
+	return mha
+}
+
+func initRandom(slice []float32, scale float32) {
+	for i := range slice {
+		slice[i] = (rand.Float32()*2 - 1) * scale
+	}
 }
 
 // ============================================================================
 // Printing
 // ============================================================================
 
-func printTrainingTimeline(progress map[TrainingMode]*TrainingProgress) {
-	fmt.Println("\n╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║                                    TRAINING PROGRESS (Eval Accuracy per 5 batches)                                                                            ║")
-	fmt.Println("╠═══════════════════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╗")
-	fmt.Printf("║ Mode              ║  B5     ║  B10    ║  B15    ║  B20    ║  B25    ║  B30    ║ Final   ║ Time    ║\n")
-	fmt.Println("╠═══════════════════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╣")
+func printTrainingTimeline(results map[string]map[TrainingMode]*ConfigResult) {
+	fmt.Println("\n╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
+	fmt.Println("║                                    TRAINING TIMELINE (Eval Accuracy % per batch)                                                                                                     ║")
+	fmt.Println("╠═══════════════════╦═══════════╦═══════════╦═══════════╦═══════════╦═══════════╦═══════════╦═════════════════════════════════════════════════════════════════════════════════════════════╣")
+	fmt.Printf("║ Mode              ║   B4      ║   B8      ║   B12     ║   B16     ║   B20     ║  Tasks    ║   Learning Curve                                                                            ║\n")
+	fmt.Println("╠═══════════════════╬═══════════╬═══════════╬═══════════╬═══════════╬═══════════╬═══════════╬═════════════════════════════════════════════════════════════════════════════════════════════╣")
 
+	// Get best config for each mode
 	for _, mode := range allModes {
-		p := progress[mode]
-		fmt.Printf("║ %-17s ║  %4.0f%%  ║  %4.0f%%  ║  %4.0f%%  ║  %4.0f%%  ║  %4.0f%%  ║  %4.0f%%  ║  %4.0f%%  ║ %5.1fs  ║\n",
-			modeNames[mode],
-			p.EvalAccuracies[4], p.EvalAccuracies[9], p.EvalAccuracies[14],
-			p.EvalAccuracies[19], p.EvalAccuracies[24], p.EvalAccuracies[29],
-			p.FinalEvalAcc, p.TrainTime.Seconds())
-	}
-	fmt.Println("╚═══════════════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╝")
-}
-
-func printEvalTimeline(results map[TrainingMode]*EvalResult) {
-	fmt.Println("\n╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║                                    EVAL BENCHMARK (Accuracy per round on held-out eval data)                                                              ║")
-	fmt.Println("╠═══════════════════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╦═════════╗")
-	fmt.Printf("║ Mode              ║  R1     ║  R2     ║  R3     ║  R4     ║  R5     ║  R6     ║  R7     ║  R8     ║  R9     ║  R10    ║  Avg    ║\n")
-	fmt.Println("╠═══════════════════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╬═════════╣")
-
-	for _, mode := range allModes {
-		r := results[mode]
-		fmt.Printf("║ %-17s ║", modeNames[mode])
-		for i := 0; i < 10; i++ {
-			fmt.Printf("  %4.0f%%  ║", r.RoundAccuracies[i])
+		// Find best config for this mode
+		bestConfig := ""
+		bestAcc := 0.0
+		for config, modes := range results {
+			if r, ok := modes[mode]; ok && r.EvalBenchAvg > bestAcc {
+				bestAcc = r.EvalBenchAvg
+				bestConfig = config
+			}
 		}
-		fmt.Printf("  %4.0f%%  ║\n", r.AvgAccuracy)
+		if bestConfig == "" {
+			continue
+		}
+		r := results[bestConfig][mode]
+
+		// Generate simple curve
+		curve := generateCurve(r.EvalAccuracies)
+
+		taskInfo := fmt.Sprintf("%d/%d", r.TasksSolved, r.TotalTasks)
+		fmt.Printf("║ %-17s ║   %4.0f%%   ║   %4.0f%%   ║   %4.0f%%   ║   %4.0f%%   ║   %4.0f%%   ║   %-5s   ║   %s\n",
+			modeNames[mode]+"("+bestConfig+")",
+			safeGet(r.EvalAccuracies, 3), safeGet(r.EvalAccuracies, 7),
+			safeGet(r.EvalAccuracies, 11), safeGet(r.EvalAccuracies, 15), safeGet(r.EvalAccuracies, 19),
+			taskInfo, curve)
 	}
-	fmt.Println("╚═══════════════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╩═════════╝")
+	fmt.Println("╚═══════════════════╩═══════════╩═══════════╩═══════════╩═══════════╩═══════════╩═══════════╩═════════════════════════════════════════════════════════════════════════════════════════════╝")
 }
 
-func printFinalSummary(progress map[TrainingMode]*TrainingProgress, evalResults map[TrainingMode]*EvalResult) {
+func generateCurve(accs []float64) string {
+	if len(accs) == 0 {
+		return ""
+	}
+	// Sample every 4 batches
+	curve := ""
+	for i := 0; i < len(accs); i += 2 {
+		acc := accs[i]
+		if acc < 15 {
+			curve += "▁"
+		} else if acc < 25 {
+			curve += "▂"
+		} else if acc < 35 {
+			curve += "▃"
+		} else if acc < 45 {
+			curve += "▄"
+		} else if acc < 55 {
+			curve += "▅"
+		} else if acc < 65 {
+			curve += "▆"
+		} else {
+			curve += "█"
+		}
+	}
+	return curve
+}
+
+func safeGet(slice []float64, idx int) float64 {
+	if idx < len(slice) {
+		return slice[idx]
+	}
+	return 0
+}
+
+func printArchitectureComparison(results map[string]map[TrainingMode]*ConfigResult) {
+	fmt.Println("\n╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
+	fmt.Println("║                                    ARCHITECTURE COMPARISON (Eval Accuracy %)                                                                                  ║")
+	fmt.Println("╠═══════════════════╦═════════════╦═════════════╦═════════════╦═════════════╦═════════════╦═════════════╦═══════════════════════════════════════════════════════╣")
+	fmt.Printf("║ Config            ║  NormalBP   ║   StepBP    ║    Tween    ║ TweenChain  ║  StepTween  ║ StepTwnChn  ║ Best                                                  ║\n")
+	fmt.Println("╠═══════════════════╬═════════════╬═════════════╬═════════════╬═════════════╬═════════════╬═════════════╬═══════════════════════════════════════════════════════╣")
+
+	configs := []string{}
+	for _, arch := range allArchitectures {
+		for _, d := range allDepths {
+			configs = append(configs, fmt.Sprintf("%s-%dL", arch, d))
+		}
+	}
+
+	for _, config := range configs {
+		modes := results[config]
+		best := ""
+		bestVal := 0.0
+		for _, m := range allModes {
+			if r, ok := modes[m]; ok && r.EvalBenchAvg > bestVal {
+				bestVal = r.EvalBenchAvg
+				best = modeNames[m]
+			}
+		}
+		fmt.Printf("║ %-17s ║   %5.0f%%    ║   %5.0f%%    ║   %5.0f%%    ║   %5.0f%%    ║   %5.0f%%    ║   %5.0f%%    ║ %-51s ║\n",
+			config,
+			modes[ModeNormalBP].EvalBenchAvg, modes[ModeStepBP].EvalBenchAvg, modes[ModeTween].EvalBenchAvg,
+			modes[ModeTweenChain].EvalBenchAvg, modes[ModeStepTween].EvalBenchAvg, modes[ModeStepTweenChain].EvalBenchAvg,
+			best)
+	}
+	fmt.Println("╚═══════════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═════════════╩═══════════════════════════════════════════════════════╝")
+}
+
+func printModeComparison(results map[string]map[TrainingMode]*ConfigResult) {
 	fmt.Println("\n╔═══════════════════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║                                    FINAL SUMMARY                                                 ║")
+	fmt.Println("║                            MODE SUMMARY (Average across all architectures)                        ║")
 	fmt.Println("╠═══════════════════╦═══════════════╦═══════════════╦═══════════════╦══════════════════════════════╣")
-	fmt.Println("║ Mode              ║ Train Final   ║ Eval Final    ║ Generalization║ Winner?                      ║")
+	fmt.Println("║ Mode              ║ Avg Train     ║ Avg Eval      ║ Avg Time      ║ Notes                        ║")
 	fmt.Println("╠═══════════════════╬═══════════════╬═══════════════╬═══════════════╬══════════════════════════════╣")
 
-	bestMode := allModes[0]
-	bestEval := evalResults[bestMode].AvgAccuracy
 	for _, mode := range allModes {
-		if evalResults[mode].AvgAccuracy > bestEval {
-			bestEval = evalResults[mode].AvgAccuracy
-			bestMode = mode
+		trainSum, evalSum, timeSum, count := 0.0, 0.0, 0.0, 0
+		for _, modes := range results {
+			if r, ok := modes[mode]; ok {
+				trainSum += r.FinalTrain
+				evalSum += r.EvalBenchAvg
+				timeSum += r.TrainTime.Seconds()
+				count++
+			}
 		}
-	}
-
-	for _, mode := range allModes {
-		p := progress[mode]
-		e := evalResults[mode]
-		gap := p.FinalTrainAcc - p.FinalEvalAcc
-		winner := ""
-		if mode == bestMode {
-			winner = "★ BEST!"
+		if count > 0 {
+			note := ""
+			if evalSum/float64(count) < 15 {
+				note = "⚠ Not learning"
+			}
+			fmt.Printf("║ %-17s ║    %5.1f%%     ║    %5.1f%%     ║    %5.1fs     ║ %-28s ║\n",
+				modeNames[mode], trainSum/float64(count), evalSum/float64(count), timeSum/float64(count), note)
 		}
-		fmt.Printf("║ %-17s ║     %5.1f%%    ║     %5.1f%%    ║    %+5.1f%%    ║ %-28s ║\n",
-			modeNames[mode], p.FinalTrainAcc, e.AvgAccuracy, -gap, winner)
 	}
 	fmt.Println("╚═══════════════════╩═══════════════╩═══════════════╩═══════════════╩══════════════════════════════╝")
+}
 
-	fmt.Println("\n┌────────────────────────────────────────────────────────────────────────────────────────────────────┐")
-	fmt.Println("│                                         KEY INSIGHTS                                              │")
-	fmt.Println("├────────────────────────────────────────────────────────────────────────────────────────────────────┤")
-	fmt.Printf("│ ★ Best Overall: %s with %.0f%% eval accuracy\n", modeNames[bestMode], bestEval)
-	fmt.Println("│ • Generalization gap = Train acc - Eval acc (smaller is better)")
-	fmt.Println("│ • Eval benchmark tests trained models on held-out data")
-	fmt.Println("│ • Random baseline ~11%, higher is better")
-	fmt.Println("└────────────────────────────────────────────────────────────────────────────────────────────────────┘")
+func printBestOverall(results map[string]map[TrainingMode]*ConfigResult) {
+	bestConfig, bestMode, bestAcc := "", ModeNormalBP, 0.0
+	for config, modes := range results {
+		for mode, r := range modes {
+			if r.EvalBenchAvg > bestAcc {
+				bestAcc = r.EvalBenchAvg
+				bestConfig = config
+				bestMode = mode
+			}
+		}
+	}
+	fmt.Printf("\n★ BEST OVERALL: %s + %s = %.0f%% eval accuracy\n", bestConfig, modeNames[bestMode], bestAcc)
+	fmt.Println("  Note: Random baseline ~11%, higher is better")
 }
 
 // ============================================================================
@@ -526,14 +716,17 @@ func argmax(s []float32) int {
 	return maxI
 }
 
-func saveResults(progress map[TrainingMode]*TrainingProgress, eval map[TrainingMode]*EvalResult) {
-	output := make(map[string]interface{})
-	for mode := range progress {
-		output[modeNames[mode]] = map[string]interface{}{
-			"final_train": progress[mode].FinalTrainAcc,
-			"final_eval":  progress[mode].FinalEvalAcc,
-			"avg_eval":    eval[mode].AvgAccuracy,
-			"train_time":  progress[mode].TrainTime.Seconds(),
+func saveResults(results map[string]map[TrainingMode]*ConfigResult) {
+	output := make(map[string]map[string]interface{})
+	for config, modes := range results {
+		output[config] = make(map[string]interface{})
+		for mode, r := range modes {
+			output[config][modeNames[mode]] = map[string]interface{}{
+				"final_train": r.FinalTrain,
+				"final_eval":  r.FinalEval,
+				"eval_bench":  r.EvalBenchAvg,
+				"train_time":  r.TrainTime.Seconds(),
+			}
 		}
 	}
 	data, _ := json.MarshalIndent(output, "", "  ")
