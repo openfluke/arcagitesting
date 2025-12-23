@@ -244,6 +244,7 @@
         <div class="tabs">
             <button class="tab-btn active" data-tab="modes">📊 Mode Comparison</button>
             <button class="tab-btn" data-tab="swarm">🧬 Genetic Swarm</button>
+            <button class="tab-btn" data-tab="council">👑 Council of 1000</button>
         </div>
 
         <!-- Mode Comparison Tab -->
@@ -377,13 +378,85 @@
                 <div class="legend" id="swarm-legend"></div>
             </div>
         </div>
+
+        <!-- Council of 1000 Tab -->
+        <div class="tab-content" id="council-tab">
+            <div class="insight-banner" style="background: linear-gradient(90deg, rgba(251, 191, 36, 0.1), rgba(168, 85, 247, 0.1)); border-color: rgba(251, 191, 36, 0.3);">
+                <div class="title" style="color: #fbbf24;">👑 THE COUNCIL OF 1000 - Massive Scale Architecture Search</div>
+                <div>
+                    <strong>1000 randomized agents</strong> competing to find unique task solutions.
+                    Testing <span style="color:var(--accent-color)">statistical saturation</span>: Does the discovery curve flatten or keep rising?
+                </div>
+            </div>
+
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <h4>📊 COUNCIL METRICS</h4>
+                    <div style="display:grid;grid-template-columns:1fr;gap:0.75rem">
+                        <div>
+                            <div class="insight-value" style="color:#fbbf24;font-size:2rem" id="council-agents">—</div>
+                            <div class="insight-detail">Total Agents</div>
+                        </div>
+                        <div>
+                            <div class="insight-value success" style="font-size:2rem" id="council-collective">—</div>
+                            <div class="insight-detail">Collective Tasks Solved</div>
+                        </div>
+                        <div>
+                            <div class="insight-value purple" id="council-efficiency">—</div>
+                            <div class="insight-detail">Efficiency (tasks per 100 agents)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <h4>⏱️ RUN INFO</h4>
+                    <div style="font-size:0.85rem;line-height:1.8">
+                        <div>Duration: <strong id="council-duration">—</strong></div>
+                        <div>Workers: <strong id="council-workers">—</strong></div>
+                        <div>Timestamp: <strong id="council-timestamp">—</strong></div>
+                    </div>
+                    <div style="margin-top:1rem">
+                        <h4>🧠 COLLECTIVE WISDOM</h4>
+                        <div style="max-height:100px;overflow-y:auto;font-size:0.7rem;font-family:monospace;margin-top:0.5rem;color:var(--secondary-text)" id="council-tasks"></div>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <h4>🏆 TOP 10 EXPERTS</h4>
+                    <div style="max-height:250px;overflow-y:auto">
+                        <table class="swarm-table">
+                            <thead>
+                                <tr>
+                                    <th>Agent</th>
+                                    <th>Architecture</th>
+                                    <th style="text-align:right">Solved</th>
+                                </tr>
+                            </thead>
+                            <tbody id="council-experts-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">📈 Discovery Curve - Cumulative Unique Tasks</div>
+                        <div class="chart-subtitle">X = Agents processed, Y = Unique tasks discovered. Is the curve still rising?</div>
+                    </div>
+                </div>
+                <canvas id="council-canvas"></canvas>
+            </div>
+        </div>
     </div>
 
     <script>
         let resultsData = null;
         let swarmData = null;
+        let councilData = null;
         let accuracyChart = null;
         let swarmChart = null;
+        let councilChart = null;
         let selectedModes = new Set();
         let selectedAlgorithm = 'balanced';
 
@@ -421,12 +494,13 @@
 
         async function init() {
             try {
-                const [modesRes, swarmRes] = await Promise.allSettled([
+                const [modesRes, swarmRes, councilRes] = await Promise.allSettled([
                     fetch('arc_benchmark_results.json'),
-                    fetch('genetic_swarm_results.json')
+                    fetch('genetic_swarm_results.json'),
+                    fetch('council_results.json')
                 ]);
 
-                if (modesRes.status === 'fulfilled') {
+                if (modesRes.status === 'fulfilled' && modesRes.value.ok) {
                     resultsData = await modesRes.value.json();
                     document.getElementById('data-timestamp').innerText = new Date(resultsData.timestamp).toLocaleString();
                     resultsData.modes.forEach(m => selectedModes.add(m));
@@ -436,9 +510,14 @@
                     updateCharts();
                 }
 
-                if (swarmRes.status === 'fulfilled') {
+                if (swarmRes.status === 'fulfilled' && swarmRes.value.ok) {
                     swarmData = await swarmRes.value.json();
                     updateSwarmDisplay();
+                }
+
+                if (councilRes.status === 'fulfilled' && councilRes.value.ok) {
+                    councilData = await councilRes.value.json();
+                    updateCouncilDisplay();
                 }
             } catch (e) {
                 console.error("Failed to load data:", e);
@@ -674,6 +753,90 @@
             document.getElementById('swarm-legend').innerHTML = legendItems.map(i =>
                 `<div class="legend-item"><div class="legend-color" style="background:${i.color}"></div>${i.label}</div>`
             ).join('');
+        }
+
+        function updateCouncilDisplay() {
+            if (!councilData) return;
+
+            // Metrics
+            document.getElementById('council-agents').innerText = councilData.councilSize.toLocaleString();
+            document.getElementById('council-collective').innerText = councilData.collectiveCount;
+            document.getElementById('council-efficiency').innerText = councilData.councilEfficiency.toFixed(2);
+            document.getElementById('council-duration').innerText = councilData.duration;
+            document.getElementById('council-workers').innerText = councilData.workerCount;
+            document.getElementById('council-timestamp').innerText = new Date(councilData.timestamp).toLocaleString();
+
+            // Collective tasks
+            document.getElementById('council-tasks').innerHTML = councilData.collectiveTasks.map(t => 
+                `<span style="display:inline-block;background:var(--surface-hover);padding:0.2rem 0.4rem;border-radius:3px;margin:0.1rem">${t}</span>`
+            ).join(' ');
+
+            // Top experts table
+            document.getElementById('council-experts-tbody').innerHTML = councilData.topExperts.slice(0, 10).map((r, i) => {
+                const cfg = r.config;
+                const arch = `${cfg.gridSize}×${cfg.gridSize} | ${cfg.brains.join(', ')}`;
+                const rankClass = i < 3 ? `rank-${i+1}` : '';
+                return `<tr>
+                    <td><span class="rank-badge ${rankClass}">${i+1}</span>${cfg.name}</td>
+                    <td style="font-size:0.7rem">${arch.slice(0, 40)}${arch.length > 40 ? '...' : ''}</td>
+                    <td style="text-align:right;font-weight:700;color:var(--success-color)">${r.tasksSolved}</td>
+                </tr>`;
+            }).join('');
+
+            // Discovery curve chart
+            updateCouncilChart();
+        }
+
+        function updateCouncilChart() {
+            const ctx = document.getElementById('council-canvas').getContext('2d');
+            if (councilChart) councilChart.destroy();
+
+            const timeline = councilData.discoveryTimeline;
+            const labels = timeline.map(p => p.agentNum);
+            const data = timeline.map(p => p.cumulativeUnique);
+
+            councilChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Cumulative Unique Tasks',
+                        data: data,
+                        borderColor: '#fbbf24',
+                        backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                        fill: true,
+                        borderWidth: 3,
+                        tension: 0.3,
+                        pointRadius: 2,
+                        pointBackgroundColor: '#fbbf24'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            title: { display: true, text: 'Unique Tasks Solved', color: 'rgba(255,255,255,0.7)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
+                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        },
+                        x: { 
+                            title: { display: true, text: 'Agents Processed', color: 'rgba(255,255,255,0.7)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
+                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        }
+                    },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `${ctx.parsed.y} unique tasks discovered by agent ${ctx.label}`
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         init();

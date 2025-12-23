@@ -89,6 +89,51 @@ The 3×3 architecture with 9 diverse brains (5 MHA + 3 RNN + 1 Dense) achieved t
 
 ---
 
+## 👑 Council of 1000: Testing Statistical Saturation
+
+We scaled up to **1000 randomized agents** to find the architecture ceiling - how many unique tasks can this approach solve?
+
+### 🔬 The Science: Statistical Saturation
+
+- **If the curve keeps rising** → run more agents!
+- **If the curve flattens** → you've hit the architecture ceiling
+
+### 📊 Results: 11 Tasks, Then Ceiling
+
+| Agents | Unique Tasks | Discovery Rate |
+|--------|--------------|----------------|
+| 0→50 | 7 tasks | Fast discovery |
+| 50→160 | 9 tasks | Slowing down |
+| 160→500 | 10 tasks | Almost flat |
+| 500→710 | 11 tasks | Very rare finds |
+| **710→1000** | **11 tasks** | **CEILING HIT** |
+
+**Key Finding:** The last 290 agents (710→1000) found **zero new tasks**. The architecture has reached its limit.
+
+### 🏆 Top Performers
+
+| Agent | Architecture | Accuracy | Solved |
+|-------|--------------|----------|--------|
+| Agent-143 | 2×2 Dense×4 | 45.3% | 5 |
+| Agent-925 | 1×1 Dense | 45.2% | 5 |
+| Agent-816 | 1×1 LSTM | 45.1% | 5 |
+| Agent-675 | 2×2 Dense+Dense+RNN+Dense | 45.0% | 5 |
+| Agent-301 | 2×2 Dense+MHA+RNN+LSTM | 44.6% | 5 |
+
+### 💡 What This Means
+
+1. **Architecture Ceiling = 11 tasks** with Nano-Hive + real-time training
+2. **Running 10,000 agents won't help** - the curve is flat
+3. **To solve more tasks**, need fundamentally different architecture
+4. **Dense layers surprisingly effective** - the winner was all-Dense!
+5. **D=16 + High LR (0.09+)** is the sweet spot
+
+### 🧠 The 11 Tasks Solved
+
+These represent the "sweet spot" - tasks whose patterns match what the network can learn in 10 seconds of real-time training.
+
+---
+
 ## 🚀 Running the Benchmarks
 
 ```bash
@@ -99,6 +144,9 @@ go run arc_benchmark.go
 
 # Evolutionary swarm (100 networks, ~10 min)
 go run genetic_swarm.go
+
+# Council of 1000 (~10 min with 18 workers)
+go run test38_council.go
 
 # Start visualization dashboard
 go run viz_server.go
@@ -111,7 +159,8 @@ go run viz_server.go
 | Test | Description | Best Result |
 |------|-------------|-------------|
 | **arc_benchmark.go** | Real-time mode comparison | 3 tasks solved |
-| **genetic_swarm.go** | Evolutionary architecture search | 5 tasks solved |
+| **genetic_swarm.go** | Evolutionary architecture search (100) | 5 tasks solved |
+| **test38_council.go** | Statistical saturation (1000) | 11 unique tasks |
 | test31_heuristic_hive.go | Heuristic Hive (MHA+LSTM) | 53.2% accuracy |
 
 ## 🏗️ Architecture
