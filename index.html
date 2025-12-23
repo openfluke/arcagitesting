@@ -245,6 +245,7 @@
             <button class="tab-btn active" data-tab="modes">📊 Mode Comparison</button>
             <button class="tab-btn" data-tab="swarm">🧬 Genetic Swarm</button>
             <button class="tab-btn" data-tab="council">👑 Council of 1000</button>
+            <button class="tab-btn" data-tab="zoo">🦎 Evolutionary Zoo</button>
         </div>
 
         <!-- Mode Comparison Tab -->
@@ -448,15 +449,92 @@
                 <canvas id="council-canvas"></canvas>
             </div>
         </div>
+
+        <!-- Evolutionary Zoo Tab -->
+        <div class="tab-content" id="zoo-tab">
+            <div class="insight-banner" style="background: linear-gradient(90deg, rgba(34, 197, 94, 0.1), rgba(168, 85, 247, 0.1)); border-color: rgba(34, 197, 94, 0.3);">
+                <div class="title" style="color: #22c55e;">🦎 THE EVOLUTIONARY ZOO - Deep Architectural Mutations</div>
+                <div>
+                    <strong>2500 mutant architectures</strong> with different topologies (1x1, 2x2, 3x3, 4x1, 1x4, 2x3, 3x2),
+                    <span style="color:var(--purple-color)">brain types (MHA, LSTM, RNN, Dense)</span>, 
+                    <span style="color:var(--accent-color)">activations (ReLU, LeakyReLU, SiLU, Tanh)</span>, and
+                    <span style="color:var(--success-color)">log-uniform learning rates</span>.
+                </div>
+            </div>
+
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <h4>📊 ZOO METRICS</h4>
+                    <div style="display:grid;grid-template-columns:1fr;gap:0.75rem">
+                        <div>
+                            <div class="insight-value" style="color:#22c55e;font-size:2rem" id="zoo-size">—</div>
+                            <div class="insight-detail">Total Mutants</div>
+                        </div>
+                        <div>
+                            <div class="insight-value success" style="font-size:2rem" id="zoo-collective">—</div>
+                            <div class="insight-detail">Collective Tasks Solved</div>
+                        </div>
+                        <div>
+                            <div class="insight-value purple" id="zoo-duration">—</div>
+                            <div class="insight-detail">Duration</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <h4>🏆 HALL OF FAME - TOP 10 MUTANTS</h4>
+                    <div style="max-height:280px;overflow-y:auto">
+                        <table class="swarm-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Mutation Config</th>
+                                    <th style="text-align:right">Solved</th>
+                                </tr>
+                            </thead>
+                            <tbody id="zoo-hall-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <h4>🧠 COLLECTIVE WISDOM</h4>
+                    <div style="max-height:200px;overflow-y:auto;font-size:0.7rem;font-family:monospace;color:var(--secondary-text)" id="zoo-tasks"></div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">🌳 Phylogenetic Tree - Species Comparison</div>
+                        <div class="chart-subtitle">Unique tasks solved by each architecture type (species)</div>
+                    </div>
+                </div>
+                <canvas id="zoo-species-canvas" style="max-height:300px"></canvas>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">📈 Discovery Curve</div>
+                        <div class="chart-subtitle">Cumulative unique tasks as mutants are processed</div>
+                    </div>
+                </div>
+                <canvas id="zoo-discovery-canvas"></canvas>
+            </div>
+        </div>
     </div>
 
     <script>
         let resultsData = null;
         let swarmData = null;
         let councilData = null;
+        let zooData = null;
         let accuracyChart = null;
         let swarmChart = null;
         let councilChart = null;
+        let zooSpeciesChart = null;
+        let zooDiscoveryChart = null;
         let selectedModes = new Set();
         let selectedAlgorithm = 'balanced';
 
@@ -494,10 +572,11 @@
 
         async function init() {
             try {
-                const [modesRes, swarmRes, councilRes] = await Promise.allSettled([
+                const [modesRes, swarmRes, councilRes, zooRes] = await Promise.allSettled([
                     fetch('arc_benchmark_results.json'),
                     fetch('genetic_swarm_results.json'),
-                    fetch('council_results.json')
+                    fetch('council_results.json'),
+                    fetch('zoo_results.json')
                 ]);
 
                 if (modesRes.status === 'fulfilled' && modesRes.value.ok) {
@@ -518,6 +597,11 @@
                 if (councilRes.status === 'fulfilled' && councilRes.value.ok) {
                     councilData = await councilRes.value.json();
                     updateCouncilDisplay();
+                }
+
+                if (zooRes.status === 'fulfilled' && zooRes.value.ok) {
+                    zooData = await zooRes.value.json();
+                    updateZooDisplay();
                 }
             } catch (e) {
                 console.error("Failed to load data:", e);
@@ -832,6 +916,149 @@
                         tooltip: {
                             callbacks: {
                                 label: (ctx) => `${ctx.parsed.y} unique tasks discovered by agent ${ctx.label}`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateZooDisplay() {
+            if (!zooData) return;
+
+            // Metrics
+            document.getElementById('zoo-size').innerText = zooData.zooSize.toLocaleString();
+            document.getElementById('zoo-collective').innerText = zooData.collectiveCount;
+            document.getElementById('zoo-duration').innerText = zooData.duration;
+
+            // Collective tasks
+            document.getElementById('zoo-tasks').innerHTML = zooData.collectiveTasks.map(t => 
+                `<span style="display:inline-block;background:var(--surface-hover);padding:0.2rem 0.4rem;border-radius:3px;margin:0.1rem">${t}</span>`
+            ).join(' ');
+
+            // Hall of Fame table
+            document.getElementById('zoo-hall-tbody').innerHTML = zooData.topMutants.slice(0, 10).map((r, i) => {
+                const rankClass = i < 3 ? `rank-${i+1}` : '';
+                const mutStr = r.config.mutationStr.length > 50 ? r.config.mutationStr.slice(0, 47) + '...' : r.config.mutationStr;
+                return `<tr>
+                    <td><span class="rank-badge ${rankClass}">${i+1}</span></td>
+                    <td style="font-size:0.7rem;font-family:monospace">${mutStr}</td>
+                    <td style="text-align:right;font-weight:700;color:var(--success-color)">${r.tasksSolved}</td>
+                </tr>`;
+            }).join('');
+
+            // Species bar chart
+            updateZooSpeciesChart();
+
+            // Discovery curve
+            updateZooDiscoveryChart();
+        }
+
+        function updateZooSpeciesChart() {
+            const ctx = document.getElementById('zoo-species-canvas').getContext('2d');
+            if (zooSpeciesChart) zooSpeciesChart.destroy();
+
+            const species = zooData.speciesBreakdown;
+            const labels = species.map(s => s.species);
+            const data = species.map(s => s.uniqueCount);
+
+            const colors = [
+                'rgba(34, 197, 94, 0.8)',
+                'rgba(168, 85, 247, 0.8)',
+                'rgba(245, 158, 11, 0.8)',
+                'rgba(239, 68, 68, 0.8)',
+                'rgba(59, 130, 246, 0.8)',
+                'rgba(236, 72, 153, 0.8)',
+                'rgba(20, 184, 166, 0.8)'
+            ];
+
+            zooSpeciesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Unique Tasks Solved',
+                        data: data,
+                        backgroundColor: colors.slice(0, labels.length),
+                        borderColor: colors.slice(0, labels.length).map(c => c.replace('0.8', '1')),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            title: { display: true, text: 'Unique Tasks', color: 'rgba(255,255,255,0.7)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
+                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        },
+                        x: { 
+                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
+                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        }
+                    },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: (ctx) => {
+                                    const s = zooData.speciesBreakdown[ctx.dataIndex];
+                                    return `Count: ${s.count} mutants\nBest: ${s.bestSolved} tasks`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateZooDiscoveryChart() {
+            const ctx = document.getElementById('zoo-discovery-canvas').getContext('2d');
+            if (zooDiscoveryChart) zooDiscoveryChart.destroy();
+
+            const timeline = zooData.discoveryTimeline;
+            const labels = timeline.map(p => p.mutantNum);
+            const data = timeline.map(p => p.cumulativeUnique);
+
+            zooDiscoveryChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Cumulative Unique Tasks',
+                        data: data,
+                        borderColor: '#22c55e',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        fill: true,
+                        borderWidth: 3,
+                        tension: 0.3,
+                        pointRadius: 2,
+                        pointBackgroundColor: '#22c55e'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            title: { display: true, text: 'Unique Tasks Solved', color: 'rgba(255,255,255,0.7)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
+                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        },
+                        x: { 
+                            title: { display: true, text: 'Mutants Processed', color: 'rgba(255,255,255,0.7)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
+                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        }
+                    },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `${ctx.parsed.y} unique tasks discovered by mutant ${ctx.label}`
                             }
                         }
                     }

@@ -134,6 +134,70 @@ These represent the "sweet spot" - tasks whose patterns match what the network c
 
 ---
 
+## 🦎 Evolutionary Zoo: Deep Architectural Mutations (Test 39)
+
+Test 38 proved that same-topology networks saturate at 11 tasks. The Zoo introduces **SPECIATION** - wildly different network topologies to break that ceiling.
+
+### 🔬 Results: 14 Unique Tasks Solved!
+
+**+3 tasks beyond the Council ceiling!** Speciation works.
+
+| Metric | Result |
+|--------|--------|
+| **Zoo Size** | 2500 mutants |
+| **Collective Tasks** | 14 unique (vs 11 with Council) |
+| **Duration** | 25m 40s |
+| **Workers** | 18 parallel |
+
+### 📊 Species Breakdown (Phylogenetic Tree)
+
+| Species | Unique Tasks | Count | Best Mutant |
+|---------|--------------|-------|-------------|
+| 🥇 **3×3 Complex** | **13** | 384 | 5 solved |
+| 🥈 3×2 Rectangle | 12 | 335 | 5 solved |
+| 🥉 1×1 Monolith | 11 | 366 | 5 solved |
+| 2×2 Standard | 11 | 355 | 5 solved |
+| 1×4 Wide | 11 | 341 | 4 solved |
+| 4×1 Tall | 10 | 370 | 5 solved |
+| 2×3 Rectangle | 10 | 349 | 5 solved |
+
+### 🏆 Hall of Fame - Top Performers
+
+| Mutant | Architecture | Tasks |
+|--------|--------------|-------|
+| Mutant-2301 | 3×3 Dense-Dense-LSTM-LSTM-RNN-RNN-LSTM-Dense-LSTM **Tanh** D=32 LR=0.087 | 5 |
+| Mutant-2314 | 2×3 MHA-Dense-Dense-Dense-LSTM-Dense **Tanh** D=64 LR=0.088 | 5 |
+| Mutant-898 | 2×3 Dense-RNN-RNN-Dense-RNN-Dense **Tanh** D=32 LR=0.087 | 5 |
+
+### 💡 Key Insights
+
+1. **Tanh Dominates** - Every top-10 mutant used Tanh activation (not LeakyReLU!)
+2. **3×3 Complex is Best** - The 9-brain grid discovered the most unique tasks (13/14)
+3. **Rectangles Work** - 3×2 and 2×3 grids are competitive with traditional squares
+4. **High LR Still Key** - Top performers cluster around LR 0.04-0.1
+5. **Dense Brains Matter** - Most winners mix Dense layers with LSTM/RNN
+
+### 📈 Discovery Curve: Still Rising (Barely)
+
+```
+Mutant  100: ████████ (8 tasks)
+Mutant  400: ████████████ (12 tasks)
+Mutant  900: █████████████ (13 tasks)
+Mutant 2500: ██████████████ (14 tasks)  ← Last task found at the end!
+```
+
+**Interpretation:** The curve is very flat after 900 mutants. Task #14 was found in the final batch, suggesting a few more tasks *might* be discoverable with 5000+ mutants, but returns are diminishing rapidly.
+
+### 🧠 The 14 Tasks Solved
+
+These task IDs can be analyzed to understand what patterns this architecture class can learn:
+```
+0e206a2e 1190e5a7 1fad071e 2dc579da 445eab21 91413438 91714a58 
+ae3edfdc b9b7f026 d631b094 d89b689b d9fac9be de1cd16c e8dc4411
+```
+
+---
+
 ## 🚀 Running the Benchmarks
 
 ```bash
@@ -148,6 +212,9 @@ go run genetic_swarm.go
 # Council of 1000 (~10 min with 18 workers)
 go run test38_council.go
 
+# Evolutionary Zoo (2500 mutants, ~25 min)
+go run test39_evolutionary_zoo.go
+
 # Start visualization dashboard
 go run viz_server.go
 
@@ -161,19 +228,20 @@ go run viz_server.go
 | **arc_benchmark.go** | Real-time mode comparison | 3 tasks solved |
 | **genetic_swarm.go** | Evolutionary architecture search (100) | 5 tasks solved |
 | **test38_council.go** | Statistical saturation (1000) | 11 unique tasks |
+| **test39_evolutionary_zoo.go** | Speciation (2500 mutants, 7 topologies) | TBD |
 | test31_heuristic_hive.go | Heuristic Hive (MHA+LSTM) | 53.2% accuracy |
 
 ## 🏗️ Architecture
 
 ```
 Hive Mind Network (Grid Scatter)
-├── 1×1: Single brain (fastest)
-├── 2×2: 4 parallel brains
-│   ├── Brain[0,0]: MHA/LSTM/RNN/Dense
-│   ├── Brain[0,1]: MHA/LSTM/RNN/Dense
-│   ├── Brain[1,0]: MHA/LSTM/RNN/Dense
-│   └── Brain[1,1]: MHA/LSTM/RNN/Dense
-└── 3×3: 9 parallel brains (most capable, solved 5 tasks)
+├── 1×1 Monolith: Single brain (fastest)
+├── 2×2 Standard: 4 parallel brains
+├── 3×3 Complex: 9 parallel brains
+├── 4×1 Tall: 4 brains in a column
+├── 1×4 Wide: 4 brains in a row
+├── 2×3 Rectangle: 6 brains
+└── 3×2 Rectangle: 6 brains
 ```
 
 ## 📚 References
