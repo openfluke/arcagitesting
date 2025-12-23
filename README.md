@@ -13,6 +13,8 @@ ARC-AGI is considered one of the hardest AI benchmarks, designed to test **abstr
 - 🤖 GPT-4, Claude: ~20-30% without fine-tuning
 - 👤 Humans: ~85% average
 
+---
+
 ## ⚡ Real-Time Task Switching Benchmark
 
 Our benchmark tests something different: **how quickly can a neural network adapt when rapidly switching between unknown tasks?**
@@ -34,16 +36,7 @@ Compare this to **NormalBP** (standard batch training):
 - **Pauses** to do batch training — can't adapt in real-time
 - Scored lowest due to near-zero consistency
 
-### Why This Matters
-
-Traditional ML training **stops** to process batches. In real-time scenarios (robotics, games, autonomous systems), you can't pause the world while your network trains.
-
-**StepTweenChain** trains on **every single sample immediately** using heuristic updates + chain rule, enabling:
-- Continuous adaptation without pausing
-- Stable performance during rapid task switches  
-- Higher throughput and consistency
-
-## 📊 Mode Comparison
+### 📊 Mode Comparison
 
 | Mode | Stability | Throughput | Consistency | Solved | Score |
 |------|-----------|------------|-------------|--------|-------|
@@ -54,39 +47,84 @@ Traditional ML training **stops** to process batches. In real-time scenarios (ro
 | StepBP | 95% | 436/s | 73% | 0 | 30 |
 | NormalBP | 97% | 1,204/s | 1% | 0 | 1 |
 
-**Scoring Formula:** `Score = (Throughput × Stability × Consistency) / 100000`
+---
 
-## 🚀 Running the Benchmark
+## 🧬 Evolutionary Swarm: Genetic Lottery with Nano-Hives
+
+We spawned **100 randomized network architectures** to find the optimal configuration through evolution!
+
+### What We Randomized
+- **Grid sizes**: 1×1, 2×2, 3×3 parallel brains
+- **Brain types**: MHA, LSTM, RNN, Dense (randomly combined)
+- **DModel**: 16, 32, 64
+- **NumHeads**: 2, 4, 8
+- **Learning rate**: 0.001 - 0.1
+
+### 🏆 Swarm Results: 5 Tasks Solved!
+
+| Rank | Architecture | Accuracy | Solved | Score |
+|------|--------------|----------|--------|-------|
+| 🥇 1 | 1×1 MHA (D=16, H=2, LR=0.095) | 46.5% | 3 | 138 |
+| 🥈 2 | 1×1 LSTM (D=16, H=4, LR=0.079) | 46.1% | 4 | 133 |
+| 🥉 3 | 1×1 RNN (D=16, H=4, LR=0.048) | 45.5% | 3 | 128 |
+| 6 | 2×2 Dense+MHA+LSTM+RNN (D=16) | 44.8% | 4 | 122 |
+| **9** | **3×3 MHA×5+RNN×3+Dense (D=16)** | **45.6%** | **5** | 111 |
+
+### 🔑 Key Insights
+
+1. **Simpler is faster**: 1×1 grids score highest due to higher throughput
+2. **Larger grids solve more**: The 3×3 grid solved **5 tasks** (most of any architecture!)
+3. **Small DModel wins**: D=16 dominated the leaderboard - smaller = faster adaptation
+4. **High learning rate helps**: Top performers had LR > 0.04
+5. **Mixed brains work**: The 2×2 with Dense+MHA+LSTM+RNN solved 4 tasks
+
+### Why 3×3 Solved More Tasks
+
+The 3×3 architecture with 9 diverse brains (5 MHA + 3 RNN + 1 Dense) achieved the **most tasks solved** (5), but scored lower on the T×S×C metric due to lower throughput. This suggests:
+
+- **Diverse parallel brains** capture different patterns
+- **More brains = better generalization** at cost of speed
+- For **task solving**, prefer larger grids
+- For **real-time adaptation**, prefer smaller grids
+
+---
+
+## 🚀 Running the Benchmarks
 
 ```bash
 cd examples/tween/arcagitesting
 
-# Run the 10-second real-time benchmark
+# Mode comparison benchmark (10 seconds)
 go run arc_benchmark.go
 
-# Start visualization server
+# Evolutionary swarm (100 networks, ~10 min)
+go run genetic_swarm.go
+
+# Start visualization dashboard
 go run viz_server.go
 
-# Open http://localhost:8001 in browser
+# Open http://localhost:8001
 ```
 
 ## 📁 Test Files
 
-| Test | Description | Best Accuracy |
-|------|-------------|---------------|
-| **arc_benchmark.go** | Real-time 10s task switching | 3 tasks solved |
-| test31_heuristic_hive.go | Heuristic Hive (MHA+LSTM) | 53.2% |
-| test29 | Tricameral Native | 53.2% |
-| test36c | Weighted Hive + RL | varies |
+| Test | Description | Best Result |
+|------|-------------|-------------|
+| **arc_benchmark.go** | Real-time mode comparison | 3 tasks solved |
+| **genetic_swarm.go** | Evolutionary architecture search | 5 tasks solved |
+| test31_heuristic_hive.go | Heuristic Hive (MHA+LSTM) | 53.2% accuracy |
 
 ## 🏗️ Architecture
 
 ```
-Hive Mind Network (Grid Scatter 2×2)
-├── Brain[0,0]: Multi-Head Attention (Spatial Patterns)
-├── Brain[0,1]: LSTM (Sequential Logic)
-├── Brain[1,0]: MHA (Spatial Backup)
-└── Brain[1,1]: MHA (Redundancy)
+Hive Mind Network (Grid Scatter)
+├── 1×1: Single brain (fastest)
+├── 2×2: 4 parallel brains
+│   ├── Brain[0,0]: MHA/LSTM/RNN/Dense
+│   ├── Brain[0,1]: MHA/LSTM/RNN/Dense
+│   ├── Brain[1,0]: MHA/LSTM/RNN/Dense
+│   └── Brain[1,1]: MHA/LSTM/RNN/Dense
+└── 3×3: 9 parallel brains (most capable, solved 5 tasks)
 ```
 
 ## 📚 References

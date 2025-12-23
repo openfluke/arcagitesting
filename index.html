@@ -16,6 +16,7 @@
             --success-color: #22c55e;
             --warning-color: #f59e0b;
             --danger-color: #ef4444;
+            --purple-color: #a855f7;
             --text-color: #e4e4e7;
             --secondary-text: #71717a;
             --border-color: #27272a;
@@ -48,6 +49,39 @@
         }
 
         .container { max-width: 1800px; margin: 0 auto; padding: 1rem; }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px 8px 0 0;
+            border: 2px solid var(--border-color);
+            border-bottom: none;
+            background: var(--surface-color);
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover { border-color: var(--accent-color); }
+        .tab-btn.active {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
         /* Mode toggles */
         .mode-toggles {
@@ -115,9 +149,15 @@
             font-size: 0.85rem;
         }
 
-        .insight-banner .title { font-weight: 700; color: var(--accent-color); margin-bottom: 0.5rem; }
+        .insight-banner.genetic {
+            background: linear-gradient(90deg, rgba(168, 85, 247, 0.1), rgba(34, 197, 94, 0.1));
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
 
-        /* Insights grid - 3 columns matching SPARTA */
+        .insight-banner .title { font-weight: 700; color: var(--accent-color); margin-bottom: 0.5rem; }
+        .insight-banner.genetic .title { color: var(--purple-color); }
+
+        /* Insights grid */
         .insights-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 2fr;
@@ -158,6 +198,7 @@
 
         .insight-value.success { color: var(--success-color); }
         .insight-value.danger { color: var(--danger-color); }
+        .insight-value.purple { color: var(--purple-color); }
 
         /* Rankings table */
         .rankings-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
@@ -176,73 +217,19 @@
         .rank-2 { background: linear-gradient(135deg, #9ca3af, #6b7280); color: #fff; }
         .rank-3 { background: linear-gradient(135deg, #d97706, #b45309); color: #fff; }
 
-        /* Task phases indicator */
-        .task-phases {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.7rem;
-            padding: 0 40px;
-            margin-top: 5px;
-            color: var(--secondary-text);
-        }
+        /* Swarm leaderboard */
+        .swarm-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        .swarm-table th { text-align: left; padding: 0.5rem 0.3rem; color: var(--secondary-text); font-weight: 500; border-bottom: 1px solid var(--border-color); }
+        .swarm-table td { padding: 0.5rem 0.3rem; border-bottom: 1px solid var(--border-color); }
+        .swarm-table tr:hover { background: var(--surface-hover); }
 
-        /* Solved tasks section */
-        .solved-tasks-section {
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.5rem;
-        }
-
-        .solved-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .solved-mode-card {
+        .arch-badge {
+            font-size: 0.65rem;
             background: var(--surface-hover);
-            border-radius: 8px;
-            padding: 1rem;
-        }
-
-        .solved-mode-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .solved-mode-name {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .solved-count {
-            background: var(--success-color);
-            color: white;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-
-        .solved-tasks-list {
-            font-size: 0.7rem;
-            color: var(--secondary-text);
-            max-height: 100px;
-            overflow-y: auto;
-            line-height: 1.5;
-        }
-
-        .solved-task-id {
-            display: inline-block;
-            background: var(--surface-color);
             padding: 0.2rem 0.4rem;
             border-radius: 3px;
-            margin: 0.1rem;
             font-family: monospace;
+            margin-right: 0.2rem;
         }
     </style>
 </head>
@@ -253,147 +240,213 @@
     </header>
 
     <div class="container">
-        <!-- Key Insight Banner -->
-        <div class="insight-banner">
-            <div class="title">⚡ Real-Time Task Switching: Task1 → Task2 → Task3 → ... → Task400 → Task1 → ...</div>
-            <div>
-                We track <strong>pixel accuracy %</strong> every <strong>100ms</strong> while switching between 400 ARC tasks. 
-                <span style="color:var(--danger-color)">NormalBP PAUSES to batch train</span> (reduced throughput) while 
-                <span style="color:var(--success-color)">StepTweenChain trains EVERY sample</span> (maintains accuracy while switching).
-            </div>
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="modes">📊 Mode Comparison</button>
+            <button class="tab-btn" data-tab="swarm">🧬 Genetic Swarm</button>
         </div>
 
-        <!-- Mode Quick Select -->
-        <div class="mode-toggles" id="mode-select">
-            <button class="mode-btn active" data-mode="all">All Modes</button>
-            <button class="mode-btn" data-mode="hide-all">Hide All</button>
-        </div>
-
-        <!-- Main Accuracy Chart -->
-        <div class="chart-section">
-            <div class="chart-header">
+        <!-- Mode Comparison Tab -->
+        <div class="tab-content active" id="modes-tab">
+            <div class="insight-banner">
+                <div class="title">⚡ Real-Time Task Switching: Task1 → Task2 → Task3 → ... → Task400 → Task1 → ...</div>
                 <div>
-                    <div class="chart-title">Accuracy Over Time</div>
-                    <div class="chart-subtitle">Comparing stability and throughput across training modes</div>
+                    We track <strong>pixel accuracy %</strong> every <strong>100ms</strong> while switching between 400 ARC tasks. 
+                    <span style="color:var(--danger-color)">NormalBP PAUSES to batch train</span> (reduced throughput) while 
+                    <span style="color:var(--success-color)">StepTweenChain trains EVERY sample</span> (maintains accuracy while switching).
                 </div>
             </div>
-            <canvas id="accuracy-canvas"></canvas>
-            <div class="task-phases" id="task-phases"></div>
-            <div class="legend" id="chart-legend"></div>
+
+            <div class="mode-toggles" id="mode-select">
+                <button class="mode-btn active" data-mode="all">All Modes</button>
+                <button class="mode-btn" data-mode="hide-all">Hide All</button>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">Accuracy Over Time</div>
+                        <div class="chart-subtitle">Comparing stability and throughput across training modes</div>
+                    </div>
+                </div>
+                <canvas id="accuracy-canvas"></canvas>
+                <div class="legend" id="chart-legend"></div>
+            </div>
+
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <h4>🏆 WINNER</h4>
+                    <div class="insight-value success" id="best-mode">—</div>
+                    <div class="insight-detail" id="best-mode-detail"></div>
+                    <div style="border-top:1px solid var(--border-color);margin:0.75rem 0;padding-top:0.75rem">
+                        <h4>⚠️ WORST</h4>
+                        <div class="insight-value danger" id="worst-mode">—</div>
+                        <div class="insight-detail" id="worst-mode-detail"></div>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <h4>⚙️ SCORING ALGORITHM</h4>
+                    <select id="algorithm-select" style="width:100%;background:var(--surface-color);color:var(--text-color);border:1px solid var(--border-color);padding:0.5rem;border-radius:6px;font-family:inherit;cursor:pointer;margin-bottom:0.5rem">
+                        <option value="balanced">Balanced (T×S×C)</option>
+                        <option value="throughput-stability">Throughput × Stability</option>
+                        <option value="consistency-first">Consistency First</option>
+                        <option value="throughput-first">Throughput First</option>
+                    </select>
+                    <div style="font-size:0.75rem;color:var(--secondary-text)">Formula:</div>
+                    <div id="formula-display" style="font-size:0.8rem;color:var(--accent-color);font-family:monospace;padding:0.4rem;background:var(--surface-hover);border-radius:4px;margin-top:0.25rem"></div>
+                </div>
+
+                <div class="insight-card">
+                    <h4>📊 MODE COMPARISON</h4>
+                    <table class="rankings-table">
+                        <thead>
+                            <tr>
+                                <th>Mode</th>
+                                <th style="text-align:right">Stability</th>
+                                <th style="text-align:right">Throughput</th>
+                                <th style="text-align:right">Consistency</th>
+                                <th style="text-align:right">Solved</th>
+                                <th style="text-align:right">Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparison-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
-        <!-- Insights Grid (3 columns like SPARTA) -->
-        <div class="insights-grid">
-            <!-- Winner/Worst Card -->
-            <div class="insight-card">
-                <h4>🏆 WINNER</h4>
-                <div class="insight-value success" id="best-mode">—</div>
-                <div class="insight-detail" id="best-mode-detail"></div>
-                
-                <div style="border-top:1px solid var(--border-color);margin:0.75rem 0;padding-top:0.75rem">
-                    <h4>⚠️ WORST</h4>
-                    <div class="insight-value danger" id="worst-mode">—</div>
-                    <div class="insight-detail" id="worst-mode-detail"></div>
+        <!-- Genetic Swarm Tab -->
+        <div class="tab-content" id="swarm-tab">
+            <div class="insight-banner genetic">
+                <div class="title">🧬 EVOLUTIONARY SWARM - Genetic Lottery with Nano-Hives</div>
+                <div>
+                    <strong>100 randomized network architectures</strong> compete in 10-second runs. Each has different
+                    <span style="color:var(--purple-color)">grid sizes</span>, 
+                    <span style="color:var(--success-color)">brain types (MHA, LSTM, RNN, Dense)</span>, and 
+                    <span style="color:var(--accent-color)">hyperparameters</span>.
                 </div>
             </div>
 
-            <!-- Scoring Algorithm Card -->
-            <div class="insight-card">
-                <h4>⚙️ SCORING ALGORITHM</h4>
-                <select id="algorithm-select" style="width:100%;background:var(--surface-color);color:var(--text-color);border:1px solid var(--border-color);padding:0.5rem;border-radius:6px;font-family:inherit;cursor:pointer;margin-bottom:0.5rem">
-                    <option value="balanced">Balanced (T×S×C)</option>
-                    <option value="throughput-stability">Throughput × Stability</option>
-                    <option value="consistency-first">Consistency First</option>
-                    <option value="throughput-first">Throughput First</option>
-                </select>
-                <div style="font-size:0.75rem;color:var(--secondary-text)">Formula:</div>
-                <div id="formula-display" style="font-size:0.8rem;color:var(--accent-color);font-family:monospace;padding:0.4rem;background:var(--surface-hover);border-radius:4px;margin-top:0.25rem"></div>
-                <div style="font-size:0.65rem;color:var(--secondary-text);margin-top:0.5rem;line-height:1.4">
-                    <b>S</b>=Stability | <b>T</b>=Throughput | <b>C</b>=Consistency
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <h4>🏆 CHAMPION</h4>
+                    <div class="insight-value purple" id="swarm-winner">—</div>
+                    <div class="insight-detail" id="swarm-winner-detail"></div>
+                    <div style="margin-top:0.5rem;font-size:0.75rem;color:var(--secondary-text)" id="swarm-winner-arch"></div>
+                </div>
+
+                <div class="insight-card">
+                    <h4>📈 SWARM STATS</h4>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;font-size:0.85rem">
+                        <div>Networks: <strong id="swarm-count">—</strong></div>
+                        <div>Avg Score: <strong id="swarm-avg">—</strong></div>
+                        <div>Best Solved: <strong id="swarm-best-solved">—</strong></div>
+                        <div>Duration: <strong id="swarm-duration">—</strong></div>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <h4>🧬 TOP 10 ARCHITECTURES</h4>
+                    <div style="max-height:200px;overflow-y:auto">
+                        <table class="swarm-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Grid</th>
+                                    <th>Brains</th>
+                                    <th style="text-align:right">Acc</th>
+                                    <th style="text-align:right">Solved</th>
+                                    <th style="text-align:right">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="swarm-tbody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- Mode Comparison Table -->
-            <div class="insight-card">
-                <h4>📊 MODE COMPARISON</h4>
-                <table class="rankings-table" id="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>Mode</th>
-                            <th style="text-align:right">Stability</th>
-                            <th style="text-align:right">Throughput</th>
-                            <th style="text-align:right">Consistency</th>
-                            <th style="text-align:right">Solved</th>
-                            <th style="text-align:right">Score</th>
-                        </tr>
-                    </thead>
-                    <tbody id="comparison-tbody"></tbody>
-                </table>
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">Top 10 Swarm Accuracy Over Time</div>
+                        <div class="chart-subtitle">Comparing the best performing architectures</div>
+                    </div>
+                </div>
+                <canvas id="swarm-canvas"></canvas>
+                <div class="legend" id="swarm-legend"></div>
             </div>
         </div>
     </div>
 
     <script>
         let resultsData = null;
+        let swarmData = null;
         let accuracyChart = null;
+        let swarmChart = null;
         let selectedModes = new Set();
         let selectedAlgorithm = 'balanced';
 
-        // Colors for each mode (matching adaptation_demo.html)
         const modeColors = {
-            "NormalBP": "hsl(0, 75%, 50%)",       // Red
-            "StepBP": "hsl(210, 75%, 50%)",       // Blue
-            "Tween": "hsl(50, 75%, 50%)",         // Yellow
-            "TweenChain": "hsl(150, 75%, 50%)",   // Green
-            "StepTween": "hsl(30, 75%, 50%)",     // Orange
-            "StepTweenChain": "hsl(270, 75%, 50%)" // Purple
+            "NormalBP": "hsl(0, 75%, 50%)",
+            "StepBP": "hsl(210, 75%, 50%)",
+            "Tween": "hsl(50, 75%, 50%)",
+            "TweenChain": "hsl(150, 75%, 50%)",
+            "StepTween": "hsl(30, 75%, 50%)",
+            "StepTweenChain": "hsl(270, 75%, 50%)"
         };
 
-        // Algorithm formulas (matching SPARTA dashboard)
+        const swarmColors = [
+            "hsl(270, 75%, 60%)", "hsl(150, 75%, 50%)", "hsl(50, 75%, 50%)",
+            "hsl(0, 75%, 50%)", "hsl(210, 75%, 50%)", "hsl(30, 75%, 50%)",
+            "hsl(180, 75%, 50%)", "hsl(300, 75%, 50%)", "hsl(120, 75%, 50%)", "hsl(60, 75%, 50%)"
+        ];
+
         const algorithms = {
-            'balanced': {
-                name: 'Balanced (T×S×C)',
-                formula: 'Score = (T × S × C) / 100000',
-                calc: (t, s, c) => (t * s * c) / 100000
-            },
-            'throughput-stability': {
-                name: 'Throughput × Stability',
-                formula: 'Score = (Stability × Throughput) / 1000',
-                calc: (t, s, c) => (s * t) / 1000
-            },
-            'consistency-first': {
-                name: 'Consistency First',
-                formula: 'Score = (C² × T × S) / 10000000',
-                calc: (t, s, c) => (c * c * t * s) / 10000000
-            },
-            'throughput-first': {
-                name: 'Throughput First',
-                formula: 'Score = (T² × S) / 1000000000',
-                calc: (t, s, c) => (t * t * s) / 1000000000
-            }
+            'balanced': { formula: 'Score = (T × S × C) / 100000', calc: (t, s, c) => (t * s * c) / 100000 },
+            'throughput-stability': { formula: 'Score = (S × T) / 1000', calc: (t, s, c) => (s * t) / 1000 },
+            'consistency-first': { formula: 'Score = (C² × T × S) / 10000000', calc: (t, s, c) => (c * c * t * s) / 10000000 },
+            'throughput-first': { formula: 'Score = (T² × S) / 1000000000', calc: (t, s, c) => (t * t * s) / 1000000000 }
         };
 
-        function updateFormulaDisplay() {
-            document.getElementById('formula-display').innerText = algorithms[selectedAlgorithm].formula;
-        }
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab + '-tab').classList.add('active');
+            });
+        });
 
         async function init() {
             try {
-                const response = await fetch('arc_benchmark_results.json');
-                resultsData = await response.json();
-                document.getElementById('data-timestamp').innerText = new Date(resultsData.timestamp).toLocaleString();
+                const [modesRes, swarmRes] = await Promise.allSettled([
+                    fetch('arc_benchmark_results.json'),
+                    fetch('genetic_swarm_results.json')
+                ]);
 
-                resultsData.modes.forEach(m => selectedModes.add(m));
+                if (modesRes.status === 'fulfilled') {
+                    resultsData = await modesRes.value.json();
+                    document.getElementById('data-timestamp').innerText = new Date(resultsData.timestamp).toLocaleString();
+                    resultsData.modes.forEach(m => selectedModes.add(m));
+                    setupModeButtons();
+                    setupAlgorithmSelect();
+                    updateFormulaDisplay();
+                    updateCharts();
+                }
 
-                setupModeButtons();
-                setupAlgorithmSelect();
-                updateFormulaDisplay();
-                updateCharts();
-                updateSolvedTasks();
+                if (swarmRes.status === 'fulfilled') {
+                    swarmData = await swarmRes.value.json();
+                    updateSwarmDisplay();
+                }
             } catch (e) {
                 console.error("Failed to load data:", e);
-                document.getElementById('data-timestamp').innerText = "Error loading data";
             }
+        }
+
+        function updateFormulaDisplay() {
+            document.getElementById('formula-display').innerText = algorithms[selectedAlgorithm].formula;
         }
 
         function setupAlgorithmSelect() {
@@ -407,7 +460,6 @@
 
         function setupModeButtons() {
             const container = document.getElementById('mode-select');
-            
             resultsData.modes.forEach(mode => {
                 const btn = document.createElement('button');
                 btn.className = 'mode-btn active';
@@ -420,9 +472,7 @@
             container.querySelectorAll('.mode-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const mode = btn.dataset.mode;
-                    
                     if (mode === 'all') {
-                        // Show all modes
                         container.querySelectorAll('.mode-btn').forEach(b => {
                             if (b.dataset.mode !== 'hide-all') b.classList.add('active');
                         });
@@ -430,14 +480,12 @@
                         selectedModes.clear();
                         resultsData.modes.forEach(m => selectedModes.add(m));
                     } else if (mode === 'hide-all') {
-                        // Hide all modes
                         container.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
                         selectedModes.clear();
                     } else {
                         container.querySelector('.mode-btn[data-mode="all"]').classList.remove('active');
                         container.querySelector('.mode-btn[data-mode="hide-all"]').classList.remove('active');
-                        
                         if (selectedModes.has(mode) && selectedModes.size > 1) {
                             selectedModes.delete(mode);
                             btn.classList.remove('active');
@@ -466,28 +514,22 @@
 
             for (const modeName of resultsData.modes) {
                 if (!selectedModes.has(modeName)) continue;
-
                 const modeResult = resultsData.results[modeName];
                 const color = modeColors[modeName];
                 numWindows = modeResult.windows.length;
-                
-                const accuracies = modeResult.windows.map(w => w.accuracy);
 
                 datasets.push({
                     label: modeName,
-                    data: accuracies,
+                    data: modeResult.windows.map(w => w.accuracy),
                     borderColor: color,
                     backgroundColor: 'transparent',
                     borderWidth: 2,
                     tension: 0.3,
-                    pointRadius: 1,
-                    pointHoverRadius: 4
+                    pointRadius: 1
                 });
-
                 legendItems.push({ label: modeName, color });
             }
 
-            // Generate labels for time (show every second)
             const labels = [];
             const windowMs = resultsData.windowMs || 100;
             for (let i = 0; i < numWindows; i++) {
@@ -497,70 +539,37 @@
 
             accuracyChart = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: datasets
-                },
+                data: { labels, datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
                     scales: {
-                        y: { 
-                            beginAtZero: true, 
-                            max: 100, 
-                            ticks: { color: 'rgba(255,255,255,0.5)', callback: v => v + '%' }, 
-                            grid: { color: 'rgba(255,255,255,0.1)' } 
-                        },
-                        x: { 
-                            ticks: { color: 'rgba(255,255,255,0.5)', maxTicksLimit: 11, maxRotation: 0 }, 
-                            grid: { color: 'rgba(255,255,255,0.1)' } 
-                        }
+                        y: { beginAtZero: true, max: 100, ticks: { color: 'rgba(255,255,255,0.5)', callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                        x: { ticks: { color: 'rgba(255,255,255,0.5)', maxTicksLimit: 11 }, grid: { color: 'rgba(255,255,255,0.1)' } }
                     },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { 
-                            backgroundColor: 'rgba(0,0,0,0.8)',
-                            titleColor: '#fff',
-                            bodyColor: '#fff',
-                            borderColor: 'rgba(245,158,11,0.5)',
-                            borderWidth: 1
-                        }
-                    }
+                    plugins: { legend: { display: false } }
                 }
             });
 
-            // Task phases indicator
-            const phasesDiv = document.getElementById('task-phases');
-            phasesDiv.innerHTML = '';
-            for (let i = 0; i <= 10; i++) {
-                phasesDiv.innerHTML += `<span>${i}s</span>`;
-            }
-
-            // Build legend
-            const legendContainer = document.getElementById('chart-legend');
-            legendContainer.innerHTML = legendItems.map(item =>
-                `<div class="legend-item"><div class="legend-color" style="background:${item.color}"></div>${item.label}</div>`
+            document.getElementById('chart-legend').innerHTML = legendItems.map(i =>
+                `<div class="legend-item"><div class="legend-color" style="background:${i.color}"></div>${i.label}</div>`
             ).join('');
         }
 
         function updateInsights() {
             const modeMetrics = [];
             const calcFn = algorithms[selectedAlgorithm].calc;
-            
+
             for (const modeName of resultsData.modes) {
                 if (!selectedModes.has(modeName)) continue;
-
                 const r = resultsData.results[modeName];
-                const score = calcFn(r.throughputPerSec, r.stability, r.consistency);
-                const tasksSolved = r.tasksSolved || 0;
                 modeMetrics.push({
                     mode: modeName,
                     stability: r.stability,
                     throughput: r.throughputPerSec,
                     consistency: r.consistency,
-                    tasksSolved: tasksSolved,
-                    score: score
+                    tasksSolved: r.tasksSolved || 0,
+                    score: calcFn(r.throughputPerSec, r.stability, r.consistency)
                 });
             }
 
@@ -569,17 +578,13 @@
             if (modeMetrics.length > 0) {
                 const best = modeMetrics[0];
                 document.getElementById('best-mode').innerText = best.mode;
-                document.getElementById('best-mode-detail').innerHTML =
-                    `Score: ${best.score.toFixed(0)} | Stab: ${best.stability.toFixed(0)}% | Tput: ${best.throughput.toFixed(0)} | Cons: ${best.consistency.toFixed(0)}%`;
+                document.getElementById('best-mode-detail').innerHTML = `Score: ${best.score.toFixed(0)} | Stab: ${best.stability.toFixed(0)}% | Cons: ${best.consistency.toFixed(0)}%`;
 
                 const worst = modeMetrics[modeMetrics.length - 1];
                 document.getElementById('worst-mode').innerText = worst.mode;
-                document.getElementById('worst-mode-detail').innerHTML =
-                    `Score: ${worst.score.toFixed(0)} | Throughput: ${worst.throughput.toFixed(0)}`;
+                document.getElementById('worst-mode-detail').innerHTML = `Score: ${worst.score.toFixed(0)}`;
 
-                // Build comparison table
-                const comparisonTbody = document.getElementById('comparison-tbody');
-                comparisonTbody.innerHTML = modeMetrics.map((m, i) => {
+                document.getElementById('comparison-tbody').innerHTML = modeMetrics.map((m, i) => {
                     const rankClass = i < 3 ? `rank-${i+1}` : '';
                     return `<tr>
                         <td><span class="rank-badge ${rankClass}">${i+1}</span><span style="color:${modeColors[m.mode]}">${m.mode}</span></td>
@@ -590,41 +595,85 @@
                         <td style="text-align:right;font-weight:700;color:var(--accent-color)">${m.score.toFixed(0)}</td>
                     </tr>`;
                 }).join('');
-            } else {
-                document.getElementById('best-mode').innerText = '—';
-                document.getElementById('best-mode-detail').innerHTML = '';
-                document.getElementById('worst-mode').innerText = '—';
-                document.getElementById('worst-mode-detail').innerHTML = '';
-                document.getElementById('comparison-tbody').innerHTML = '';
             }
         }
 
-        function updateSolvedTasks() {
-            const solvedGrid = document.getElementById('solved-grid');
-            solvedGrid.innerHTML = '';
+        function updateSwarmDisplay() {
+            if (!swarmData) return;
 
-            for (const modeName of resultsData.modes) {
-                const r = resultsData.results[modeName];
-                const solvedIds = r.solvedTaskIds || [];
-                const tasksSolved = r.tasksSolved || 0;
-                const color = modeColors[modeName];
+            const winner = swarmData.topN[0];
+            document.getElementById('swarm-winner').innerText = winner.config.name;
+            document.getElementById('swarm-winner-detail').innerHTML = `Score: ${winner.score.toFixed(0)} | Accuracy: ${winner.avgTrainAccuracy.toFixed(1)}% | Solved: ${winner.tasksSolved}`;
+            document.getElementById('swarm-winner-arch').innerHTML = `${winner.config.gridSize}×${winner.config.gridSize} Grid | D=${winner.config.dModel} | Brains: ${winner.config.brains.join(', ')}`;
 
-                const card = document.createElement('div');
-                card.className = 'solved-mode-card';
-                card.innerHTML = `
-                    <div class="solved-mode-header">
-                        <span class="solved-mode-name" style="color:${color}">${modeName}</span>
-                        <span class="solved-count">${tasksSolved} task${tasksSolved !== 1 ? 's' : ''}</span>
-                    </div>
-                    <div class="solved-tasks-list">
-                        ${tasksSolved > 0 
-                            ? solvedIds.map(id => `<span class="solved-task-id">${id}</span>`).join(' ')
-                            : '<span style="color:var(--secondary-text);font-style:italic">No tasks solved</span>'
-                        }
-                    </div>
-                `;
-                solvedGrid.appendChild(card);
+            document.getElementById('swarm-count').innerText = swarmData.swarmSize;
+            const avgScore = swarmData.allResults.reduce((s, r) => s + r.score, 0) / swarmData.allResults.length;
+            document.getElementById('swarm-avg').innerText = avgScore.toFixed(1);
+            document.getElementById('swarm-best-solved').innerText = Math.max(...swarmData.allResults.map(r => r.tasksSolved));
+            document.getElementById('swarm-duration').innerText = swarmData.duration;
+
+            // Top 10 table
+            document.getElementById('swarm-tbody').innerHTML = swarmData.topN.map((r, i) => {
+                const brains = (r.config.brains || r.config.brainNames || []).join(', ');
+                return `<tr>
+                    <td><span class="rank-badge ${i < 3 ? 'rank-' + (i+1) : ''}">${i+1}</span></td>
+                    <td>${r.config.gridSize}×${r.config.gridSize}</td>
+                    <td style="font-size:0.65rem">${brains.slice(0, 30)}${brains.length > 30 ? '...' : ''}</td>
+                    <td style="text-align:right">${r.avgTrainAccuracy.toFixed(1)}%</td>
+                    <td style="text-align:right">${r.tasksSolved}</td>
+                    <td style="text-align:right;color:var(--purple-color);font-weight:700">${r.score.toFixed(0)}</td>
+                </tr>`;
+            }).join('');
+
+            // Swarm chart
+            updateSwarmChart();
+        }
+
+        function updateSwarmChart() {
+            const ctx = document.getElementById('swarm-canvas').getContext('2d');
+            if (swarmChart) swarmChart.destroy();
+
+            const datasets = [];
+            const legendItems = [];
+
+            swarmData.topN.slice(0, 10).forEach((r, i) => {
+                const color = swarmColors[i];
+                datasets.push({
+                    label: r.config.name,
+                    data: r.windows.map(w => w.accuracy),
+                    borderColor: color,
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    pointRadius: 1
+                });
+                legendItems.push({ label: `#${i+1} ${r.config.gridSize}×${r.config.gridSize}`, color });
+            });
+
+            const numWindows = swarmData.topN[0]?.windows.length || 100;
+            const labels = [];
+            for (let i = 0; i < numWindows; i++) {
+                const time = ((i + 1) * 100) / 1000;
+                labels.push(time % 1 === 0 ? time + 's' : '');
             }
+
+            swarmChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100, ticks: { color: 'rgba(255,255,255,0.5)', callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                        x: { ticks: { color: 'rgba(255,255,255,0.5)', maxTicksLimit: 11 }, grid: { color: 'rgba(255,255,255,0.1)' } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            document.getElementById('swarm-legend').innerHTML = legendItems.map(i =>
+                `<div class="legend-item"><div class="legend-color" style="background:${i.color}"></div>${i.label}</div>`
+            ).join('');
         }
 
         init();
