@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARC-AGI - Realtime Task Switching Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0a0f;
+            --surface-color: #12121a;
+            --surface-hover: #1a1a25;
+            --accent-color: #f59e0b;
+            --accent-glow: rgba(245, 158, 11, 0.3);
+            --success-color: #22c55e;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-color: #e4e4e7;
+            --secondary-text: #71717a;
+            --border-color: #27272a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container { max-width: 1800px; margin: 0 auto; padding: 1rem; }
+
+        /* Mode toggles */
+        .mode-toggles {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .mode-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            background: var(--surface-color);
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-btn:hover { border-color: var(--accent-color); }
+        .mode-btn.active {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            color: white;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        /* Chart section */
+        .chart-section {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .chart-title { font-size: 1.1rem; font-weight: 600; }
+        .chart-subtitle { font-size: 0.8rem; color: var(--secondary-text); }
+
+        canvas { height: 400px !important; }
+
+        /* Legend */
+        .legend { display: flex; flex-wrap: wrap; gap: 0.75rem; font-size: 0.75rem; margin-top: 1rem; justify-content: center; }
+        .legend-item { display: flex; align-items: center; gap: 0.3rem; }
+        .legend-color { width: 12px; height: 12px; border-radius: 3px; }
+
+        /* Key insight banner */
+        .insight-banner {
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1));
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .insight-banner .title { font-weight: 700; color: var(--accent-color); margin-bottom: 0.5rem; }
+
+        /* Insights grid - 3 columns matching SPARTA */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 2fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 1200px) {
+            .insights-grid { grid-template-columns: 1fr; }
+        }
+
+        .insight-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .insight-card h4 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary-text);
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .insight-detail {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+            margin-top: 0.25rem;
+        }
+
+        .insight-value.success { color: var(--success-color); }
+        .insight-value.danger { color: var(--danger-color); }
+
+        /* Rankings table */
+        .rankings-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .rankings-table th { text-align: left; padding: 0.5rem 0; color: var(--secondary-text); font-weight: 500; border-bottom: 1px solid var(--border-color); }
+        .rankings-table td { padding: 0.5rem 0; border-bottom: 1px solid var(--border-color); }
+        .rankings-table tr:last-child td { border-bottom: none; }
+
+        .rank-badge {
+            display: inline-block;
+            width: 20px; height: 20px; line-height: 20px;
+            text-align: center; border-radius: 4px;
+            font-size: 0.7rem; font-weight: 600; margin-right: 0.5rem;
+        }
+
+        .rank-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; }
+        .rank-2 { background: linear-gradient(135deg, #9ca3af, #6b7280); color: #fff; }
+        .rank-3 { background: linear-gradient(135deg, #d97706, #b45309); color: #fff; }
+
+        /* Task phases indicator */
+        .task-phases {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            padding: 0 40px;
+            margin-top: 5px;
+            color: var(--secondary-text);
+        }
+
+        /* Solved tasks section */
+        .solved-tasks-section {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .solved-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .solved-mode-card {
+            background: var(--surface-hover);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .solved-mode-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .solved-mode-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .solved-count {
+            background: var(--success-color);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .solved-tasks-list {
+            font-size: 0.7rem;
+            color: var(--secondary-text);
+            max-height: 100px;
+            overflow-y: auto;
+            line-height: 1.5;
+        }
+
+        .solved-task-id {
+            display: inline-block;
+            background: var(--surface-color);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            margin: 0.1rem;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">ARC-AGI Task Switching Analytics</div>
+        <span style="font-size:0.8rem;color:var(--secondary-text)" id="data-timestamp">Loading...</span>
+    </header>
+
+    <div class="container">
+        <!-- Key Insight Banner -->
+        <div class="insight-banner">
+            <div class="title">⚡ Real-Time Task Switching: Task1 → Task2 → Task3 → ... → Task400 → Task1 → ...</div>
+            <div>
+                We track <strong>pixel accuracy %</strong> every <strong>100ms</strong> while switching between 400 ARC tasks. 
+                <span style="color:var(--danger-color)">NormalBP PAUSES to batch train</span> (reduced throughput) while 
+                <span style="color:var(--success-color)">StepTweenChain trains EVERY sample</span> (maintains accuracy while switching).
+            </div>
+        </div>
+
+        <!-- Mode Quick Select -->
+        <div class="mode-toggles" id="mode-select">
+            <button class="mode-btn active" data-mode="all">All Modes</button>
+            <button class="mode-btn" data-mode="hide-all">Hide All</button>
+        </div>
+
+        <!-- Main Accuracy Chart -->
+        <div class="chart-section">
+            <div class="chart-header">
+                <div>
+                    <div class="chart-title">Accuracy Over Time</div>
+                    <div class="chart-subtitle">Comparing stability and throughput across training modes</div>
+                </div>
+            </div>
+            <canvas id="accuracy-canvas"></canvas>
+            <div class="task-phases" id="task-phases"></div>
+            <div class="legend" id="chart-legend"></div>
+        </div>
+
+        <!-- Insights Grid (3 columns like SPARTA) -->
+        <div class="insights-grid">
+            <!-- Winner/Worst Card -->
+            <div class="insight-card">
+                <h4>🏆 WINNER</h4>
+                <div class="insight-value success" id="best-mode">—</div>
+                <div class="insight-detail" id="best-mode-detail"></div>
+                
+                <div style="border-top:1px solid var(--border-color);margin:0.75rem 0;padding-top:0.75rem">
+                    <h4>⚠️ WORST</h4>
+                    <div class="insight-value danger" id="worst-mode">—</div>
+                    <div class="insight-detail" id="worst-mode-detail"></div>
+                </div>
+            </div>
+
+            <!-- Scoring Algorithm Card -->
+            <div class="insight-card">
+                <h4>⚙️ SCORING ALGORITHM</h4>
+                <select id="algorithm-select" style="width:100%;background:var(--surface-color);color:var(--text-color);border:1px solid var(--border-color);padding:0.5rem;border-radius:6px;font-family:inherit;cursor:pointer;margin-bottom:0.5rem">
+                    <option value="balanced">Balanced (T×S×C)</option>
+                    <option value="throughput-stability">Throughput × Stability</option>
+                    <option value="consistency-first">Consistency First</option>
+                    <option value="throughput-first">Throughput First</option>
+                </select>
+                <div style="font-size:0.75rem;color:var(--secondary-text)">Formula:</div>
+                <div id="formula-display" style="font-size:0.8rem;color:var(--accent-color);font-family:monospace;padding:0.4rem;background:var(--surface-hover);border-radius:4px;margin-top:0.25rem"></div>
+                <div style="font-size:0.65rem;color:var(--secondary-text);margin-top:0.5rem;line-height:1.4">
+                    <b>S</b>=Stability | <b>T</b>=Throughput | <b>C</b>=Consistency
+                </div>
+            </div>
+
+            <!-- Mode Comparison Table -->
+            <div class="insight-card">
+                <h4>📊 MODE COMPARISON</h4>
+                <table class="rankings-table" id="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Mode</th>
+                            <th style="text-align:right">Stability</th>
+                            <th style="text-align:right">Throughput</th>
+                            <th style="text-align:right">Consistency</th>
+                            <th style="text-align:right">Solved</th>
+                            <th style="text-align:right">Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparison-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let resultsData = null;
+        let accuracyChart = null;
+        let selectedModes = new Set();
+        let selectedAlgorithm = 'balanced';
+
+        // Colors for each mode (matching adaptation_demo.html)
+        const modeColors = {
+            "NormalBP": "hsl(0, 75%, 50%)",       // Red
+            "StepBP": "hsl(210, 75%, 50%)",       // Blue
+            "Tween": "hsl(50, 75%, 50%)",         // Yellow
+            "TweenChain": "hsl(150, 75%, 50%)",   // Green
+            "StepTween": "hsl(30, 75%, 50%)",     // Orange
+            "StepTweenChain": "hsl(270, 75%, 50%)" // Purple
+        };
+
+        // Algorithm formulas (matching SPARTA dashboard)
+        const algorithms = {
+            'balanced': {
+                name: 'Balanced (T×S×C)',
+                formula: 'Score = (T × S × C) / 100000',
+                calc: (t, s, c) => (t * s * c) / 100000
+            },
+            'throughput-stability': {
+                name: 'Throughput × Stability',
+                formula: 'Score = (Stability × Throughput) / 1000',
+                calc: (t, s, c) => (s * t) / 1000
+            },
+            'consistency-first': {
+                name: 'Consistency First',
+                formula: 'Score = (C² × T × S) / 10000000',
+                calc: (t, s, c) => (c * c * t * s) / 10000000
+            },
+            'throughput-first': {
+                name: 'Throughput First',
+                formula: 'Score = (T² × S) / 1000000000',
+                calc: (t, s, c) => (t * t * s) / 1000000000
+            }
+        };
+
+        function updateFormulaDisplay() {
+            document.getElementById('formula-display').innerText = algorithms[selectedAlgorithm].formula;
+        }
+
+        async function init() {
+            try {
+                const response = await fetch('arc_benchmark_results.json');
+                resultsData = await response.json();
+                document.getElementById('data-timestamp').innerText = new Date(resultsData.timestamp).toLocaleString();
+
+                resultsData.modes.forEach(m => selectedModes.add(m));
+
+                setupModeButtons();
+                setupAlgorithmSelect();
+                updateFormulaDisplay();
+                updateCharts();
+                updateSolvedTasks();
+            } catch (e) {
+                console.error("Failed to load data:", e);
+                document.getElementById('data-timestamp').innerText = "Error loading data";
+            }
+        }
+
+        function setupAlgorithmSelect() {
+            const select = document.getElementById('algorithm-select');
+            select.addEventListener('change', () => {
+                selectedAlgorithm = select.value;
+                updateFormulaDisplay();
+                updateInsights();
+            });
+        }
+
+        function setupModeButtons() {
+            const container = document.getElementById('mode-select');
+            
+            resultsData.modes.forEach(mode => {
+                const btn = document.createElement('button');
+                btn.className = 'mode-btn active';
+                btn.dataset.mode = mode;
+                btn.style.borderLeft = `4px solid ${modeColors[mode]}`;
+                btn.innerText = mode;
+                container.appendChild(btn);
+            });
+
+            container.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const mode = btn.dataset.mode;
+                    
+                    if (mode === 'all') {
+                        // Show all modes
+                        container.querySelectorAll('.mode-btn').forEach(b => {
+                            if (b.dataset.mode !== 'hide-all') b.classList.add('active');
+                        });
+                        container.querySelector('.mode-btn[data-mode="hide-all"]').classList.remove('active');
+                        selectedModes.clear();
+                        resultsData.modes.forEach(m => selectedModes.add(m));
+                    } else if (mode === 'hide-all') {
+                        // Hide all modes
+                        container.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        selectedModes.clear();
+                    } else {
+                        container.querySelector('.mode-btn[data-mode="all"]').classList.remove('active');
+                        container.querySelector('.mode-btn[data-mode="hide-all"]').classList.remove('active');
+                        
+                        if (selectedModes.has(mode) && selectedModes.size > 1) {
+                            selectedModes.delete(mode);
+                            btn.classList.remove('active');
+                        } else if (!selectedModes.has(mode)) {
+                            selectedModes.add(mode);
+                            btn.classList.add('active');
+                        }
+                    }
+                    updateCharts();
+                });
+            });
+        }
+
+        function updateCharts() {
+            updateAccuracyChart();
+            updateInsights();
+        }
+
+        function updateAccuracyChart() {
+            const ctx = document.getElementById('accuracy-canvas').getContext('2d');
+            if (accuracyChart) accuracyChart.destroy();
+
+            const datasets = [];
+            const legendItems = [];
+            let numWindows = 100;
+
+            for (const modeName of resultsData.modes) {
+                if (!selectedModes.has(modeName)) continue;
+
+                const modeResult = resultsData.results[modeName];
+                const color = modeColors[modeName];
+                numWindows = modeResult.windows.length;
+                
+                const accuracies = modeResult.windows.map(w => w.accuracy);
+
+                datasets.push({
+                    label: modeName,
+                    data: accuracies,
+                    borderColor: color,
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    pointRadius: 1,
+                    pointHoverRadius: 4
+                });
+
+                legendItems.push({ label: modeName, color });
+            }
+
+            // Generate labels for time (show every second)
+            const labels = [];
+            const windowMs = resultsData.windowMs || 100;
+            for (let i = 0; i < numWindows; i++) {
+                const time = ((i + 1) * windowMs) / 1000;
+                labels.push(time % 1 === 0 ? time + 's' : '');
+            }
+
+            accuracyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            max: 100, 
+                            ticks: { color: 'rgba(255,255,255,0.5)', callback: v => v + '%' }, 
+                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        },
+                        x: { 
+                            ticks: { color: 'rgba(255,255,255,0.5)', maxTicksLimit: 11, maxRotation: 0 }, 
+                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { 
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(245,158,11,0.5)',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+
+            // Task phases indicator
+            const phasesDiv = document.getElementById('task-phases');
+            phasesDiv.innerHTML = '';
+            for (let i = 0; i <= 10; i++) {
+                phasesDiv.innerHTML += `<span>${i}s</span>`;
+            }
+
+            // Build legend
+            const legendContainer = document.getElementById('chart-legend');
+            legendContainer.innerHTML = legendItems.map(item =>
+                `<div class="legend-item"><div class="legend-color" style="background:${item.color}"></div>${item.label}</div>`
+            ).join('');
+        }
+
+        function updateInsights() {
+            const modeMetrics = [];
+            const calcFn = algorithms[selectedAlgorithm].calc;
+            
+            for (const modeName of resultsData.modes) {
+                if (!selectedModes.has(modeName)) continue;
+
+                const r = resultsData.results[modeName];
+                const score = calcFn(r.throughputPerSec, r.stability, r.consistency);
+                const tasksSolved = r.tasksSolved || 0;
+                modeMetrics.push({
+                    mode: modeName,
+                    stability: r.stability,
+                    throughput: r.throughputPerSec,
+                    consistency: r.consistency,
+                    tasksSolved: tasksSolved,
+                    score: score
+                });
+            }
+
+            modeMetrics.sort((a, b) => b.score - a.score);
+
+            if (modeMetrics.length > 0) {
+                const best = modeMetrics[0];
+                document.getElementById('best-mode').innerText = best.mode;
+                document.getElementById('best-mode-detail').innerHTML =
+                    `Score: ${best.score.toFixed(0)} | Stab: ${best.stability.toFixed(0)}% | Tput: ${best.throughput.toFixed(0)} | Cons: ${best.consistency.toFixed(0)}%`;
+
+                const worst = modeMetrics[modeMetrics.length - 1];
+                document.getElementById('worst-mode').innerText = worst.mode;
+                document.getElementById('worst-mode-detail').innerHTML =
+                    `Score: ${worst.score.toFixed(0)} | Throughput: ${worst.throughput.toFixed(0)}`;
+
+                // Build comparison table
+                const comparisonTbody = document.getElementById('comparison-tbody');
+                comparisonTbody.innerHTML = modeMetrics.map((m, i) => {
+                    const rankClass = i < 3 ? `rank-${i+1}` : '';
+                    return `<tr>
+                        <td><span class="rank-badge ${rankClass}">${i+1}</span><span style="color:${modeColors[m.mode]}">${m.mode}</span></td>
+                        <td style="text-align:right">${m.stability.toFixed(0)}%</td>
+                        <td style="text-align:right">${m.throughput.toLocaleString()}</td>
+                        <td style="text-align:right">${m.consistency.toFixed(0)}%</td>
+                        <td style="text-align:right">${m.tasksSolved}</td>
+                        <td style="text-align:right;font-weight:700;color:var(--accent-color)">${m.score.toFixed(0)}</td>
+                    </tr>`;
+                }).join('');
+            } else {
+                document.getElementById('best-mode').innerText = '—';
+                document.getElementById('best-mode-detail').innerHTML = '';
+                document.getElementById('worst-mode').innerText = '—';
+                document.getElementById('worst-mode-detail').innerHTML = '';
+                document.getElementById('comparison-tbody').innerHTML = '';
+            }
+        }
+
+        function updateSolvedTasks() {
+            const solvedGrid = document.getElementById('solved-grid');
+            solvedGrid.innerHTML = '';
+
+            for (const modeName of resultsData.modes) {
+                const r = resultsData.results[modeName];
+                const solvedIds = r.solvedTaskIds || [];
+                const tasksSolved = r.tasksSolved || 0;
+                const color = modeColors[modeName];
+
+                const card = document.createElement('div');
+                card.className = 'solved-mode-card';
+                card.innerHTML = `
+                    <div class="solved-mode-header">
+                        <span class="solved-mode-name" style="color:${color}">${modeName}</span>
+                        <span class="solved-count">${tasksSolved} task${tasksSolved !== 1 ? 's' : ''}</span>
+                    </div>
+                    <div class="solved-tasks-list">
+                        ${tasksSolved > 0 
+                            ? solvedIds.map(id => `<span class="solved-task-id">${id}</span>`).join(' ')
+                            : '<span style="color:var(--secondary-text);font-style:italic">No tasks solved</span>'
+                        }
+                    </div>
+                `;
+                solvedGrid.appendChild(card);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
