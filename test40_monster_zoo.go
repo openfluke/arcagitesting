@@ -33,9 +33,9 @@ const (
 	NumTasks    = 400
 	InitScale   = float32(0.5)
 
-	// Zoo settings - GENERATION 2: Sparse Voting Committees
-	ZooSize        = 500
-	TestDuration   = 20 * time.Second // Increased from 10s for better convergence
+	// Zoo settings - GENERATION 4: OPTIMIZED based on results analysis
+	ZooSize        = 250              // Reduced from 500 - plateau was at 250
+	TestDuration   = 60 * time.Second // Increased from 10s for deeper training
 	WindowDuration = 100 * time.Millisecond
 )
 
@@ -163,13 +163,15 @@ var gridShapes = []GridShape{
 	{3, 2, "3x2 Rect"},
 	{2, 4, "2x4 Wide"},
 	{4, 2, "4x2 Tall"},
-	{1, 8, "1x8 Pipeline"}, // The Pipeline (extreme depth)
-	{8, 1, "8x1 Scanner"},  // The Parallel Scanner (extreme width)
-	{8, 2, "8x2 WideGrid"}, // NEW: 16 brains wide
-	{8, 3, "8x3 MegaWide"}, // NEW: 24 brains wide
-	{7, 3, "7x3 Prime"},    // NEW: 21 brains (prime-ish)
-	{6, 4, "6x4 Matrix"},   // NEW: 24 brains rectangular
-	{5, 4, "5x4 Squad"},    // NEW: 20 brains balanced
+	{1, 8, "1x8 Pipeline"},           // The Pipeline (extreme depth)
+	{8, 1, "8x1 Scanner"},            // The Parallel Scanner (extreme width)
+	{10, 1, "10x1 ScannerWider"},     // The Parallel Scanner (extreme width)
+	{15, 1, "15x1 ScannerWiderMore"}, // The Parallel Scanner (extreme width)
+	{8, 2, "8x2 WideGrid"},           // NEW: 16 brains wide
+	{8, 3, "8x3 MegaWide"},           // NEW: 24 brains wide
+	{7, 3, "7x3 Prime"},              // NEW: 21 brains (prime-ish)
+	{6, 4, "6x4 Matrix"},             // NEW: 24 brains rectangular
+	{5, 4, "5x4 Squad"},              // NEW: 20 brains balanced
 }
 
 // MutantConfig defines architectural configuration
@@ -559,8 +561,8 @@ func main() {
 func generateMutantConfigs(count int) []MutantConfig {
 	configs := make([]MutantConfig, count)
 
-	// Keep Test 39's DModel settings (proven effective)
-	dModels := []int{32, 64}
+	// GENERATION 4: Focus on D64 (80% chance) - proven more effective
+	dModels := []int{64, 64, 64, 64, 32} // 80% D64, 20% D32
 	numHeads := []int{4, 8}
 
 	for i := 0; i < count; i++ {
@@ -624,27 +626,27 @@ func generateMutantConfigs(count int) []MutantConfig {
 			heads = numHeads[rand.Intn(len(numHeads))]
 		}
 
-		// Log-uniform learning rate
+		// GENERATION 4: Narrowed learning rate range (0.0001-0.001) - winners had low LR
 		logMin := math.Log(0.0001)
-		logMax := math.Log(0.1)
+		logMax := math.Log(0.001) // Was 0.1 - now 100x smaller range
 		lr := float32(math.Exp(logMin + rand.Float64()*(logMax-logMin)))
 
 		// Random activation
 		activation := ActivationType(rand.Intn(5))
 
-		// GENERATION 3: Flatter CombineMode distribution (Cambrian Explosion)
-		// 30% avg, 30% grid_scatter, 20% concat, 20% add
+		// GENERATION 4: Prefer avg/add (70% combined) - these performed best
+		// 40% avg, 30% add, 15% concat, 15% grid_scatter
 		var combineMode CombineModeType
 		r := rand.Float64()
 		switch {
-		case r < 0.30:
+		case r < 0.40:
 			combineMode = CombineAvg
-		case r < 0.60:
-			combineMode = CombineGridScatter
-		case r < 0.80:
+		case r < 0.70:
+			combineMode = CombineAdd
+		case r < 0.85:
 			combineMode = CombineConcat
 		default:
-			combineMode = CombineAdd
+			combineMode = CombineGridScatter
 		}
 
 		// GENERATION 3: Balanced OutputType (30% Entmax, 30% Sparsemax, 40% others)

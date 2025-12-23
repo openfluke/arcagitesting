@@ -1,1106 +1,1097 @@
 {
-  "zooSize": 500,
+  "zooSize": 250,
   "topMutants": [
     {
       "config": {
-        "id": 217,
-        "name": "Mutant-217",
-        "species": "7x3 Prime",
-        "mutationStr": "7x3_avg_LSTM-LSTM-RNN-Dense-MHA-MHA-MHA-SwiGLU-Dense-NormDense-MHA-Dense-MHA-MHA-NormDense-LSTM-MHA-MHA-NormDense-MHA-Dense_Entmax_ScaledReLU_D64_LR0.0001",
-        "gridRows": 7,
+        "id": 143,
+        "name": "Mutant-143",
+        "species": "8x3 MegaWide",
+        "mutationStr": "8x3_avg_RNN-MHA-RNN-RNN-LSTM-Dense-MHA-LSTM-MHA-MHA-RNN-MHA-LSTM-Dense-Dense-NormDense-RNN-RNN-MHA-Dense-Dense-RNN-LSTM-SwiGLU_Entmax_ScaledReLU_D64_LR0.0001",
+        "gridRows": 8,
         "gridCols": 3,
-        "numBrains": 21,
+        "numBrains": 24,
         "dModel": 64,
         "numHeads": 4,
-        "learningRate": 0.0001342815,
-        "budgetScale": 0.52604073,
+        "learningRate": 0.00012660163,
+        "budgetScale": 0.6812221,
+        "activation": "ScaledReLU",
+        "combineMode": "avg",
+        "outputType": "Entmax",
+        "brains": [
+          "RNN",
+          "MHA",
+          "RNN",
+          "RNN",
+          "LSTM",
+          "Dense",
+          "MHA",
+          "LSTM",
+          "MHA",
+          "MHA",
+          "RNN",
+          "MHA",
+          "LSTM",
+          "Dense",
+          "Dense",
+          "NormDense",
+          "RNN",
+          "RNN",
+          "MHA",
+          "Dense",
+          "Dense",
+          "RNN",
+          "LSTM",
+          "SwiGLU"
+        ],
+        "branchPatterns": [
+          "DenseStack",
+          "Single",
+          "RecurrentAttn",
+          "Transformer",
+          "Single",
+          "Single",
+          "Single",
+          "Transformer",
+          "Transformer",
+          "Single",
+          "Single",
+          "Single",
+          "Single",
+          "Single",
+          "Single",
+          "GatedNorm",
+          "Single",
+          "Single",
+          "Single",
+          "Single",
+          "GatedNorm",
+          "Single",
+          "DenseStack",
+          "RecurrentAttn"
+        ]
+      },
+      "avgTrainAccuracy": 48.122254504552096,
+      "tasksSolved": 5,
+      "solvedTaskIds": [
+        "d89b689b",
+        "ae3edfdc",
+        "0e206a2e",
+        "91413438",
+        "91714a58"
+      ],
+      "score": 288.73352702731256,
+      "throughputPerSec": 36.6213386327648
+    },
+    {
+      "config": {
+        "id": 53,
+        "name": "Mutant-53",
+        "species": "2x4 Wide",
+        "mutationStr": "2x4_avg_MHA-MHA-MHA-NormDense-LSTM-LSTM-SwiGLU-SwiGLU_Entmax_LeakyReLU_D32_LR0.0001",
+        "gridRows": 2,
+        "gridCols": 4,
+        "numBrains": 8,
+        "dModel": 32,
+        "numHeads": 4,
+        "learningRate": 0.000104141305,
+        "budgetScale": 0.7442299,
+        "activation": "LeakyReLU",
+        "combineMode": "avg",
+        "outputType": "Entmax",
+        "brains": [
+          "MHA",
+          "MHA",
+          "MHA",
+          "NormDense",
+          "LSTM",
+          "LSTM",
+          "SwiGLU",
+          "SwiGLU"
+        ],
+        "branchPatterns": [
+          "Single",
+          "GatedNorm",
+          "DenseStack",
+          "Single",
+          "Single",
+          "Single",
+          "Single",
+          "Transformer"
+        ]
+      },
+      "avgTrainAccuracy": 47.37383785459811,
+      "tasksSolved": 5,
+      "solvedTaskIds": [
+        "d89b689b",
+        "91413438",
+        "0e206a2e",
+        "de1cd16c",
+        "ae3edfdc"
+      ],
+      "score": 284.2430271275887,
+      "throughputPerSec": 225.44471589899675
+    },
+    {
+      "config": {
+        "id": 20,
+        "name": "Mutant-20",
+        "species": "10x1 ScannerWider",
+        "mutationStr": "10x1_avg_MHA-Dense-LSTM-MHA-LSTM-MHA-RNN-LSTM-NormDense-LSTM_Entmax_LeakyReLU_D64_LR0.0002",
+        "gridRows": 10,
+        "gridCols": 1,
+        "numBrains": 10,
+        "dModel": 64,
+        "numHeads": 4,
+        "learningRate": 0.00015518723,
+        "budgetScale": 0.8538809,
+        "activation": "LeakyReLU",
+        "combineMode": "avg",
+        "outputType": "Entmax",
+        "brains": [
+          "MHA",
+          "Dense",
+          "LSTM",
+          "MHA",
+          "LSTM",
+          "MHA",
+          "RNN",
+          "LSTM",
+          "NormDense",
+          "LSTM"
+        ],
+        "branchPatterns": [
+          "Single",
+          "Single",
+          "Single",
+          "Transformer",
+          "Single",
+          "Single",
+          "Single",
+          "Single",
+          "Single",
+          "Single"
+        ]
+      },
+      "avgTrainAccuracy": 48.800133851532976,
+      "tasksSolved": 4,
+      "solvedTaskIds": [
+        "ae3edfdc",
+        "0e206a2e",
+        "d89b689b",
+        "91413438"
+      ],
+      "score": 244.00066925766487,
+      "throughputPerSec": 57.971765981453245
+    },
+    {
+      "config": {
+        "id": 49,
+        "name": "Mutant-49",
+        "species": "5x4 Squad",
+        "mutationStr": "5x4_avg_LSTM-Dense-SwiGLU-LSTM-RNN-MHA-LSTM-RNN-MHA-LSTM-MHA-RNN-Dense-LSTM-NormDense-RNN-NormDense-LSTM-RNN-MHA_Entmax_ScaledReLU_D64_LR0.0002",
+        "gridRows": 5,
+        "gridCols": 4,
+        "numBrains": 20,
+        "dModel": 64,
+        "numHeads": 8,
+        "learningRate": 0.00015259832,
+        "budgetScale": 0.50633425,
         "activation": "ScaledReLU",
         "combineMode": "avg",
         "outputType": "Entmax",
         "brains": [
           "LSTM",
+          "Dense",
+          "SwiGLU",
           "LSTM",
           "RNN",
+          "MHA",
+          "LSTM",
+          "RNN",
+          "MHA",
+          "LSTM",
+          "MHA",
+          "RNN",
           "Dense",
+          "LSTM",
+          "NormDense",
+          "RNN",
+          "NormDense",
+          "LSTM",
+          "RNN",
+          "MHA"
+        ],
+        "branchPatterns": [
+          "Single",
+          "DenseStack",
+          "RecurrentAttn",
+          "Triple",
+          "Triple",
+          "GatedNorm",
+          "Single",
+          "Single",
+          "DenseStack",
+          "Single",
+          "Single",
+          "Transformer",
+          "RecurrentAttn",
+          "Single",
+          "RecurrentAttn",
+          "Single",
+          "Single",
+          "Triple",
+          "Single",
+          "Single"
+        ]
+      },
+      "avgTrainAccuracy": 48.62036531195659,
+      "tasksSolved": 4,
+      "solvedTaskIds": [
+        "91413438",
+        "ae3edfdc",
+        "d89b689b",
+        "0e206a2e"
+      ],
+      "score": 243.10182655978295,
+      "throughputPerSec": 28.852722627661187
+    },
+    {
+      "config": {
+        "id": 114,
+        "name": "Mutant-114",
+        "species": "7x3 Prime",
+        "mutationStr": "7x3_avg_Dense-MHA-LSTM-MHA-LSTM-Dense-SwiGLU-RNN-LSTM-LSTM-SwiGLU-MHA-LSTM-RNN-MHA-MHA-LSTM-LSTM-LSTM-MHA-LSTM_Entmax_LeakyReLU_D64_LR0.0007",
+        "gridRows": 7,
+        "gridCols": 3,
+        "numBrains": 21,
+        "dModel": 64,
+        "numHeads": 8,
+        "learningRate": 0.0007325505,
+        "budgetScale": 0.71320915,
+        "activation": "LeakyReLU",
+        "combineMode": "avg",
+        "outputType": "Entmax",
+        "brains": [
+          "Dense",
+          "MHA",
+          "LSTM",
+          "MHA",
+          "LSTM",
+          "Dense",
+          "SwiGLU",
+          "RNN",
+          "LSTM",
+          "LSTM",
+          "SwiGLU",
+          "MHA",
+          "LSTM",
+          "RNN",
+          "MHA",
+          "MHA",
+          "LSTM",
+          "LSTM",
+          "LSTM",
+          "MHA",
+          "LSTM"
+        ],
+        "branchPatterns": [
+          "Transformer",
+          "Single",
+          "Transformer",
+          "Single",
+          "GatedNorm",
+          "Single",
+          "Triple",
+          "Single",
+          "Single",
+          "DenseStack",
+          "DenseStack",
+          "Single",
+          "Single",
+          "Single",
+          "GatedNorm",
+          "Single",
+          "Single",
+          "Single",
+          "RecurrentAttn",
+          "RecurrentAttn",
+          "Single"
+        ]
+      },
+      "avgTrainAccuracy": 48.34567879969589,
+      "tasksSolved": 4,
+      "solvedTaskIds": [
+        "91413438",
+        "0e206a2e",
+        "ae3edfdc",
+        "d89b689b"
+      ],
+      "score": 241.72839399847945,
+      "throughputPerSec": 25.804172325562956
+    },
+    {
+      "config": {
+        "id": 46,
+        "name": "Mutant-46",
+        "species": "5x4 Squad",
+        "mutationStr": "5x4_avg_RNN-LSTM-SwiGLU-MHA-RNN-MHA-LSTM-MHA-SwiGLU-MHA-MHA-MHA-MHA-LSTM-MHA-MHA-MHA-SwiGLU-NormDense-MHA_Entmax_ScaledReLU_D64_LR0.0002",
+        "gridRows": 5,
+        "gridCols": 4,
+        "numBrains": 20,
+        "dModel": 64,
+        "numHeads": 8,
+        "learningRate": 0.00023949564,
+        "budgetScale": 0.72893804,
+        "activation": "ScaledReLU",
+        "combineMode": "avg",
+        "outputType": "Entmax",
+        "brains": [
+          "RNN",
+          "LSTM",
+          "SwiGLU",
+          "MHA",
+          "RNN",
+          "MHA",
+          "LSTM",
+          "MHA",
+          "SwiGLU",
+          "MHA",
+          "MHA",
+          "MHA",
+          "MHA",
+          "LSTM",
           "MHA",
           "MHA",
           "MHA",
           "SwiGLU",
-          "Dense",
           "NormDense",
-          "MHA",
-          "Dense",
-          "MHA",
-          "MHA",
-          "NormDense",
-          "LSTM",
-          "MHA",
-          "MHA",
-          "NormDense",
-          "MHA",
-          "Dense"
+          "MHA"
         ],
         "branchPatterns": [
+          "Single",
           "DenseStack",
+          "Single",
+          "Single",
+          "Triple",
+          "GatedNorm",
+          "Single",
           "DenseStack",
           "Single",
           "GatedNorm",
           "Single",
           "Single",
           "Single",
-          "DenseStack",
           "Single",
           "Single",
           "Triple",
-          "Single",
-          "Single",
-          "Single",
-          "Single",
-          "DenseStack",
+          "Triple",
           "Single",
           "RecurrentAttn",
-          "Triple",
-          "DenseStack",
-          "GatedNorm"
+          "Transformer"
         ]
       },
-      "avgTrainAccuracy": 49.29409618988061,
-      "tasksSolved": 5,
+      "avgTrainAccuracy": 48.29971601565683,
+      "tasksSolved": 4,
       "solvedTaskIds": [
         "d89b689b",
         "0e206a2e",
-        "91714a58",
         "91413438",
         "ae3edfdc"
       ],
-      "score": 295.7645771392837,
-      "throughputPerSec": 54.33580329888789
+      "score": 241.49858007828414,
+      "throughputPerSec": 48.07181778626762
     },
     {
       "config": {
-        "id": 293,
-        "name": "Mutant-293",
+        "id": 242,
+        "name": "Mutant-242",
+        "species": "3x2 Rect",
+        "mutationStr": "3x2_add_RNN-LSTM-LSTM-LSTM-RNN-Dense_Entmax_LeakyReLU_D64_LR0.0001",
+        "gridRows": 3,
+        "gridCols": 2,
+        "numBrains": 6,
+        "dModel": 64,
+        "numHeads": 4,
+        "learningRate": 0.00010277634,
+        "budgetScale": 0.5491512,
+        "activation": "LeakyReLU",
+        "combineMode": "add",
+        "outputType": "Entmax",
+        "brains": [
+          "RNN",
+          "LSTM",
+          "LSTM",
+          "LSTM",
+          "RNN",
+          "Dense"
+        ],
+        "branchPatterns": [
+          "Single",
+          "DenseStack",
+          "Single",
+          "DenseStack",
+          "Single",
+          "Transformer"
+        ]
+      },
+      "avgTrainAccuracy": 48.25828385995374,
+      "tasksSolved": 4,
+      "solvedTaskIds": [
+        "ae3edfdc",
+        "0e206a2e",
+        "91413438",
+        "d89b689b"
+      ],
+      "score": 241.2914192997687,
+      "throughputPerSec": 81.71413942265782
+    },
+    {
+      "config": {
+        "id": 32,
+        "name": "Mutant-32",
         "species": "2x2 Standard",
-        "mutationStr": "2x2_avg_LSTM-RNN-MHA-MHA_Entmax_ScaledReLU_D64_LR0.0001",
+        "mutationStr": "2x2_avg_RNN-NormDense-Dense-MHA_Entmax_Tanh_D64_LR0.0001",
         "gridRows": 2,
         "gridCols": 2,
         "numBrains": 4,
         "dModel": 64,
         "numHeads": 8,
-        "learningRate": 0.00010018238,
-        "budgetScale": 0.57838756,
-        "activation": "ScaledReLU",
+        "learningRate": 0.00010752417,
+        "budgetScale": 0.6307525,
+        "activation": "Tanh",
         "combineMode": "avg",
         "outputType": "Entmax",
         "brains": [
-          "LSTM",
           "RNN",
-          "MHA",
-          "MHA"
-        ],
-        "branchPatterns": [
-          "Single",
-          "Single",
-          "Transformer",
-          "Single"
-        ]
-      },
-      "avgTrainAccuracy": 48.471030836841116,
-      "tasksSolved": 5,
-      "solvedTaskIds": [
-        "d89b689b",
-        "91714a58",
-        "0e206a2e",
-        "91413438",
-        "ae3edfdc"
-      ],
-      "score": 290.8261850210467,
-      "throughputPerSec": 117.51505319720762
-    },
-    {
-      "config": {
-        "id": 442,
-        "name": "Mutant-442",
-        "species": "1x4 Wide",
-        "mutationStr": "1x4_avg_Dense-LSTM-LSTM-MHA_Softmax_Softplus_D64_LR0.0525",
-        "gridRows": 1,
-        "gridCols": 4,
-        "numBrains": 4,
-        "dModel": 64,
-        "numHeads": 4,
-        "learningRate": 0.052450377,
-        "budgetScale": 0.7671843,
-        "activation": "Softplus",
-        "combineMode": "avg",
-        "outputType": "Softmax",
-        "brains": [
+          "NormDense",
           "Dense",
-          "LSTM",
-          "LSTM",
           "MHA"
         ],
         "branchPatterns": [
-          "Single",
-          "GatedNorm",
-          "Single",
+          "RecurrentAttn",
+          "Transformer",
+          "Transformer",
           "DenseStack"
         ]
       },
-      "avgTrainAccuracy": 46.269688847375186,
-      "tasksSolved": 5,
+      "avgTrainAccuracy": 48.09730181523601,
+      "tasksSolved": 4,
       "solvedTaskIds": [
+        "0e206a2e",
         "91413438",
         "d89b689b",
-        "ae3edfdc",
-        "d9fac9be",
-        "0e206a2e"
+        "ae3edfdc"
       ],
-      "score": 277.6181330842511,
-      "throughputPerSec": 96.58132363483277
+      "score": 240.48650907618003,
+      "throughputPerSec": 121.57646279808169
     },
     {
       "config": {
-        "id": 339,
-        "name": "Mutant-339",
+        "id": 75,
+        "name": "Mutant-75",
         "species": "6x4 Matrix",
-        "mutationStr": "6x4_add_RNN-MHA-LSTM-MHA-LSTM-MHA-LSTM-LSTM-Dense-LSTM-SwiGLU-RNN-LSTM-MHA-RNN-RNN-Dense-LSTM-RNN-MHA-MHA-LSTM-MHA-RNN_Sigmoid_Softplus_D64_LR0.0124",
+        "mutationStr": "6x4_grid_scatter_LSTM-RNN-SwiGLU-LSTM-RNN-SwiGLU-SwiGLU-MHA-Dense-LSTM-MHA-LSTM-SwiGLU-SwiGLU-SwiGLU-LSTM-Dense-NormDense-LSTM-MHA-RNN-MHA-RNN-SwiGLU_Entmax_LeakyReLU_D64_LR0.0002",
         "gridRows": 6,
         "gridCols": 4,
         "numBrains": 24,
         "dModel": 64,
         "numHeads": 8,
-        "learningRate": 0.012399192,
-        "budgetScale": 0.8898632,
-        "activation": "Softplus",
-        "combineMode": "add",
-        "outputType": "Sigmoid",
+        "learningRate": 0.00022643879,
+        "budgetScale": 0.69244075,
+        "activation": "LeakyReLU",
+        "combineMode": "grid_scatter",
+        "outputType": "Entmax",
         "brains": [
+          "LSTM",
           "RNN",
+          "SwiGLU",
+          "LSTM",
+          "RNN",
+          "SwiGLU",
+          "SwiGLU",
           "MHA",
-          "LSTM",
-          "MHA",
-          "LSTM",
-          "MHA",
-          "LSTM",
-          "LSTM",
           "Dense",
+          "LSTM",
+          "MHA",
           "LSTM",
           "SwiGLU",
-          "RNN",
+          "SwiGLU",
+          "SwiGLU",
           "LSTM",
-          "MHA",
-          "RNN",
-          "RNN",
           "Dense",
+          "NormDense",
+          "LSTM",
+          "MHA",
+          "RNN",
+          "MHA",
+          "RNN",
+          "SwiGLU"
+        ],
+        "branchPatterns": [
+          "Transformer",
+          "Single",
+          "Single",
+          "Single",
+          "Single",
+          "Single",
+          "Single",
+          "RecurrentAttn",
+          "Single",
+          "Single",
+          "Single",
+          "Transformer",
+          "Single",
+          "Single",
+          "Transformer",
+          "Single",
+          "Single",
+          "Single",
+          "Single",
+          "Triple",
+          "Triple",
+          "Single",
+          "Single",
+          "RecurrentAttn"
+        ]
+      },
+      "avgTrainAccuracy": 48.0715379879753,
+      "tasksSolved": 4,
+      "solvedTaskIds": [
+        "ae3edfdc",
+        "91413438",
+        "0e206a2e",
+        "d89b689b"
+      ],
+      "score": 240.35768993987648,
+      "throughputPerSec": 30.03936953923882
+    },
+    {
+      "config": {
+        "id": 159,
+        "name": "Mutant-159",
+        "species": "3x2 Rect",
+        "mutationStr": "3x2_add_MHA-MHA-MHA-MHA-LSTM-SwiGLU_Entmax_LeakyReLU_D64_LR0.0004",
+        "gridRows": 3,
+        "gridCols": 2,
+        "numBrains": 6,
+        "dModel": 64,
+        "numHeads": 8,
+        "learningRate": 0.0004265357,
+        "budgetScale": 0.7268108,
+        "activation": "LeakyReLU",
+        "combineMode": "add",
+        "outputType": "Entmax",
+        "brains": [
+          "MHA",
+          "MHA",
+          "MHA",
+          "MHA",
+          "LSTM",
+          "SwiGLU"
+        ],
+        "branchPatterns": [
+          "Single",
+          "Single",
+          "DenseStack",
+          "Triple",
+          "Triple",
+          "RecurrentAttn"
+        ]
+      },
+      "avgTrainAccuracy": 47.961410272184914,
+      "tasksSolved": 4,
+      "solvedTaskIds": [
+        "91413438",
+        "de1cd16c",
+        "0e206a2e",
+        "ae3edfdc"
+      ],
+      "score": 239.80705136092456,
+      "throughputPerSec": 72.59421761527727
+    },
+    {
+      "config": {
+        "id": 86,
+        "name": "Mutant-86",
+        "species": "8x2 WideGrid",
+        "mutationStr": "8x2_grid_scatter_MHA-NormDense-MHA-LSTM-LSTM-RNN-LSTM-RNN-LSTM-LSTM-RNN-MHA-NormDense-LSTM-MHA-SwiGLU_Entmax_LeakyReLU_D64_LR0.0001",
+        "gridRows": 8,
+        "gridCols": 2,
+        "numBrains": 16,
+        "dModel": 64,
+        "numHeads": 8,
+        "learningRate": 0.00013289899,
+        "budgetScale": 0.7482497,
+        "activation": "LeakyReLU",
+        "combineMode": "grid_scatter",
+        "outputType": "Entmax",
+        "brains": [
+          "MHA",
+          "NormDense",
+          "MHA",
+          "LSTM",
+          "LSTM",
+          "RNN",
+          "LSTM",
+          "RNN",
+          "LSTM",
           "LSTM",
           "RNN",
           "MHA",
-          "MHA",
+          "NormDense",
           "LSTM",
           "MHA",
-          "RNN"
+          "SwiGLU"
         ],
         "branchPatterns": [
           "Triple",
+          "DenseStack",
           "Single",
-          "Transformer",
-          "GatedNorm",
+          "Single",
+          "DenseStack",
+          "DenseStack",
+          "Single",
           "RecurrentAttn",
           "Single",
-          "GatedNorm",
+          "Single",
           "Single",
           "Transformer",
-          "Single",
-          "GatedNorm",
-          "Triple",
-          "Single",
-          "Single",
-          "Single",
           "DenseStack",
           "Single",
-          "Single",
+          "Transformer",
+          "Single"
+        ]
+      },
+      "avgTrainAccuracy": 47.93127938022717,
+      "tasksSolved": 4,
+      "solvedTaskIds": [
+        "0e206a2e",
+        "d89b689b",
+        "ae3edfdc",
+        "91413438"
+      ],
+      "score": 239.65639690113585,
+      "throughputPerSec": 34.95733006136661
+    },
+    {
+      "config": {
+        "id": 45,
+        "name": "Mutant-45",
+        "species": "2x2 Standard",
+        "mutationStr": "2x2_add_MHA-MHA-MHA-SwiGLU_Entmax_LeakyReLU_D64_LR0.0002",
+        "gridRows": 2,
+        "gridCols": 2,
+        "numBrains": 4,
+        "dModel": 64,
+        "numHeads": 4,
+        "learningRate": 0.00018041133,
+        "budgetScale": 0.85753495,
+        "activation": "LeakyReLU",
+        "combineMode": "add",
+        "outputType": "Entmax",
+        "brains": [
+          "MHA",
+          "MHA",
+          "MHA",
+          "SwiGLU"
+        ],
+        "branchPatterns": [
           "Single",
           "DenseStack",
+          "RecurrentAttn",
+          "DenseStack"
+        ]
+      },
+      "avgTrainAccuracy": 47.88563837711786,
+      "tasksSolved": 4,
+      "solvedTaskIds": [
+        "91413438",
+        "0e206a2e",
+        "de1cd16c",
+        "ae3edfdc"
+      ],
+      "score": 239.42819188558929,
+      "throughputPerSec": 118.54964737802553
+    },
+    {
+      "config": {
+        "id": 132,
+        "name": "Mutant-132",
+        "species": "3x2 Rect",
+        "mutationStr": "3x2_avg_MHA-MHA-MHA-LSTM-MHA-LSTM_Entmax_Tanh_D64_LR0.0005",
+        "gridRows": 3,
+        "gridCols": 2,
+        "numBrains": 6,
+        "dModel": 64,
+        "numHeads": 8,
+        "learningRate": 0.00052522105,
+        "budgetScale": 0.7939328,
+        "activation": "Tanh",
+        "combineMode": "avg",
+        "outputType": "Entmax",
+        "brains": [
+          "MHA",
+          "MHA",
+          "MHA",
+          "LSTM",
+          "MHA",
+          "LSTM"
+        ],
+        "branchPatterns": [
           "Single",
+          "RecurrentAttn",
+          "Transformer",
           "Single",
           "Single",
           "Single"
         ]
       },
-      "avgTrainAccuracy": 44.61331898531034,
-      "tasksSolved": 5,
+      "avgTrainAccuracy": 47.873448068691005,
+      "tasksSolved": 4,
       "solvedTaskIds": [
-        "de1cd16c",
+        "0e206a2e",
         "ae3edfdc",
         "91413438",
-        "d89b689b",
-        "0e206a2e"
+        "de1cd16c"
       ],
-      "score": 267.67991391186206,
-      "throughputPerSec": 30.87166595103131
+      "score": 239.36724034345502,
+      "throughputPerSec": 68.43952260717198
     },
     {
       "config": {
         "id": 47,
         "name": "Mutant-47",
-        "species": "3x3 Complex",
-        "mutationStr": "3x3_grid_scatter_MHA-LSTM-LSTM-RNN-MHA-Dense-SwiGLU-NormDense-LSTM_Entmax_Tanh_D64_LR0.0003",
-        "gridRows": 3,
-        "gridCols": 3,
-        "numBrains": 9,
+        "species": "15x1 ScannerWiderMore",
+        "mutationStr": "15x1_avg_NormDense-MHA-MHA-MHA-MHA-LSTM-MHA-LSTM-LSTM-RNN-LSTM-LSTM-RNN-LSTM-LSTM_Entmax_ScaledReLU_D64_LR0.0008",
+        "gridRows": 15,
+        "gridCols": 1,
+        "numBrains": 15,
         "dModel": 64,
-        "numHeads": 8,
-        "learningRate": 0.00025569118,
-        "budgetScale": 0.81476754,
-        "activation": "Tanh",
-        "combineMode": "grid_scatter",
+        "numHeads": 4,
+        "learningRate": 0.00078045327,
+        "budgetScale": 0.6590888,
+        "activation": "ScaledReLU",
+        "combineMode": "avg",
         "outputType": "Entmax",
         "brains": [
+          "NormDense",
+          "MHA",
+          "MHA",
+          "MHA",
+          "MHA",
+          "LSTM",
           "MHA",
           "LSTM",
           "LSTM",
           "RNN",
-          "MHA",
-          "Dense",
-          "SwiGLU",
-          "NormDense",
+          "LSTM",
+          "LSTM",
+          "RNN",
+          "LSTM",
           "LSTM"
         ],
         "branchPatterns": [
-          "Transformer",
-          "Transformer",
-          "RecurrentAttn",
-          "Single",
-          "Transformer",
-          "Single",
-          "RecurrentAttn",
-          "DenseStack",
-          "Transformer"
-        ]
-      },
-      "avgTrainAccuracy": 49.475954350312975,
-      "tasksSolved": 4,
-      "solvedTaskIds": [
-        "91413438",
-        "d89b689b",
-        "0e206a2e",
-        "ae3edfdc"
-      ],
-      "score": 247.37977175156487,
-      "throughputPerSec": 48.41629114014439
-    },
-    {
-      "config": {
-        "id": 131,
-        "name": "Mutant-131",
-        "species": "8x2 WideGrid",
-        "mutationStr": "8x2_avg_SwiGLU-MHA-NormDense-LSTM-MHA-RNN-LSTM-RNN-MHA-LSTM-LSTM-LSTM-SwiGLU-SwiGLU-LSTM-NormDense_Entmax_ScaledReLU_D64_LR0.0003",
-        "gridRows": 8,
-        "gridCols": 2,
-        "numBrains": 16,
-        "dModel": 64,
-        "numHeads": 4,
-        "learningRate": 0.00031616894,
-        "budgetScale": 0.6695839,
-        "activation": "ScaledReLU",
-        "combineMode": "avg",
-        "outputType": "Entmax",
-        "brains": [
-          "SwiGLU",
-          "MHA",
-          "NormDense",
-          "LSTM",
-          "MHA",
-          "RNN",
-          "LSTM",
-          "RNN",
-          "MHA",
-          "LSTM",
-          "LSTM",
-          "LSTM",
-          "SwiGLU",
-          "SwiGLU",
-          "LSTM",
-          "NormDense"
-        ],
-        "branchPatterns": [
-          "Single",
-          "Single",
-          "Single",
-          "Triple",
-          "Single",
-          "Single",
-          "GatedNorm",
-          "Single",
-          "Single",
-          "RecurrentAttn",
-          "Single",
-          "Single",
-          "Single",
-          "Single",
-          "RecurrentAttn",
-          "Single"
-        ]
-      },
-      "avgTrainAccuracy": 49.13621829028928,
-      "tasksSolved": 4,
-      "solvedTaskIds": [
-        "ae3edfdc",
-        "91413438",
-        "d89b689b",
-        "0e206a2e"
-      ],
-      "score": 245.68109145144638,
-      "throughputPerSec": 36.29448557192849
-    },
-    {
-      "config": {
-        "id": 493,
-        "name": "Mutant-493",
-        "species": "2x3 Rect",
-        "mutationStr": "2x3_concat_LSTM-LSTM-RNN-RNN-LSTM-MHA_Entmax_Tanh_D32_LR0.0002",
-        "gridRows": 2,
-        "gridCols": 3,
-        "numBrains": 6,
-        "dModel": 32,
-        "numHeads": 8,
-        "learningRate": 0.00021641163,
-        "budgetScale": 0.7376459,
-        "activation": "Tanh",
-        "combineMode": "concat",
-        "outputType": "Entmax",
-        "brains": [
-          "LSTM",
-          "LSTM",
-          "RNN",
-          "RNN",
-          "LSTM",
-          "MHA"
-        ],
-        "branchPatterns": [
-          "Transformer",
-          "Transformer",
-          "Triple",
-          "Single",
-          "Triple",
-          "RecurrentAttn"
-        ]
-      },
-      "avgTrainAccuracy": 48.221967417367466,
-      "tasksSolved": 4,
-      "solvedTaskIds": [
-        "91413438",
-        "0e206a2e",
-        "ae3edfdc",
-        "d89b689b"
-      ],
-      "score": 241.10983708683733,
-      "throughputPerSec": 208.26065567808118
-    },
-    {
-      "config": {
-        "id": 261,
-        "name": "Mutant-261",
-        "species": "4x2 Tall",
-        "mutationStr": "4x2_avg_MHA-MHA-RNN-SwiGLU-MHA-LSTM-LSTM-MHA_Entmax_LeakyReLU_D64_LR0.0002",
-        "gridRows": 4,
-        "gridCols": 2,
-        "numBrains": 8,
-        "dModel": 64,
-        "numHeads": 8,
-        "learningRate": 0.00019812187,
-        "budgetScale": 0.94163513,
-        "activation": "LeakyReLU",
-        "combineMode": "avg",
-        "outputType": "Entmax",
-        "brains": [
-          "MHA",
-          "MHA",
-          "RNN",
-          "SwiGLU",
-          "MHA",
-          "LSTM",
-          "LSTM",
-          "MHA"
-        ],
-        "branchPatterns": [
           "DenseStack",
           "Single",
-          "RecurrentAttn",
-          "Single",
-          "GatedNorm",
           "Single",
           "Single",
-          "Single"
-        ]
-      },
-      "avgTrainAccuracy": 48.12090606305027,
-      "tasksSolved": 4,
-      "solvedTaskIds": [
-        "ae3edfdc",
-        "0e206a2e",
-        "d89b689b",
-        "91413438"
-      ],
-      "score": 240.60453031525134,
-      "throughputPerSec": 71.14550316309797
-    },
-    {
-      "config": {
-        "id": 288,
-        "name": "Mutant-288",
-        "species": "4x1 Tall",
-        "mutationStr": "4x1_add_LSTM-NormDense-SwiGLU-RNN_Entmax_LeakyReLU_D64_LR0.0003",
-        "gridRows": 4,
-        "gridCols": 1,
-        "numBrains": 4,
-        "dModel": 64,
-        "numHeads": 4,
-        "learningRate": 0.00025196775,
-        "budgetScale": 0.6916508,
-        "activation": "LeakyReLU",
-        "combineMode": "add",
-        "outputType": "Entmax",
-        "brains": [
-          "LSTM",
-          "NormDense",
-          "SwiGLU",
-          "RNN"
-        ],
-        "branchPatterns": [
-          "RecurrentAttn",
-          "DenseStack",
-          "Single",
-          "Single"
-        ]
-      },
-      "avgTrainAccuracy": 47.997811575856964,
-      "tasksSolved": 4,
-      "solvedTaskIds": [
-        "d89b689b",
-        "91413438",
-        "ae3edfdc",
-        "0e206a2e"
-      ],
-      "score": 239.98905787928481,
-      "throughputPerSec": 96.93117791841148
-    },
-    {
-      "config": {
-        "id": 110,
-        "name": "Mutant-110",
-        "species": "4x2 Tall",
-        "mutationStr": "4x2_grid_scatter_MHA-SwiGLU-Dense-LSTM-Dense-LSTM-NormDense-Dense_Entmax_ScaledReLU_D64_LR0.0012",
-        "gridRows": 4,
-        "gridCols": 2,
-        "numBrains": 8,
-        "dModel": 64,
-        "numHeads": 4,
-        "learningRate": 0.0012196644,
-        "budgetScale": 0.90752286,
-        "activation": "ScaledReLU",
-        "combineMode": "grid_scatter",
-        "outputType": "Entmax",
-        "brains": [
-          "MHA",
-          "SwiGLU",
-          "Dense",
-          "LSTM",
-          "Dense",
-          "LSTM",
-          "NormDense",
-          "Dense"
-        ],
-        "branchPatterns": [
-          "Triple",
           "Single",
           "Single",
-          "Triple",
-          "Transformer",
-          "DenseStack",
-          "Single",
-          "Single"
-        ]
-      },
-      "avgTrainAccuracy": 47.94960760563526,
-      "tasksSolved": 4,
-      "solvedTaskIds": [
-        "de1cd16c",
-        "91413438",
-        "ae3edfdc",
-        "0e206a2e"
-      ],
-      "score": 239.7480380281763,
-      "throughputPerSec": 76.79064993590801
-    },
-    {
-      "config": {
-        "id": 229,
-        "name": "Mutant-229",
-        "species": "8x1 Scanner",
-        "mutationStr": "8x1_concat_RNN-MHA-MHA-LSTM-LSTM-LSTM-NormDense-LSTM_Entmax_Tanh_D32_LR0.0001",
-        "gridRows": 8,
-        "gridCols": 1,
-        "numBrains": 8,
-        "dModel": 32,
-        "numHeads": 8,
-        "learningRate": 0.00014760418,
-        "budgetScale": 0.9392848,
-        "activation": "Tanh",
-        "combineMode": "concat",
-        "outputType": "Entmax",
-        "brains": [
-          "RNN",
-          "MHA",
-          "MHA",
-          "LSTM",
-          "LSTM",
-          "LSTM",
-          "NormDense",
-          "LSTM"
-        ],
-        "branchPatterns": [
-          "Transformer",
           "RecurrentAttn",
           "Single",
           "Single",
           "Single",
-          "Single",
           "Transformer",
-          "Single"
-        ]
-      },
-      "avgTrainAccuracy": 47.924400944335865,
-      "tasksSolved": 4,
-      "solvedTaskIds": [
-        "91413438",
-        "d89b689b",
-        "0e206a2e",
-        "ae3edfdc"
-      ],
-      "score": 239.62200472167933,
-      "throughputPerSec": 151.17716044183706
-    },
-    {
-      "config": {
-        "id": 374,
-        "name": "Mutant-374",
-        "species": "2x3 Rect",
-        "mutationStr": "2x3_grid_scatter_MHA-RNN-Dense-MHA-MHA-RNN_Entmax_LeakyReLU_D64_LR0.0004",
-        "gridRows": 2,
-        "gridCols": 3,
-        "numBrains": 6,
-        "dModel": 64,
-        "numHeads": 8,
-        "learningRate": 0.00039729616,
-        "budgetScale": 0.81074435,
-        "activation": "LeakyReLU",
-        "combineMode": "grid_scatter",
-        "outputType": "Entmax",
-        "brains": [
-          "MHA",
-          "RNN",
-          "Dense",
-          "MHA",
-          "MHA",
-          "RNN"
-        ],
-        "branchPatterns": [
-          "Single",
-          "DenseStack",
-          "Transformer",
-          "DenseStack",
-          "RecurrentAttn",
-          "RecurrentAttn"
-        ]
-      },
-      "avgTrainAccuracy": 47.80355125502393,
-      "tasksSolved": 4,
-      "solvedTaskIds": [
-        "d89b689b",
-        "ae3edfdc",
-        "0e206a2e",
-        "91413438"
-      ],
-      "score": 239.01775627511967,
-      "throughputPerSec": 82.94646051278433
-    },
-    {
-      "config": {
-        "id": 408,
-        "name": "Mutant-408",
-        "species": "8x2 WideGrid",
-        "mutationStr": "8x2_concat_MHA-RNN-NormDense-RNN-RNN-RNN-RNN-LSTM-MHA-Dense-LSTM-LSTM-LSTM-NormDense-Dense-MHA_Entmax_ScaledReLU_D32_LR0.0003",
-        "gridRows": 8,
-        "gridCols": 2,
-        "numBrains": 16,
-        "dModel": 32,
-        "numHeads": 8,
-        "learningRate": 0.00031662127,
-        "budgetScale": 0.6777228,
-        "activation": "ScaledReLU",
-        "combineMode": "concat",
-        "outputType": "Entmax",
-        "brains": [
-          "MHA",
-          "RNN",
-          "NormDense",
-          "RNN",
-          "RNN",
-          "RNN",
-          "RNN",
-          "LSTM",
-          "MHA",
-          "Dense",
-          "LSTM",
-          "LSTM",
-          "LSTM",
-          "NormDense",
-          "Dense",
-          "MHA"
-        ],
-        "branchPatterns": [
-          "Single",
           "Triple",
           "Single",
           "Single",
-          "RecurrentAttn",
-          "Single",
-          "Transformer",
-          "RecurrentAttn",
-          "Single",
-          "Single",
-          "Triple",
-          "DenseStack",
-          "RecurrentAttn",
-          "Single",
-          "Single",
-          "RecurrentAttn"
-        ]
-      },
-      "avgTrainAccuracy": 47.74961047551842,
-      "tasksSolved": 4,
-      "solvedTaskIds": [
-        "d89b689b",
-        "0e206a2e",
-        "91413438",
-        "ae3edfdc"
-      ],
-      "score": 238.7480523775921,
-      "throughputPerSec": 100.49648082428415
-    },
-    {
-      "config": {
-        "id": 274,
-        "name": "Mutant-274",
-        "species": "1x4 Wide",
-        "mutationStr": "1x4_avg_Dense-Dense-NormDense-MHA_Entmax_LeakyReLU_D32_LR0.0004",
-        "gridRows": 1,
-        "gridCols": 4,
-        "numBrains": 4,
-        "dModel": 32,
-        "numHeads": 4,
-        "learningRate": 0.0003835937,
-        "budgetScale": 0.797295,
-        "activation": "LeakyReLU",
-        "combineMode": "avg",
-        "outputType": "Entmax",
-        "brains": [
-          "Dense",
-          "Dense",
-          "NormDense",
-          "MHA"
-        ],
-        "branchPatterns": [
-          "RecurrentAttn",
-          "Single",
-          "Transformer",
-          "Single"
-        ]
-      },
-      "avgTrainAccuracy": 47.660667087891234,
-      "tasksSolved": 4,
-      "solvedTaskIds": [
-        "de1cd16c",
-        "0e206a2e",
-        "ae3edfdc",
-        "91413438"
-      ],
-      "score": 238.30333543945616,
-      "throughputPerSec": 308.80310110030615
-    },
-    {
-      "config": {
-        "id": 62,
-        "name": "Mutant-62",
-        "species": "3x3 Complex",
-        "mutationStr": "3x3_avg_MHA-LSTM-MHA-SwiGLU-LSTM-SwiGLU-Dense-LSTM-RNN_Entmax_LeakyReLU_D32_LR0.0004",
-        "gridRows": 3,
-        "gridCols": 3,
-        "numBrains": 9,
-        "dModel": 32,
-        "numHeads": 8,
-        "learningRate": 0.000417982,
-        "budgetScale": 0.5813721,
-        "activation": "LeakyReLU",
-        "combineMode": "avg",
-        "outputType": "Entmax",
-        "brains": [
-          "MHA",
-          "LSTM",
-          "MHA",
-          "SwiGLU",
-          "LSTM",
-          "SwiGLU",
-          "Dense",
-          "LSTM",
-          "RNN"
-        ],
-        "branchPatterns": [
-          "Single",
-          "Single",
-          "Triple",
-          "Single",
-          "Single",
-          "Single",
-          "Transformer",
-          "GatedNorm",
-          "Transformer"
-        ]
-      },
-      "avgTrainAccuracy": 47.64906811184365,
-      "tasksSolved": 4,
-      "solvedTaskIds": [
-        "de1cd16c",
-        "0e206a2e",
-        "ae3edfdc",
-        "91413438"
-      ],
-      "score": 238.24534055921822,
-      "throughputPerSec": 210.97670971137782
-    },
-    {
-      "config": {
-        "id": 228,
-        "name": "Mutant-228",
-        "species": "8x2 WideGrid",
-        "mutationStr": "8x2_concat_SwiGLU-MHA-MHA-LSTM-RNN-RNN-MHA-LSTM-MHA-Dense-MHA-LSTM-MHA-SwiGLU-RNN-RNN_Entmax_ScaledReLU_D32_LR0.0002",
-        "gridRows": 8,
-        "gridCols": 2,
-        "numBrains": 16,
-        "dModel": 32,
-        "numHeads": 8,
-        "learningRate": 0.00022954753,
-        "budgetScale": 0.8450216,
-        "activation": "ScaledReLU",
-        "combineMode": "concat",
-        "outputType": "Entmax",
-        "brains": [
-          "SwiGLU",
-          "MHA",
-          "MHA",
-          "LSTM",
-          "RNN",
-          "RNN",
-          "MHA",
-          "LSTM",
-          "MHA",
-          "Dense",
-          "MHA",
-          "LSTM",
-          "MHA",
-          "SwiGLU",
-          "RNN",
-          "RNN"
-        ],
-        "branchPatterns": [
-          "DenseStack",
-          "Triple",
-          "Single",
-          "Single",
-          "Single",
-          "DenseStack",
-          "Transformer",
-          "Single",
-          "Single",
-          "Single",
-          "Triple",
-          "Triple",
-          "Triple",
-          "Single",
-          "DenseStack",
           "Triple"
         ]
       },
-      "avgTrainAccuracy": 47.5380220340879,
+      "avgTrainAccuracy": 47.78869706738649,
       "tasksSolved": 4,
       "solvedTaskIds": [
-        "91413438",
+        "ae3edfdc",
         "0e206a2e",
-        "d89b689b",
-        "ae3edfdc"
+        "de1cd16c",
+        "91413438"
       ],
-      "score": 237.6901101704395,
-      "throughputPerSec": 158.17866316149215
+      "score": 238.94348533693244,
+      "throughputPerSec": 32.21573769687601
     },
     {
       "config": {
-        "id": 179,
-        "name": "Mutant-179",
-        "species": "2x2 Standard",
-        "mutationStr": "2x2_avg_MHA-NormDense-MHA-MHA_Entmax_LeakyReLU_D64_LR0.0003",
-        "gridRows": 2,
-        "gridCols": 2,
+        "id": 235,
+        "name": "Mutant-235",
+        "species": "4x1 Tall",
+        "mutationStr": "4x1_add_LSTM-LSTM-LSTM-RNN_Entmax_LeakyReLU_D64_LR0.0007",
+        "gridRows": 4,
+        "gridCols": 1,
         "numBrains": 4,
         "dModel": 64,
         "numHeads": 8,
-        "learningRate": 0.0003469412,
-        "budgetScale": 0.5706706,
+        "learningRate": 0.0007062436,
+        "budgetScale": 0.59803075,
         "activation": "LeakyReLU",
-        "combineMode": "avg",
+        "combineMode": "add",
         "outputType": "Entmax",
         "brains": [
-          "MHA",
-          "NormDense",
-          "MHA",
+          "LSTM",
+          "LSTM",
+          "LSTM",
+          "RNN"
+        ],
+        "branchPatterns": [
+          "Single",
+          "RecurrentAttn",
+          "Single",
+          "Single"
+        ]
+      },
+      "avgTrainAccuracy": 47.73545884885961,
+      "tasksSolved": 4,
+      "solvedTaskIds": [
+        "ae3edfdc",
+        "0e206a2e",
+        "91413438",
+        "de1cd16c"
+      ],
+      "score": 238.67729424429803,
+      "throughputPerSec": 65.71274224664556
+    },
+    {
+      "config": {
+        "id": 70,
+        "name": "Mutant-70",
+        "species": "1x4 Wide",
+        "mutationStr": "1x4_add_LSTM-Dense-LSTM-MHA_Entmax_ScaledReLU_D64_LR0.0003",
+        "gridRows": 1,
+        "gridCols": 4,
+        "numBrains": 4,
+        "dModel": 64,
+        "numHeads": 4,
+        "learningRate": 0.00025602154,
+        "budgetScale": 0.74181104,
+        "activation": "ScaledReLU",
+        "combineMode": "add",
+        "outputType": "Entmax",
+        "brains": [
+          "LSTM",
+          "Dense",
+          "LSTM",
           "MHA"
         ],
         "branchPatterns": [
           "Single",
           "RecurrentAttn",
           "Single",
-          "RecurrentAttn"
+          "Transformer"
         ]
       },
-      "avgTrainAccuracy": 47.5317190000902,
+      "avgTrainAccuracy": 47.7146010958861,
       "tasksSolved": 4,
       "solvedTaskIds": [
-        "ae3edfdc",
         "91413438",
         "0e206a2e",
-        "d89b689b"
+        "de1cd16c",
+        "ae3edfdc"
       ],
-      "score": 237.658595000451,
-      "throughputPerSec": 93.29979310770878
+      "score": 238.57300547943052,
+      "throughputPerSec": 70.97135334168357
     },
     {
       "config": {
-        "id": 165,
-        "name": "Mutant-165",
-        "species": "5x4 Squad",
-        "mutationStr": "5x4_avg_RNN-Dense-MHA-LSTM-MHA-MHA-NormDense-MHA-RNN-MHA-MHA-RNN-RNN-RNN-LSTM-LSTM-LSTM-LSTM-LSTM-LSTM_Entmax_LeakyReLU_D32_LR0.0007",
-        "gridRows": 5,
-        "gridCols": 4,
-        "numBrains": 20,
-        "dModel": 32,
+        "id": 111,
+        "name": "Mutant-111",
+        "species": "2x2 Standard",
+        "mutationStr": "2x2_avg_Dense-LSTM-LSTM-Dense_Entmax_ScaledReLU_D64_LR0.0006",
+        "gridRows": 2,
+        "gridCols": 2,
+        "numBrains": 4,
+        "dModel": 64,
         "numHeads": 8,
-        "learningRate": 0.00074531033,
-        "budgetScale": 0.8798891,
-        "activation": "LeakyReLU",
+        "learningRate": 0.00056195597,
+        "budgetScale": 0.5659989,
+        "activation": "ScaledReLU",
         "combineMode": "avg",
         "outputType": "Entmax",
         "brains": [
-          "RNN",
           "Dense",
-          "MHA",
-          "LSTM",
-          "MHA",
-          "MHA",
-          "NormDense",
-          "MHA",
-          "RNN",
-          "MHA",
-          "MHA",
-          "RNN",
-          "RNN",
-          "RNN",
           "LSTM",
           "LSTM",
-          "LSTM",
-          "LSTM",
-          "LSTM",
-          "LSTM"
+          "Dense"
         ],
         "branchPatterns": [
-          "DenseStack",
-          "DenseStack",
-          "Single",
-          "Single",
+          "Transformer",
           "Triple",
           "Single",
-          "GatedNorm",
-          "Transformer",
-          "DenseStack",
-          "Triple",
-          "Transformer",
-          "RecurrentAttn",
-          "Single",
-          "GatedNorm",
-          "Transformer",
-          "DenseStack",
-          "Single",
-          "DenseStack",
-          "Single",
-          "Single"
+          "Triple"
         ]
       },
-      "avgTrainAccuracy": 47.49057146589611,
+      "avgTrainAccuracy": 47.51310423854133,
       "tasksSolved": 4,
       "solvedTaskIds": [
-        "de1cd16c",
+        "91413438",
         "ae3edfdc",
-        "0e206a2e",
-        "91413438"
+        "de1cd16c",
+        "0e206a2e"
       ],
-      "score": 237.45285732948054,
-      "throughputPerSec": 106.3992528644464
+      "score": 237.56552119270665,
+      "throughputPerSec": 84.40225202524113
     },
     {
       "config": {
-        "id": 470,
-        "name": "Mutant-470",
+        "id": 74,
+        "name": "Mutant-74",
+        "species": "1x8 Pipeline",
+        "mutationStr": "1x8_add_RNN-LSTM-RNN-NormDense-LSTM-MHA-NormDense-Dense_Entmax_ScaledReLU_D64_LR0.0006",
+        "gridRows": 1,
+        "gridCols": 8,
+        "numBrains": 8,
+        "dModel": 64,
+        "numHeads": 4,
+        "learningRate": 0.00057603355,
+        "budgetScale": 0.9814271,
+        "activation": "ScaledReLU",
+        "combineMode": "add",
+        "outputType": "Entmax",
+        "brains": [
+          "RNN",
+          "LSTM",
+          "RNN",
+          "NormDense",
+          "LSTM",
+          "MHA",
+          "NormDense",
+          "Dense"
+        ],
+        "branchPatterns": [
+          "Single",
+          "DenseStack",
+          "Single",
+          "Single",
+          "Single",
+          "RecurrentAttn",
+          "Single",
+          "DenseStack"
+        ]
+      },
+      "avgTrainAccuracy": 47.491000657966495,
+      "tasksSolved": 4,
+      "solvedTaskIds": [
+        "91413438",
+        "0e206a2e",
+        "de1cd16c",
+        "ae3edfdc"
+      ],
+      "score": 237.45500328983246,
+      "throughputPerSec": 65.46336237508332
+    },
+    {
+      "config": {
+        "id": 5,
+        "name": "Mutant-5",
         "species": "4x1 Tall",
-        "mutationStr": "4x1_concat_MHA-LSTM-NormDense-LSTM_Entmax_ScaledReLU_D32_LR0.0002",
+        "mutationStr": "4x1_concat_LSTM-MHA-RNN-Dense_Entmax_LeakyReLU_D64_LR0.0003",
         "gridRows": 4,
         "gridCols": 1,
         "numBrains": 4,
-        "dModel": 32,
+        "dModel": 64,
         "numHeads": 8,
-        "learningRate": 0.00017806453,
-        "budgetScale": 0.69433266,
-        "activation": "ScaledReLU",
+        "learningRate": 0.00029343,
+        "budgetScale": 0.5628035,
+        "activation": "LeakyReLU",
         "combineMode": "concat",
         "outputType": "Entmax",
         "brains": [
-          "MHA",
           "LSTM",
-          "NormDense",
-          "LSTM"
-        ],
-        "branchPatterns": [
-          "Transformer",
-          "Single",
-          "Single",
-          "Single"
-        ]
-      },
-      "avgTrainAccuracy": 47.464075239172644,
-      "tasksSolved": 4,
-      "solvedTaskIds": [
-        "d89b689b",
-        "0e206a2e",
-        "91413438",
-        "ae3edfdc"
-      ],
-      "score": 237.32037619586322,
-      "throughputPerSec": 221.96022010068737
-    },
-    {
-      "config": {
-        "id": 87,
-        "name": "Mutant-87",
-        "species": "8x3 MegaWide",
-        "mutationStr": "8x3_add_Dense-MHA-RNN-NormDense-MHA-LSTM-MHA-LSTM-LSTM-SwiGLU-Dense-MHA-LSTM-NormDense-Dense-NormDense-LSTM-RNN-RNN-LSTM-MHA-NormDense-MHA-Dense_Sigmoid_Softplus_D64_LR0.0196",
-        "gridRows": 8,
-        "gridCols": 3,
-        "numBrains": 24,
-        "dModel": 64,
-        "numHeads": 4,
-        "learningRate": 0.019578293,
-        "budgetScale": 0.6094231,
-        "activation": "Softplus",
-        "combineMode": "add",
-        "outputType": "Sigmoid",
-        "brains": [
-          "Dense",
           "MHA",
           "RNN",
-          "NormDense",
-          "MHA",
-          "LSTM",
-          "MHA",
-          "LSTM",
-          "LSTM",
-          "SwiGLU",
-          "Dense",
-          "MHA",
-          "LSTM",
-          "NormDense",
-          "Dense",
-          "NormDense",
-          "LSTM",
-          "RNN",
-          "RNN",
-          "LSTM",
-          "MHA",
-          "NormDense",
-          "MHA",
           "Dense"
         ],
         "branchPatterns": [
           "RecurrentAttn",
-          "RecurrentAttn",
-          "Single",
-          "DenseStack",
-          "GatedNorm",
-          "Single",
           "Transformer",
-          "Single",
-          "Single",
-          "DenseStack",
-          "Single",
-          "Single",
-          "Single",
-          "Single",
-          "Single",
-          "Single",
-          "Single",
-          "Transformer",
-          "Transformer",
-          "Single",
-          "Single",
-          "Single",
           "Single",
           "Single"
         ]
       },
-      "avgTrainAccuracy": 47.31650005793923,
+      "avgTrainAccuracy": 47.45937101428139,
+      "tasksSolved": 4,
+      "solvedTaskIds": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "de1cd16c"
+      ],
+      "score": 237.29685507140692,
+      "throughputPerSec": 94.05879087014837
+    },
+    {
+      "config": {
+        "id": 0,
+        "name": "Mutant-0",
+        "species": "4x1 Tall",
+        "mutationStr": "4x1_avg_Dense-SwiGLU-LSTM-LSTM_Entmax_Tanh_D64_LR0.0006",
+        "gridRows": 4,
+        "gridCols": 1,
+        "numBrains": 4,
+        "dModel": 64,
+        "numHeads": 8,
+        "learningRate": 0.0006195782,
+        "budgetScale": 0.8723009,
+        "activation": "Tanh",
+        "combineMode": "avg",
+        "outputType": "Entmax",
+        "brains": [
+          "Dense",
+          "SwiGLU",
+          "LSTM",
+          "LSTM"
+        ],
+        "branchPatterns": [
+          "Triple",
+          "Single",
+          "DenseStack",
+          "Single"
+        ]
+      },
+      "avgTrainAccuracy": 47.123518229256135,
       "tasksSolved": 4,
       "solvedTaskIds": [
         "91413438",
+        "de1cd16c",
         "ae3edfdc",
-        "d89b689b",
         "0e206a2e"
       ],
-      "score": 236.58250028969616,
-      "throughputPerSec": 33.89430835758409
+      "score": 235.6175911462807,
+      "throughputPerSec": 99.91779746305279
     }
   ],
   "speciesBreakdown": [
     {
-      "species": "8x1 Scanner",
-      "count": 33,
-      "totalSolved": 85,
+      "species": "8x3 MegaWide",
+      "count": 16,
+      "totalSolved": 17,
       "uniqueTasks": [
         "0e206a2e",
-        "1fad071e",
         "91413438",
+        "91714a58",
         "ae3edfdc",
         "d631b094",
         "d89b689b",
         "d9fac9be",
-        "de1cd16c",
-        "e8dc4411"
+        "de1cd16c"
       ],
-      "uniqueCount": 9,
-      "bestMutant": "8x1_add_LSTM-LSTM-LSTM-MHA-MHA-RNN-RNN-SwiGLU_Entmax_Softplus_D32_LR0.0006",
-      "bestSolved": 4,
-      "avgAccuracy": 30.370998417010163
+      "uniqueCount": 8,
+      "bestMutant": "8x3_avg_RNN-MHA-RNN-RNN-LSTM-Dense-MHA-LSTM-MHA-MHA-RNN-MHA-LSTM-Dense-Dense-NormDense-RNN-RNN-MHA-Dense-Dense-RNN-LSTM-SwiGLU_Entmax_ScaledReLU_D64_LR0.0001",
+      "bestSolved": 5,
+      "avgAccuracy": 23.36174192616544
     },
     {
-      "species": "4x2 Tall",
-      "count": 32,
-      "totalSolved": 68,
+      "species": "8x2 WideGrid",
+      "count": 11,
+      "totalSolved": 16,
       "uniqueTasks": [
         "0e206a2e",
         "445eab21",
@@ -1112,147 +1103,14 @@
         "de1cd16c"
       ],
       "uniqueCount": 8,
-      "bestMutant": "4x2_concat_RNN-Dense-MHA-Dense-LSTM-MHA-LSTM-RNN_Sparsemax_Tanh_D32_LR0.0905",
+      "bestMutant": "8x2_grid_scatter_MHA-NormDense-MHA-LSTM-LSTM-RNN-LSTM-RNN-LSTM-LSTM-RNN-MHA-NormDense-LSTM-MHA-SwiGLU_Entmax_LeakyReLU_D64_LR0.0001",
       "bestSolved": 4,
-      "avgAccuracy": 24.111310391752912
+      "avgAccuracy": 20.154382369829907
     },
     {
-      "species": "2x2 Standard",
-      "count": 38,
-      "totalSolved": 82,
-      "uniqueTasks": [
-        "0e206a2e",
-        "91413438",
-        "91714a58",
-        "ae3edfdc",
-        "d631b094",
-        "d89b689b",
-        "d9fac9be",
-        "de1cd16c"
-      ],
-      "uniqueCount": 8,
-      "bestMutant": "2x2_avg_LSTM-RNN-MHA-MHA_Entmax_ScaledReLU_D64_LR0.0001",
-      "bestSolved": 5,
-      "avgAccuracy": 27.818951684428804
-    },
-    {
-      "species": "4x1 Tall",
-      "count": 31,
-      "totalSolved": 73,
-      "uniqueTasks": [
-        "0e206a2e",
-        "1fad071e",
-        "91413438",
-        "ae3edfdc",
-        "d631b094",
-        "d89b689b",
-        "d9fac9be",
-        "de1cd16c"
-      ],
-      "uniqueCount": 8,
-      "bestMutant": "4x1_concat_SwiGLU-LSTM-RNN-RNN_Sparsemax_Sigmoid_D32_LR0.0053",
-      "bestSolved": 4,
-      "avgAccuracy": 32.6906816342684
-    },
-    {
-      "species": "1x4 Wide",
-      "count": 50,
-      "totalSolved": 111,
-      "uniqueTasks": [
-        "0e206a2e",
-        "1fad071e",
-        "91413438",
-        "ae3edfdc",
-        "d631b094",
-        "d89b689b",
-        "d9fac9be",
-        "de1cd16c"
-      ],
-      "uniqueCount": 8,
-      "bestMutant": "1x4_avg_Dense-LSTM-LSTM-MHA_Softmax_Softplus_D64_LR0.0525",
-      "bestSolved": 5,
-      "avgAccuracy": 26.097978226721402
-    },
-    {
-      "species": "7x3 Prime",
-      "count": 30,
-      "totalSolved": 72,
-      "uniqueTasks": [
-        "0e206a2e",
-        "91413438",
-        "91714a58",
-        "ae3edfdc",
-        "d631b094",
-        "d89b689b",
-        "d9fac9be",
-        "de1cd16c"
-      ],
-      "uniqueCount": 8,
-      "bestMutant": "7x3_avg_LSTM-LSTM-RNN-Dense-MHA-MHA-MHA-SwiGLU-Dense-NormDense-MHA-Dense-MHA-MHA-NormDense-LSTM-MHA-MHA-NormDense-MHA-Dense_Entmax_ScaledReLU_D64_LR0.0001",
-      "bestSolved": 5,
-      "avgAccuracy": 29.369568240482884
-    },
-    {
-      "species": "8x3 MegaWide",
-      "count": 24,
-      "totalSolved": 45,
-      "uniqueTasks": [
-        "0e206a2e",
-        "1fad071e",
-        "91413438",
-        "ae3edfdc",
-        "d631b094",
-        "d89b689b",
-        "d9fac9be",
-        "de1cd16c"
-      ],
-      "uniqueCount": 8,
-      "bestMutant": "8x3_grid_scatter_RNN-MHA-RNN-Dense-SwiGLU-MHA-SwiGLU-Dense-LSTM-MHA-MHA-MHA-NormDense-MHA-LSTM-MHA-MHA-LSTM-LSTM-RNN-Dense-LSTM-MHA-LSTM_Sparsemax_Softplus_D64_LR0.0806",
-      "bestSolved": 4,
-      "avgAccuracy": 28.23813037562879
-    },
-    {
-      "species": "3x3 Complex",
-      "count": 35,
-      "totalSolved": 82,
-      "uniqueTasks": [
-        "0e206a2e",
-        "1fad071e",
-        "91413438",
-        "ae3edfdc",
-        "d631b094",
-        "d89b689b",
-        "d9fac9be",
-        "de1cd16c"
-      ],
-      "uniqueCount": 8,
-      "bestMutant": "3x3_avg_Dense-LSTM-MHA-MHA-RNN-RNN-Dense-MHA-LSTM_Entmax_ScaledReLU_D32_LR0.0197",
-      "bestSolved": 4,
-      "avgAccuracy": 26.587093492020532
-    },
-    {
-      "species": "8x2 WideGrid",
-      "count": 29,
-      "totalSolved": 70,
-      "uniqueTasks": [
-        "0e206a2e",
-        "1fad071e",
-        "91413438",
-        "ae3edfdc",
-        "d631b094",
-        "d89b689b",
-        "d9fac9be",
-        "de1cd16c"
-      ],
-      "uniqueCount": 8,
-      "bestMutant": "8x2_avg_SwiGLU-MHA-NormDense-LSTM-MHA-RNN-LSTM-RNN-MHA-LSTM-LSTM-LSTM-SwiGLU-SwiGLU-LSTM-NormDense_Entmax_ScaledReLU_D64_LR0.0003",
-      "bestSolved": 4,
-      "avgAccuracy": 32.1763873535803
-    },
-    {
-      "species": "2x3 Rect",
-      "count": 33,
-      "totalSolved": 74,
+      "species": "10x1 ScannerWider",
+      "count": 12,
+      "totalSolved": 13,
       "uniqueTasks": [
         "0e206a2e",
         "91413438",
@@ -1263,104 +1121,122 @@
         "de1cd16c"
       ],
       "uniqueCount": 7,
-      "bestMutant": "2x3_grid_scatter_MHA-RNN-MHA-MHA-SwiGLU-Dense_Entmax_Softplus_D64_LR0.0004",
+      "bestMutant": "10x1_avg_MHA-Dense-LSTM-MHA-LSTM-MHA-RNN-LSTM-NormDense-LSTM_Entmax_LeakyReLU_D64_LR0.0002",
       "bestSolved": 4,
-      "avgAccuracy": 28.920561286372084
-    },
-    {
-      "species": "1x1 Mono",
-      "count": 28,
-      "totalSolved": 76,
-      "uniqueTasks": [
-        "0e206a2e",
-        "1fad071e",
-        "91413438",
-        "ae3edfdc",
-        "d631b094",
-        "d9fac9be",
-        "de1cd16c"
-      ],
-      "uniqueCount": 7,
-      "bestMutant": "1x1_avg_LSTM_Entmax_LeakyReLU_D32_LR0.0203",
-      "bestSolved": 4,
-      "avgAccuracy": 29.056432579066687
-    },
-    {
-      "species": "3x2 Rect",
-      "count": 28,
-      "totalSolved": 71,
-      "uniqueTasks": [
-        "0e206a2e",
-        "91413438",
-        "ae3edfdc",
-        "d631b094",
-        "d89b689b",
-        "d9fac9be",
-        "de1cd16c"
-      ],
-      "uniqueCount": 7,
-      "bestMutant": "3x2_avg_MHA-NormDense-LSTM-LSTM-MHA-SwiGLU_Entmax_Sigmoid_D32_LR0.0011",
-      "bestSolved": 4,
-      "avgAccuracy": 33.47822904808545
-    },
-    {
-      "species": "1x8 Pipeline",
-      "count": 27,
-      "totalSolved": 56,
-      "uniqueTasks": [
-        "0e206a2e",
-        "1fad071e",
-        "91413438",
-        "ae3edfdc",
-        "d631b094",
-        "d9fac9be",
-        "de1cd16c"
-      ],
-      "uniqueCount": 7,
-      "bestMutant": "1x8_add_SwiGLU-LSTM-MHA-MHA-MHA-RNN-MHA-LSTM_Sparsemax_ScaledReLU_D32_LR0.0252",
-      "bestSolved": 4,
-      "avgAccuracy": 32.531905548386916
-    },
-    {
-      "species": "6x4 Matrix",
-      "count": 21,
-      "totalSolved": 40,
-      "uniqueTasks": [
-        "0e206a2e",
-        "91413438",
-        "ae3edfdc",
-        "d631b094",
-        "d89b689b",
-        "d9fac9be",
-        "de1cd16c"
-      ],
-      "uniqueCount": 7,
-      "bestMutant": "6x4_add_RNN-MHA-LSTM-MHA-LSTM-MHA-LSTM-LSTM-Dense-LSTM-SwiGLU-RNN-LSTM-MHA-RNN-RNN-Dense-LSTM-RNN-MHA-MHA-LSTM-MHA-RNN_Sigmoid_Softplus_D64_LR0.0124",
-      "bestSolved": 5,
-      "avgAccuracy": 27.498205744679165
+      "avgAccuracy": 15.318385329493118
     },
     {
       "species": "5x4 Squad",
-      "count": 26,
-      "totalSolved": 58,
+      "count": 13,
+      "totalSolved": 17,
       "uniqueTasks": [
         "0e206a2e",
-        "1fad071e",
         "91413438",
         "ae3edfdc",
         "d631b094",
+        "d89b689b",
         "d9fac9be",
         "de1cd16c"
       ],
       "uniqueCount": 7,
-      "bestMutant": "5x4_concat_RNN-MHA-MHA-MHA-LSTM-RNN-LSTM-LSTM-SwiGLU-MHA-LSTM-NormDense-NormDense-MHA-LSTM-MHA-MHA-MHA-RNN-MHA_Sparsemax_Softplus_D64_LR0.0142",
+      "bestMutant": "5x4_avg_RNN-LSTM-SwiGLU-MHA-RNN-MHA-LSTM-MHA-SwiGLU-MHA-MHA-MHA-MHA-LSTM-MHA-MHA-MHA-SwiGLU-NormDense-MHA_Entmax_ScaledReLU_D64_LR0.0002",
       "bestSolved": 4,
-      "avgAccuracy": 27.458916660472276
+      "avgAccuracy": 18.068352198435342
+    },
+    {
+      "species": "6x4 Matrix",
+      "count": 19,
+      "totalSolved": 30,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d631b094",
+        "d89b689b",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 7,
+      "bestMutant": "6x4_grid_scatter_LSTM-RNN-SwiGLU-LSTM-RNN-SwiGLU-SwiGLU-MHA-Dense-LSTM-MHA-LSTM-SwiGLU-SwiGLU-SwiGLU-LSTM-Dense-NormDense-LSTM-MHA-RNN-MHA-RNN-SwiGLU_Entmax_LeakyReLU_D64_LR0.0002",
+      "bestSolved": 4,
+      "avgAccuracy": 16.22158364983002
+    },
+    {
+      "species": "7x3 Prime",
+      "count": 15,
+      "totalSolved": 20,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d631b094",
+        "d89b689b",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 7,
+      "bestMutant": "7x3_avg_Dense-MHA-LSTM-MHA-LSTM-Dense-SwiGLU-RNN-LSTM-LSTM-SwiGLU-MHA-LSTM-RNN-MHA-MHA-LSTM-LSTM-LSTM-MHA-LSTM_Entmax_LeakyReLU_D64_LR0.0007",
+      "bestSolved": 4,
+      "avgAccuracy": 22.77950113483852
+    },
+    {
+      "species": "3x2 Rect",
+      "count": 15,
+      "totalSolved": 38,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d631b094",
+        "d89b689b",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 7,
+      "bestMutant": "3x2_avg_MHA-MHA-MHA-LSTM-MHA-LSTM_Entmax_Tanh_D64_LR0.0005",
+      "bestSolved": 4,
+      "avgAccuracy": 31.33314987803991
     },
     {
       "species": "2x4 Wide",
-      "count": 35,
-      "totalSolved": 71,
+      "count": 17,
+      "totalSolved": 31,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d631b094",
+        "d89b689b",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 7,
+      "bestMutant": "2x4_avg_MHA-MHA-MHA-NormDense-LSTM-LSTM-SwiGLU-SwiGLU_Entmax_LeakyReLU_D32_LR0.0001",
+      "bestSolved": 5,
+      "avgAccuracy": 19.6707999713323
+    },
+    {
+      "species": "1x1 Mono",
+      "count": 14,
+      "totalSolved": 24,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d631b094",
+        "d9fac9be",
+        "de1cd16c",
+        "e8dc4411"
+      ],
+      "uniqueCount": 7,
+      "bestMutant": "1x1_add_Dense_Entmax_Tanh_D64_LR0.0004",
+      "bestSolved": 4,
+      "avgAccuracy": 21.12280829234928
+    },
+    {
+      "species": "4x2 Tall",
+      "count": 15,
+      "totalSolved": 29,
       "uniqueTasks": [
         "0e206a2e",
         "91413438",
@@ -1370,19 +1246,154 @@
         "de1cd16c"
       ],
       "uniqueCount": 6,
-      "bestMutant": "2x4_concat_RNN-Dense-LSTM-MHA-Dense-SwiGLU-SwiGLU-LSTM_Softmax_ScaledReLU_D32_LR0.0350",
+      "bestMutant": "4x2_avg_MHA-LSTM-NormDense-RNN-LSTM-LSTM-MHA-NormDense_Entmax_Sigmoid_D64_LR0.0002",
       "bestSolved": 4,
-      "avgAccuracy": 24.450638424922218
+      "avgAccuracy": 26.29222047833581
+    },
+    {
+      "species": "8x1 Scanner",
+      "count": 9,
+      "totalSolved": 18,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d631b094",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 6,
+      "bestMutant": "8x1_avg_MHA-LSTM-RNN-RNN-Dense-RNN-NormDense-RNN_Entmax_Sigmoid_D64_LR0.0003",
+      "bestSolved": 4,
+      "avgAccuracy": 25.68753328659334
+    },
+    {
+      "species": "1x8 Pipeline",
+      "count": 15,
+      "totalSolved": 21,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d631b094",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 6,
+      "bestMutant": "1x8_add_RNN-LSTM-RNN-NormDense-LSTM-MHA-NormDense-Dense_Entmax_ScaledReLU_D64_LR0.0006",
+      "bestSolved": 4,
+      "avgAccuracy": 18.295151319827678
+    },
+    {
+      "species": "15x1 ScannerWiderMore",
+      "count": 13,
+      "totalSolved": 25,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d631b094",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 6,
+      "bestMutant": "15x1_avg_NormDense-MHA-MHA-MHA-MHA-LSTM-MHA-LSTM-LSTM-RNN-LSTM-LSTM-RNN-LSTM-LSTM_Entmax_ScaledReLU_D64_LR0.0008",
+      "bestSolved": 4,
+      "avgAccuracy": 18.372694251080404
+    },
+    {
+      "species": "2x3 Rect",
+      "count": 9,
+      "totalSolved": 16,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d631b094",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 6,
+      "bestMutant": "2x3_add_LSTM-RNN-RNN-SwiGLU-LSTM-LSTM_Entmax_ScaledReLU_D64_LR0.0007",
+      "bestSolved": 4,
+      "avgAccuracy": 15.58683909036504
+    },
+    {
+      "species": "1x4 Wide",
+      "count": 13,
+      "totalSolved": 22,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d631b094",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 6,
+      "bestMutant": "1x4_add_LSTM-Dense-LSTM-MHA_Entmax_ScaledReLU_D64_LR0.0003",
+      "bestSolved": 4,
+      "avgAccuracy": 18.25925575999583
+    },
+    {
+      "species": "4x1 Tall",
+      "count": 17,
+      "totalSolved": 45,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d631b094",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 6,
+      "bestMutant": "4x1_avg_Dense-SwiGLU-LSTM-LSTM_Entmax_Tanh_D64_LR0.0006",
+      "bestSolved": 4,
+      "avgAccuracy": 27.23665332836189
+    },
+    {
+      "species": "2x2 Standard",
+      "count": 14,
+      "totalSolved": 26,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d89b689b",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 6,
+      "bestMutant": "2x2_avg_RNN-NormDense-Dense-MHA_Entmax_Tanh_D64_LR0.0001",
+      "bestSolved": 4,
+      "avgAccuracy": 26.46391081242993
+    },
+    {
+      "species": "3x3 Complex",
+      "count": 13,
+      "totalSolved": 20,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 5,
+      "bestMutant": "3x3_add_SwiGLU-MHA-LSTM-SwiGLU-NormDense-LSTM-LSTM-Dense-Dense_Softmax_Softplus_D32_LR0.0003",
+      "bestSolved": 4,
+      "avgAccuracy": 24.47720590396095
     }
   ],
   "combineModeBreakdown": [
     {
       "combineMode": "avg",
-      "count": 149,
-      "totalSolved": 351,
+      "count": 90,
+      "totalSolved": 166,
       "uniqueTasks": [
         "0e206a2e",
-        "1fad071e",
+        "445eab21",
         "91413438",
         "91714a58",
         "ae3edfdc",
@@ -1392,53 +1403,32 @@
         "de1cd16c"
       ],
       "uniqueCount": 9,
-      "bestMutant": "7x3_avg_LSTM-LSTM-RNN-Dense-MHA-MHA-MHA-SwiGLU-Dense-NormDense-MHA-Dense-MHA-MHA-NormDense-LSTM-MHA-MHA-NormDense-MHA-Dense_Entmax_ScaledReLU_D64_LR0.0001",
+      "bestMutant": "2x4_avg_MHA-MHA-MHA-NormDense-LSTM-LSTM-SwiGLU-SwiGLU_Entmax_LeakyReLU_D32_LR0.0001",
       "bestSolved": 5
     },
     {
-      "combineMode": "grid_scatter",
-      "count": 150,
-      "totalSolved": 318,
+      "combineMode": "concat",
+      "count": 31,
+      "totalSolved": 51,
       "uniqueTasks": [
         "0e206a2e",
-        "1fad071e",
         "91413438",
         "ae3edfdc",
         "d631b094",
-        "d89b689b",
         "d9fac9be",
         "de1cd16c",
         "e8dc4411"
       ],
-      "uniqueCount": 9,
-      "bestMutant": "8x3_grid_scatter_RNN-MHA-RNN-Dense-SwiGLU-MHA-SwiGLU-Dense-LSTM-MHA-MHA-MHA-NormDense-MHA-LSTM-MHA-MHA-LSTM-LSTM-RNN-Dense-LSTM-MHA-LSTM_Sparsemax_Softplus_D64_LR0.0806",
-      "bestSolved": 4
-    },
-    {
-      "combineMode": "concat",
-      "count": 103,
-      "totalSolved": 225,
-      "uniqueTasks": [
-        "0e206a2e",
-        "445eab21",
-        "91413438",
-        "ae3edfdc",
-        "d631b094",
-        "d89b689b",
-        "d9fac9be",
-        "de1cd16c"
-      ],
-      "uniqueCount": 8,
-      "bestMutant": "4x1_concat_SwiGLU-LSTM-RNN-RNN_Sparsemax_Sigmoid_D32_LR0.0053",
+      "uniqueCount": 7,
+      "bestMutant": "4x1_concat_LSTM-MHA-RNN-Dense_Entmax_LeakyReLU_D64_LR0.0003",
       "bestSolved": 4
     },
     {
       "combineMode": "add",
-      "count": 98,
-      "totalSolved": 240,
+      "count": 89,
+      "totalSolved": 152,
       "uniqueTasks": [
         "0e206a2e",
-        "1fad071e",
         "91413438",
         "ae3edfdc",
         "d631b094",
@@ -1446,90 +1436,36 @@
         "d9fac9be",
         "de1cd16c"
       ],
-      "uniqueCount": 8,
-      "bestMutant": "6x4_add_RNN-MHA-LSTM-MHA-LSTM-MHA-LSTM-LSTM-Dense-LSTM-SwiGLU-RNN-LSTM-MHA-RNN-RNN-Dense-LSTM-RNN-MHA-MHA-LSTM-MHA-RNN_Sigmoid_Softplus_D64_LR0.0124",
-      "bestSolved": 5
+      "uniqueCount": 7,
+      "bestMutant": "3x3_add_SwiGLU-MHA-LSTM-SwiGLU-NormDense-LSTM-LSTM-Dense-Dense_Softmax_Softplus_D32_LR0.0003",
+      "bestSolved": 4
+    },
+    {
+      "combineMode": "grid_scatter",
+      "count": 40,
+      "totalSolved": 59,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d631b094",
+        "d89b689b",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 7,
+      "bestMutant": "6x4_grid_scatter_LSTM-RNN-SwiGLU-LSTM-RNN-SwiGLU-SwiGLU-MHA-Dense-LSTM-MHA-LSTM-SwiGLU-SwiGLU-SwiGLU-LSTM-Dense-NormDense-LSTM-MHA-RNN-MHA-RNN-SwiGLU_Entmax_LeakyReLU_D64_LR0.0002",
+      "bestSolved": 4
     }
   ],
   "outputTypeBreakdown": [
     {
       "outputType": "Sparsemax",
-      "count": 131,
-      "totalSolved": 268,
+      "count": 54,
+      "totalSolved": 63,
       "uniqueTasks": [
         "0e206a2e",
-        "1fad071e",
         "445eab21",
-        "91413438",
-        "ae3edfdc",
-        "d631b094",
-        "d89b689b",
-        "d9fac9be",
-        "de1cd16c"
-      ],
-      "uniqueCount": 9,
-      "bestMutant": "4x1_concat_SwiGLU-LSTM-RNN-RNN_Sparsemax_Sigmoid_D32_LR0.0053",
-      "bestSolved": 4
-    },
-    {
-      "outputType": "Sigmoid",
-      "count": 73,
-      "totalSolved": 162,
-      "uniqueTasks": [
-        "0e206a2e",
-        "1fad071e",
-        "91413438",
-        "ae3edfdc",
-        "d631b094",
-        "d89b689b",
-        "d9fac9be",
-        "de1cd16c"
-      ],
-      "uniqueCount": 8,
-      "bestMutant": "6x4_add_RNN-MHA-LSTM-MHA-LSTM-MHA-LSTM-LSTM-Dense-LSTM-SwiGLU-RNN-LSTM-MHA-RNN-RNN-Dense-LSTM-RNN-MHA-MHA-LSTM-MHA-RNN_Sigmoid_Softplus_D64_LR0.0124",
-      "bestSolved": 5
-    },
-    {
-      "outputType": "Entmax",
-      "count": 160,
-      "totalSolved": 418,
-      "uniqueTasks": [
-        "0e206a2e",
-        "1fad071e",
-        "91413438",
-        "91714a58",
-        "ae3edfdc",
-        "d89b689b",
-        "d9fac9be",
-        "de1cd16c"
-      ],
-      "uniqueCount": 8,
-      "bestMutant": "7x3_avg_LSTM-LSTM-RNN-Dense-MHA-MHA-MHA-SwiGLU-Dense-NormDense-MHA-Dense-MHA-MHA-NormDense-LSTM-MHA-MHA-NormDense-MHA-Dense_Entmax_ScaledReLU_D64_LR0.0001",
-      "bestSolved": 5
-    },
-    {
-      "outputType": "Softmax",
-      "count": 67,
-      "totalSolved": 158,
-      "uniqueTasks": [
-        "0e206a2e",
-        "91413438",
-        "ae3edfdc",
-        "d631b094",
-        "d89b689b",
-        "d9fac9be",
-        "de1cd16c"
-      ],
-      "uniqueCount": 7,
-      "bestMutant": "1x4_avg_Dense-LSTM-LSTM-MHA_Softmax_Softplus_D64_LR0.0525",
-      "bestSolved": 5
-    },
-    {
-      "outputType": "Gumbel",
-      "count": 69,
-      "totalSolved": 128,
-      "uniqueTasks": [
-        "0e206a2e",
         "91413438",
         "ae3edfdc",
         "d631b094",
@@ -1537,14 +1473,78 @@
         "de1cd16c",
         "e8dc4411"
       ],
-      "uniqueCount": 7,
-      "bestMutant": "4x1_add_RNN-LSTM-MHA-MHA_Gumbel_Sigmoid_D64_LR0.0155",
+      "uniqueCount": 8,
+      "bestMutant": "2x4_grid_scatter_Dense-NormDense-LSTM-MHA-Dense-SwiGLU-RNN-Dense_Sparsemax_Softplus_D64_LR0.0009",
       "bestSolved": 4
+    },
+    {
+      "outputType": "Entmax",
+      "count": 92,
+      "totalSolved": 239,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "91714a58",
+        "ae3edfdc",
+        "d89b689b",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 7,
+      "bestMutant": "2x4_avg_MHA-MHA-MHA-NormDense-LSTM-LSTM-SwiGLU-SwiGLU_Entmax_LeakyReLU_D32_LR0.0001",
+      "bestSolved": 5
+    },
+    {
+      "outputType": "Sigmoid",
+      "count": 34,
+      "totalSolved": 45,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d631b094",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 6,
+      "bestMutant": "4x1_add_Dense-MHA-MHA-LSTM_Sigmoid_Softplus_D32_LR0.0004",
+      "bestSolved": 4
+    },
+    {
+      "outputType": "Softmax",
+      "count": 34,
+      "totalSolved": 43,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d631b094",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 6,
+      "bestMutant": "3x3_add_SwiGLU-MHA-LSTM-SwiGLU-NormDense-LSTM-LSTM-Dense-Dense_Softmax_Softplus_D32_LR0.0003",
+      "bestSolved": 4
+    },
+    {
+      "outputType": "Gumbel",
+      "count": 36,
+      "totalSolved": 38,
+      "uniqueTasks": [
+        "0e206a2e",
+        "91413438",
+        "ae3edfdc",
+        "d631b094",
+        "d9fac9be",
+        "de1cd16c"
+      ],
+      "uniqueCount": 6,
+      "bestMutant": "2x4_add_LSTM-LSTM-LSTM-MHA-MHA-MHA-RNN-Dense_Gumbel_Softplus_D64_LR0.0007",
+      "bestSolved": 3
     }
   ],
   "collectiveTasks": [
     "0e206a2e",
-    "1fad071e",
     "445eab21",
     "91413438",
     "91714a58",
@@ -1555,11 +1555,11 @@
     "de1cd16c",
     "e8dc4411"
   ],
-  "collectiveCount": 11,
+  "collectiveCount": 10,
   "discoveryTimeline": [
     {
       "mutantNum": 10,
-      "cumulativeUnique": 5
+      "cumulativeUnique": 6
     },
     {
       "mutantNum": 20,
@@ -1571,47 +1571,47 @@
     },
     {
       "mutantNum": 40,
-      "cumulativeUnique": 9
+      "cumulativeUnique": 7
     },
     {
       "mutantNum": 50,
-      "cumulativeUnique": 9
+      "cumulativeUnique": 8
     },
     {
       "mutantNum": 60,
-      "cumulativeUnique": 9
+      "cumulativeUnique": 8
     },
     {
       "mutantNum": 70,
-      "cumulativeUnique": 9
+      "cumulativeUnique": 8
     },
     {
       "mutantNum": 80,
-      "cumulativeUnique": 9
+      "cumulativeUnique": 8
     },
     {
       "mutantNum": 90,
-      "cumulativeUnique": 10
+      "cumulativeUnique": 8
     },
     {
       "mutantNum": 100,
-      "cumulativeUnique": 10
+      "cumulativeUnique": 8
     },
     {
       "mutantNum": 110,
-      "cumulativeUnique": 10
+      "cumulativeUnique": 8
     },
     {
       "mutantNum": 120,
-      "cumulativeUnique": 10
+      "cumulativeUnique": 8
     },
     {
       "mutantNum": 130,
-      "cumulativeUnique": 10
+      "cumulativeUnique": 9
     },
     {
       "mutantNum": 140,
-      "cumulativeUnique": 10
+      "cumulativeUnique": 9
     },
     {
       "mutantNum": 150,
@@ -1643,122 +1643,22 @@
     },
     {
       "mutantNum": 220,
-      "cumulativeUnique": 11
+      "cumulativeUnique": 10
     },
     {
       "mutantNum": 230,
-      "cumulativeUnique": 11
+      "cumulativeUnique": 10
     },
     {
       "mutantNum": 240,
-      "cumulativeUnique": 11
+      "cumulativeUnique": 10
     },
     {
       "mutantNum": 250,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 260,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 270,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 280,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 290,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 300,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 310,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 320,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 330,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 340,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 350,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 360,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 370,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 380,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 390,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 400,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 410,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 420,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 430,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 440,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 450,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 460,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 470,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 480,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 490,
-      "cumulativeUnique": 11
-    },
-    {
-      "mutantNum": 500,
-      "cumulativeUnique": 11
+      "cumulativeUnique": 10
     }
   ],
-  "timestamp": "2025-12-23T18:39:33+11:00",
-  "duration": "10m55.531181289s",
+  "timestamp": "2025-12-23T19:41:12+11:00",
+  "duration": "15m22.813298756s",
   "workerCount": 18
 }
