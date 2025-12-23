@@ -246,6 +246,7 @@
             <button class="tab-btn" data-tab="swarm">🧬 Genetic Swarm</button>
             <button class="tab-btn" data-tab="council">👑 Council of 1000</button>
             <button class="tab-btn" data-tab="zoo">🦎 Evolutionary Zoo</button>
+            <button class="tab-btn" data-tab="monster">🦖 Monster Zoo</button>
         </div>
 
         <!-- Mode Comparison Tab -->
@@ -523,6 +524,91 @@
                 <canvas id="zoo-discovery-canvas"></canvas>
             </div>
         </div>
+
+        <!-- Monster Zoo Tab (Architectural Diversity) -->
+        <div class="tab-content" id="monster-tab">
+            <div class="insight-banner" style="background: linear-gradient(90deg, rgba(168, 85, 247, 0.1), rgba(34, 197, 94, 0.1)); border-color: rgba(168, 85, 247, 0.3);">
+                <div class="title" style="color: #a855f7;">🧬 ARCHITECTURAL DIVERSITY ZOO - Layer & CombineMode Variations</div>
+                <div>
+                    <strong>500 mutant architectures</strong> exploring 
+                    <span style="color:var(--accent-color)">CombineModes</span> (concat/add/avg/grid_scatter), 
+                    <span style="color:var(--success-color)">OutputTypes</span> (Sigmoid/Softmax/Sparsemax/Gumbel/Entmax), 
+                    and <span style="color:#ef4444">6 brain types</span> (MHA/LSTM/RNN/Dense/SwiGLU/NormDense).
+                </div>
+            </div>
+
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <h4>📊 ZOO METRICS</h4>
+                    <div style="display:grid;grid-template-columns:1fr;gap:0.75rem">
+                        <div>
+                            <div class="insight-value" style="color:#a855f7;font-size:2rem" id="monster-size">—</div>
+                            <div class="insight-detail">Total Mutants</div>
+                        </div>
+                        <div>
+                            <div class="insight-value success" style="font-size:2rem" id="monster-collective">—</div>
+                            <div class="insight-detail">Collective Tasks Solved</div>
+                        </div>
+                        <div>
+                            <div class="insight-value purple" id="monster-duration">—</div>
+                            <div class="insight-detail">Duration</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <h4>🔗 BEST COMBINE MODE</h4>
+                    <div id="monster-best-combine" style="font-size:0.8rem;color:var(--secondary-text)">Loading...</div>
+                </div>
+
+                <div class="insight-card">
+                    <h4>🏆 TOP MUTANTS</h4>
+                    <div style="max-height:220px;overflow-y:auto">
+                        <table class="swarm-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Config</th>
+                                    <th>Mode</th>
+                                    <th style="text-align:right">Solved</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monster-hall-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">🔗 CombineMode Performance</div>
+                        <div class="chart-subtitle">Does concat/add/avg/grid_scatter affect task discovery?</div>
+                    </div>
+                </div>
+                <canvas id="monster-combine-canvas" style="max-height:250px"></canvas>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">📤 OutputType Performance</div>
+                        <div class="chart-subtitle">Sigmoid vs Softmax vs Sparsemax vs Gumbel vs Entmax</div>
+                    </div>
+                </div>
+                <canvas id="monster-output-canvas" style="max-height:250px"></canvas>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">📈 Discovery Curve</div>
+                        <div class="chart-subtitle">Cumulative unique tasks as mutants are processed</div>
+                    </div>
+                </div>
+                <canvas id="monster-discovery-canvas"></canvas>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -530,11 +616,14 @@
         let swarmData = null;
         let councilData = null;
         let zooData = null;
+        let monsterData = null;
         let accuracyChart = null;
         let swarmChart = null;
         let councilChart = null;
         let zooSpeciesChart = null;
         let zooDiscoveryChart = null;
+        let monsterScatterChart = null;
+        let monsterDiscoveryChart = null;
         let selectedModes = new Set();
         let selectedAlgorithm = 'balanced';
 
@@ -572,11 +661,12 @@
 
         async function init() {
             try {
-                const [modesRes, swarmRes, councilRes, zooRes] = await Promise.allSettled([
+                const [modesRes, swarmRes, councilRes, zooRes, monsterRes] = await Promise.allSettled([
                     fetch('arc_benchmark_results.json'),
                     fetch('genetic_swarm_results.json'),
                     fetch('council_results.json'),
-                    fetch('zoo_results.json')
+                    fetch('zoo_results.json'),
+                    fetch('monster_results.json')
                 ]);
 
                 if (modesRes.status === 'fulfilled' && modesRes.value.ok) {
@@ -602,6 +692,11 @@
                 if (zooRes.status === 'fulfilled' && zooRes.value.ok) {
                     zooData = await zooRes.value.json();
                     updateZooDisplay();
+                }
+
+                if (monsterRes.status === 'fulfilled' && monsterRes.value.ok) {
+                    monsterData = await monsterRes.value.json();
+                    updateMonsterDisplay();
                 }
             } catch (e) {
                 console.error("Failed to load data:", e);
@@ -1064,6 +1159,220 @@
                     }
                 }
             });
+        }
+
+        function updateMonsterDisplay() {
+            if (!monsterData) return;
+
+            // Metrics
+            document.getElementById('monster-size').innerText = monsterData.zooSize.toLocaleString();
+            document.getElementById('monster-collective').innerText = monsterData.collectiveCount;
+            document.getElementById('monster-duration').innerText = monsterData.duration;
+
+            // Best combine mode
+            if (monsterData.combineModeBreakdown && monsterData.combineModeBreakdown.length > 0) {
+                const best = monsterData.combineModeBreakdown[0];
+                document.getElementById('monster-best-combine').innerHTML = `
+                    <div style="font-size:1.2rem;color:#a855f7;font-weight:700">${best.combineMode}</div>
+                    <div style="margin:0.5rem 0">Discovered: <strong>${best.uniqueCount}</strong> unique tasks</div>
+                    <div style="color:var(--secondary-text)">${best.count} mutants tested</div>
+                `;
+            }
+
+            // Hall of Fame table - now showing combineMode instead of params
+            document.getElementById('monster-hall-tbody').innerHTML = monsterData.topMutants.slice(0, 10).map((r, i) => {
+                const rankClass = i < 3 ? `rank-${i+1}` : '';
+                const cfg = r.config.mutationStr;
+                const shortCfg = cfg.length > 30 ? cfg.slice(0, 27) + '...' : cfg;
+                const mode = r.config.combineMode || 'concat';
+                return `<tr>
+                    <td><span class="rank-badge ${rankClass}">${i+1}</span></td>
+                    <td style="font-size:0.6rem;font-family:monospace" title="${cfg}">${shortCfg}</td>
+                    <td style="font-size:0.7rem;color:var(--accent-color)">${mode}</td>
+                    <td style="text-align:right;font-weight:700;color:var(--success-color)">${r.tasksSolved}</td>
+                </tr>`;
+            }).join('');
+
+            // Charts
+            updateMonsterCombineChart();
+            updateMonsterOutputChart();
+            updateMonsterDiscoveryChart();
+        }
+
+        function updateMonsterCombineChart() {
+            const ctx = document.getElementById('monster-combine-canvas').getContext('2d');
+            if (monsterScatterChart) monsterScatterChart.destroy();
+
+            const breakdown = monsterData.combineModeBreakdown || [];
+            const labels = breakdown.map(b => b.combineMode);
+            const data = breakdown.map(b => b.uniqueCount);
+
+            const colorMap = {
+                'concat': 'rgba(168, 85, 247, 0.7)',
+                'add': 'rgba(59, 130, 246, 0.7)',
+                'avg': 'rgba(34, 197, 94, 0.7)',
+                'grid_scatter': 'rgba(245, 158, 11, 0.7)'
+            };
+
+            monsterScatterChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Unique Tasks Discovered',
+                        data: data,
+                        backgroundColor: labels.map(l => colorMap[l] || 'rgba(255,255,255,0.5)'),
+                        borderColor: labels.map(l => colorMap[l] || 'rgba(255,255,255,0.7)'),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            title: { display: true, text: 'Unique Tasks Discovered', color: 'rgba(255,255,255,0.7)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)', stepSize: 1 }, 
+                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        },
+                        x: { 
+                            ticks: { color: 'rgba(255,255,255,0.7)' }, 
+                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        }
+                    },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: (ctx) => {
+                                    const b = breakdown[ctx.dataIndex];
+                                    return `${b.count} mutants | Best: ${b.bestSolved} tasks`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateMonsterOutputChart() {
+            const ctx = document.getElementById('monster-output-canvas').getContext('2d');
+            if (monsterDiscoveryChart) monsterDiscoveryChart.destroy();
+
+            const breakdown = monsterData.outputTypeBreakdown || [];
+            const labels = breakdown.map(b => b.outputType);
+            const data = breakdown.map(b => b.uniqueCount);
+
+            const colorMap = {
+                'Sigmoid': 'rgba(34, 197, 94, 0.7)',
+                'Softmax': 'rgba(59, 130, 246, 0.7)',
+                'Sparsemax': 'rgba(239, 68, 68, 0.7)',
+                'Gumbel': 'rgba(245, 158, 11, 0.7)',
+                'Entmax': 'rgba(168, 85, 247, 0.7)'
+            };
+
+            monsterDiscoveryChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Unique Tasks Discovered',
+                        data: data,
+                        backgroundColor: labels.map(l => colorMap[l] || 'rgba(255,255,255,0.5)'),
+                        borderColor: labels.map(l => colorMap[l] || 'rgba(255,255,255,0.7)'),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            title: { display: true, text: 'Unique Tasks Discovered', color: 'rgba(255,255,255,0.7)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)', stepSize: 1 }, 
+                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        },
+                        x: { 
+                            ticks: { color: 'rgba(255,255,255,0.7)' }, 
+                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        }
+                    },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: (ctx) => {
+                                    const b = breakdown[ctx.dataIndex];
+                                    return `${b.count} mutants | Best: ${b.bestSolved} tasks`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateMonsterDiscoveryChartReal() {
+            const canvas = document.getElementById('monster-discovery-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // Use a separate chart variable
+            if (window.monsterDiscoveryChartReal) window.monsterDiscoveryChartReal.destroy();
+
+            const timeline = monsterData.discoveryTimeline || [];
+            const labels = timeline.map(p => p.mutantNum);
+            const data = timeline.map(p => p.cumulativeUnique);
+
+            window.monsterDiscoveryChartReal = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Cumulative Unique Tasks',
+                        data: data,
+                        borderColor: '#a855f7',
+                        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                        fill: true,
+                        borderWidth: 3,
+                        tension: 0.3,
+                        pointRadius: 2,
+                        pointBackgroundColor: '#a855f7'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            title: { display: true, text: 'Unique Tasks Solved', color: 'rgba(255,255,255,0.7)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
+                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        },
+                        x: { 
+                            title: { display: true, text: 'Mutants Processed', color: 'rgba(255,255,255,0.7)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
+                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        }
+                    },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `${ctx.parsed.y} unique tasks discovered by mutant ${ctx.label}`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Keep the old function as alias
+        function updateMonsterDiscoveryChart() {
+            updateMonsterDiscoveryChartReal();
         }
 
         init();
