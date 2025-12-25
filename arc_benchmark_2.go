@@ -31,9 +31,9 @@ const (
 	MaxGridSize  = 30
 	InputSize    = MaxGridSize * MaxGridSize // 900
 	NumTasks     = 1000                      // ARC-AGI2 has 1000 training tasks
-	LearningRate = float32(1000.01)          // Same as arc_benchmark.go
-	InitScale    = float32(1000.5)
-	BudgetScale  = float32(1000.8)
+	LearningRate = float32(0.11)             // Same as arc_benchmark.go
+	InitScale    = float32(0.5)
+	BudgetScale  = float32(0.8)
 
 	// Architecture params
 	DModel     = 32
@@ -41,13 +41,13 @@ const (
 	LSTMHidden = 32
 
 	// Timing - 10 second training run with 100ms windows (100 windows total)
-	TestDuration   = 10 * time.Second
+	TestDuration   = 120 * time.Second
 	WindowDuration = 100 * time.Millisecond // 100ms for fine-grained accuracy tracking
 
 	// Batch training interval for NormalBP/Tween (this is where they PAUSE!)
 	TrainInterval = 50 * time.Millisecond
 
-	numHives = 10
+	numHives = 2
 )
 
 type TrainingMode int
@@ -780,8 +780,8 @@ func encodeGrid(grid [][]int) []float32 {
 
 func saveResults(results *BenchmarkResults) {
 	data, _ := json.MarshalIndent(results, "", "  ")
-	os.WriteFile("arc_benchmark_results.json", data, 0644)
-	fmt.Println("\n✅ Results saved to arc_benchmark_results.json")
+	os.WriteFile("arc_benchmark_results_2.json", data, 0644)
+	fmt.Println("\n✅ Results saved to arc_benchmark_results_2.json")
 }
 
 func printTimeline(results *BenchmarkResults) {

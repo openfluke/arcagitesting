@@ -559,8 +559,8 @@ func main() {
 
 	// Save results
 	data, _ := json.MarshalIndent(output, "", "  ")
-	os.WriteFile("monster_results.json", data, 0644)
-	fmt.Println("\n✅ Results saved to monster_results.json")
+	os.WriteFile("monster_results_2.json", data, 0644)
+	fmt.Println("\n✅ Results saved to monster_results_2.json")
 
 	// Print results
 	printResults(output)
