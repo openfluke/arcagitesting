@@ -12,45 +12,45 @@
       "windows": [
         {
           "timeMs": 100,
-          "outputs": 153,
-          "totalPixelAcc": 961.6699561307361,
-          "accuracy": 6.285424549874092,
-          "taskSwitches": 48
+          "outputs": 58,
+          "totalPixelAcc": 333.24630040416577,
+          "accuracy": 5.745625869037341,
+          "taskSwitches": 20
         },
         {
           "timeMs": 200,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 78,
+          "totalPixelAcc": 539.8188269877238,
+          "accuracy": 6.920754192150305,
+          "taskSwitches": 24
         },
         {
           "timeMs": 300,
-          "outputs": 161,
-          "totalPixelAcc": 1067.337796242558,
-          "accuracy": 6.6294273058543975,
-          "taskSwitches": 49
+          "outputs": 35,
+          "totalPixelAcc": 298.2973026752789,
+          "accuracy": 8.52278007643654,
+          "taskSwitches": 11
         },
         {
           "timeMs": 400,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 8,
+          "totalPixelAcc": 0.8264462809917356,
+          "accuracy": 0.10330578512396695,
+          "taskSwitches": 2
         },
         {
           "timeMs": 500,
+          "outputs": 171,
+          "totalPixelAcc": 875.92442848213,
+          "accuracy": 5.122365078842866,
+          "taskSwitches": 53
+        },
+        {
+          "timeMs": 600,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
-        },
-        {
-          "timeMs": 600,
-          "outputs": 103,
-          "totalPixelAcc": 629.412962023209,
-          "accuracy": 6.11080545653601,
-          "taskSwitches": 32
         },
         {
           "timeMs": 700,
@@ -61,52 +61,52 @@
         },
         {
           "timeMs": 800,
-          "outputs": 166,
-          "totalPixelAcc": 720.4259079756986,
-          "accuracy": 4.33991510828734,
-          "taskSwitches": 54
+          "outputs": 146,
+          "totalPixelAcc": 785.9061163610426,
+          "accuracy": 5.3829186052126206,
+          "taskSwitches": 43
         },
         {
           "timeMs": 900,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 31,
+          "totalPixelAcc": 127.5979938271605,
+          "accuracy": 4.116064317005177,
+          "taskSwitches": 7
         },
         {
           "timeMs": 1000,
-          "outputs": 3,
-          "totalPixelAcc": 0.8888888888888888,
-          "accuracy": 0.2962962962962963,
-          "taskSwitches": 1
-        },
-        {
-          "timeMs": 1100,
-          "outputs": 149,
-          "totalPixelAcc": 995.3055050609162,
-          "accuracy": 6.679902718529639,
-          "taskSwitches": 48
-        },
-        {
-          "timeMs": 1200,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
         },
         {
+          "timeMs": 1100,
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
+        },
+        {
+          "timeMs": 1200,
+          "outputs": 109,
+          "totalPixelAcc": 688.8500210873398,
+          "accuracy": 6.319724964104035,
+          "taskSwitches": 33
+        },
+        {
           "timeMs": 1300,
-          "outputs": 166,
-          "totalPixelAcc": 1027.9483197215907,
-          "accuracy": 6.19245975735898,
-          "taskSwitches": 49
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 1400,
-          "outputs": 8,
-          "totalPixelAcc": 51,
-          "accuracy": 6.375,
-          "taskSwitches": 2
+          "outputs": 82,
+          "totalPixelAcc": 259.75866245426334,
+          "accuracy": 3.167788566515407,
+          "taskSwitches": 26
         },
         {
           "timeMs": 1500,
@@ -117,10 +117,10 @@
         },
         {
           "timeMs": 1600,
-          "outputs": 116,
-          "totalPixelAcc": 519.7611446178296,
-          "accuracy": 4.480699522567496,
-          "taskSwitches": 34
+          "outputs": 133,
+          "totalPixelAcc": 935.0370732335706,
+          "accuracy": 7.030353934086997,
+          "taskSwitches": 40
         },
         {
           "timeMs": 1700,
@@ -131,31 +131,31 @@
         },
         {
           "timeMs": 1800,
-          "outputs": 114,
-          "totalPixelAcc": 537.2559598022859,
-          "accuracy": 4.712771577213035,
-          "taskSwitches": 34
+          "outputs": 143,
+          "totalPixelAcc": 611.0039581098696,
+          "accuracy": 4.27275495181727,
+          "taskSwitches": 42
         },
         {
           "timeMs": 1900,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 11,
+          "totalPixelAcc": 8.588931405895693,
+          "accuracy": 0.7808119459905175,
+          "taskSwitches": 4
         },
         {
           "timeMs": 2000,
-          "outputs": 181,
-          "totalPixelAcc": 863.5163748206077,
-          "accuracy": 4.770808700666341,
-          "taskSwitches": 55
-        },
-        {
-          "timeMs": 2100,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
+        },
+        {
+          "timeMs": 2100,
+          "outputs": 138,
+          "totalPixelAcc": 765.5089636073848,
+          "accuracy": 5.5471664029520635,
+          "taskSwitches": 42
         },
         {
           "timeMs": 2200,
@@ -166,108 +166,108 @@
         },
         {
           "timeMs": 2300,
-          "outputs": 131,
-          "totalPixelAcc": 939.7272445620711,
-          "accuracy": 7.173490416504359,
-          "taskSwitches": 41
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 2400,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 149,
+          "totalPixelAcc": 1186.266934900603,
+          "accuracy": 7.961523053024181,
+          "taskSwitches": 47
         },
         {
           "timeMs": 2500,
-          "outputs": 93,
-          "totalPixelAcc": 655.6846240179573,
-          "accuracy": 7.050372301268358,
-          "taskSwitches": 28
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 2600,
-          "outputs": 76,
-          "totalPixelAcc": 406.08424908424905,
-          "accuracy": 5.343213803740119,
-          "taskSwitches": 24
+          "outputs": 33,
+          "totalPixelAcc": 179.49269686164612,
+          "accuracy": 5.439172632171094,
+          "taskSwitches": 11
         },
         {
           "timeMs": 2700,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 51,
+          "totalPixelAcc": 240.30779059597123,
+          "accuracy": 4.7119174626661025,
+          "taskSwitches": 17
         },
         {
           "timeMs": 2800,
-          "outputs": 47,
-          "totalPixelAcc": 340.72947549083915,
-          "accuracy": 7.249563308315727,
-          "taskSwitches": 13
+          "outputs": 79,
+          "totalPixelAcc": 610.9183803723233,
+          "accuracy": 7.733144055345865,
+          "taskSwitches": 26
         },
         {
           "timeMs": 2900,
-          "outputs": 132,
-          "totalPixelAcc": 556.900368333815,
-          "accuracy": 4.218942184347084,
-          "taskSwitches": 41
+          "outputs": 11,
+          "totalPixelAcc": 73.76893939393939,
+          "accuracy": 6.706267217630853,
+          "taskSwitches": 3
         },
         {
           "timeMs": 3000,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 106,
+          "totalPixelAcc": 381.6235771721511,
+          "accuracy": 3.600222426152369,
+          "taskSwitches": 32
         },
         {
           "timeMs": 3100,
-          "outputs": 68,
-          "totalPixelAcc": 365.7582333800444,
-          "accuracy": 5.378797549706535,
-          "taskSwitches": 24
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 3200,
-          "outputs": 83,
-          "totalPixelAcc": 488.16849228212874,
-          "accuracy": 5.881548099784683,
-          "taskSwitches": 28
+          "outputs": 129,
+          "totalPixelAcc": 719.1881369527995,
+          "accuracy": 5.575101836843407,
+          "taskSwitches": 43
         },
         {
           "timeMs": 3300,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 29,
+          "totalPixelAcc": 198.81595410913943,
+          "accuracy": 6.855722555487566,
+          "taskSwitches": 9
         },
         {
           "timeMs": 3400,
-          "outputs": 154,
-          "totalPixelAcc": 1003.2819312156087,
-          "accuracy": 6.51481773516629,
-          "taskSwitches": 45
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 3500,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 12,
+          "totalPixelAcc": 45.115864527629235,
+          "accuracy": 3.7596553773024364,
+          "taskSwitches": 5
         },
         {
           "timeMs": 3600,
+          "outputs": 155,
+          "totalPixelAcc": 713.7960533963426,
+          "accuracy": 4.6051358283635,
+          "taskSwitches": 48
+        },
+        {
+          "timeMs": 3700,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
-        },
-        {
-          "timeMs": 3700,
-          "outputs": 125,
-          "totalPixelAcc": 576.748062285343,
-          "accuracy": 4.613984498282744,
-          "taskSwitches": 38
         },
         {
           "timeMs": 3800,
@@ -278,10 +278,10 @@
         },
         {
           "timeMs": 3900,
-          "outputs": 166,
-          "totalPixelAcc": 843.0233120587707,
-          "accuracy": 5.078453687101028,
-          "taskSwitches": 50
+          "outputs": 173,
+          "totalPixelAcc": 963.6571139495046,
+          "accuracy": 5.570272334968235,
+          "taskSwitches": 54
         },
         {
           "timeMs": 4000,
@@ -292,52 +292,52 @@
         },
         {
           "timeMs": 4100,
-          "outputs": 126,
-          "totalPixelAcc": 513.688370143588,
-          "accuracy": 4.076891826536413,
-          "taskSwitches": 35
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 4200,
-          "outputs": 16,
-          "totalPixelAcc": 148.6672463009361,
-          "accuracy": 9.291702893808507,
-          "taskSwitches": 6
+          "outputs": 59,
+          "totalPixelAcc": 226.29195350248713,
+          "accuracy": 3.8354568390252055,
+          "taskSwitches": 19
         },
         {
           "timeMs": 4300,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 95,
+          "totalPixelAcc": 486.0213622056154,
+          "accuracy": 5.116014339006478,
+          "taskSwitches": 29
         },
         {
           "timeMs": 4400,
-          "outputs": 161,
-          "totalPixelAcc": 949.2280459343226,
-          "accuracy": 5.895826372262873,
-          "taskSwitches": 50
-        },
-        {
-          "timeMs": 4500,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
         },
         {
+          "timeMs": 4500,
+          "outputs": 118,
+          "totalPixelAcc": 752.5633009237429,
+          "accuracy": 6.377655092574092,
+          "taskSwitches": 35
+        },
+        {
           "timeMs": 4600,
-          "outputs": 47,
-          "totalPixelAcc": 348.4531802677797,
-          "accuracy": 7.413897452505951,
-          "taskSwitches": 14
+          "outputs": 59,
+          "totalPixelAcc": 219.8612729419997,
+          "accuracy": 3.726462253254232,
+          "taskSwitches": 18
         },
         {
           "timeMs": 4700,
-          "outputs": 99,
-          "totalPixelAcc": 677.5615427457532,
-          "accuracy": 6.84405598733084,
-          "taskSwitches": 32
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 4800,
@@ -348,10 +348,10 @@
         },
         {
           "timeMs": 4900,
-          "outputs": 143,
-          "totalPixelAcc": 878.4425402039038,
-          "accuracy": 6.142954826600726,
-          "taskSwitches": 44
+          "outputs": 130,
+          "totalPixelAcc": 740.9551828014688,
+          "accuracy": 5.6996552523189905,
+          "taskSwitches": 40
         },
         {
           "timeMs": 5000,
@@ -362,17 +362,17 @@
         },
         {
           "timeMs": 5100,
-          "outputs": 11,
-          "totalPixelAcc": 18.555555555555557,
-          "accuracy": 1.686868686868687,
-          "taskSwitches": 3
+          "outputs": 17,
+          "totalPixelAcc": 163.4012388427209,
+          "accuracy": 9.611837578983582,
+          "taskSwitches": 5
         },
         {
           "timeMs": 5200,
-          "outputs": 129,
-          "totalPixelAcc": 588.3367796511155,
-          "accuracy": 4.560750229853609,
-          "taskSwitches": 41
+          "outputs": 98,
+          "totalPixelAcc": 556.9056198259144,
+          "accuracy": 5.682710406386882,
+          "taskSwitches": 31
         },
         {
           "timeMs": 5300,
@@ -383,10 +383,10 @@
         },
         {
           "timeMs": 5400,
-          "outputs": 170,
-          "totalPixelAcc": 946.2110904968044,
-          "accuracy": 5.5659475911576735,
-          "taskSwitches": 56
+          "outputs": 159,
+          "totalPixelAcc": 630.731194664106,
+          "accuracy": 3.9668628595226796,
+          "taskSwitches": 48
         },
         {
           "timeMs": 5500,
@@ -397,17 +397,17 @@
         },
         {
           "timeMs": 5600,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 23,
+          "totalPixelAcc": 156.9277902816251,
+          "accuracy": 6.822947403548918,
+          "taskSwitches": 8
         },
         {
           "timeMs": 5700,
-          "outputs": 206,
-          "totalPixelAcc": 1194.5152282786025,
-          "accuracy": 5.798617613002925,
-          "taskSwitches": 61
+          "outputs": 153,
+          "totalPixelAcc": 786.6776204869642,
+          "accuracy": 5.141683794032446,
+          "taskSwitches": 48
         },
         {
           "timeMs": 5800,
@@ -425,101 +425,101 @@
         },
         {
           "timeMs": 6000,
-          "outputs": 183,
-          "totalPixelAcc": 903.5958688592684,
-          "accuracy": 4.93768234349327,
-          "taskSwitches": 55
+          "outputs": 83,
+          "totalPixelAcc": 354.0244905805459,
+          "accuracy": 4.265355308199348,
+          "taskSwitches": 25
         },
         {
           "timeMs": 6100,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 39,
+          "totalPixelAcc": 353.9515306122449,
+          "accuracy": 9.075680272108842,
+          "taskSwitches": 12
         },
         {
           "timeMs": 6200,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 63,
+          "totalPixelAcc": 373.5345523996481,
+          "accuracy": 5.929119879359494,
+          "taskSwitches": 21
         },
         {
           "timeMs": 6300,
-          "outputs": 125,
-          "totalPixelAcc": 502.43554824533385,
-          "accuracy": 4.019484385962671,
-          "taskSwitches": 35
+          "outputs": 16,
+          "totalPixelAcc": 20.856037151702786,
+          "accuracy": 1.3035023219814241,
+          "taskSwitches": 4
         },
         {
           "timeMs": 6400,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 63,
+          "totalPixelAcc": 407.7949288895863,
+          "accuracy": 6.472935379199782,
+          "taskSwitches": 20
         },
         {
           "timeMs": 6500,
-          "outputs": 95,
-          "totalPixelAcc": 571.9282460674501,
-          "accuracy": 6.020297327025791,
-          "taskSwitches": 30
+          "outputs": 13,
+          "totalPixelAcc": 114.68982900112708,
+          "accuracy": 8.822294538548237,
+          "taskSwitches": 5
         },
         {
           "timeMs": 6600,
-          "outputs": 50,
-          "totalPixelAcc": 279.675650164372,
-          "accuracy": 5.593513003287439,
-          "taskSwitches": 17
+          "outputs": 158,
+          "totalPixelAcc": 1073.6640916122356,
+          "accuracy": 6.795342351976174,
+          "taskSwitches": 48
         },
         {
           "timeMs": 6700,
-          "outputs": 28,
-          "totalPixelAcc": 221.2685185185185,
-          "accuracy": 7.902447089947089,
-          "taskSwitches": 7
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 6800,
-          "outputs": 113,
-          "totalPixelAcc": 706.6815222488418,
-          "accuracy": 6.2538187809632015,
-          "taskSwitches": 36
+          "outputs": 3,
+          "totalPixelAcc": 4.861111111111112,
+          "accuracy": 1.6203703703703705,
+          "taskSwitches": 1
         },
         {
           "timeMs": 6900,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 114,
+          "totalPixelAcc": 481.49675527907687,
+          "accuracy": 4.223655748062078,
+          "taskSwitches": 35
         },
         {
           "timeMs": 7000,
-          "outputs": 152,
-          "totalPixelAcc": 903.6613247863244,
-          "accuracy": 5.945140294646871,
-          "taskSwitches": 46
-        },
-        {
-          "timeMs": 7100,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
         },
         {
+          "timeMs": 7100,
+          "outputs": 201,
+          "totalPixelAcc": 1209.063746003784,
+          "accuracy": 6.015242517431761,
+          "taskSwitches": 61
+        },
+        {
           "timeMs": 7200,
-          "outputs": 47,
-          "totalPixelAcc": 402.06611570247924,
-          "accuracy": 8.55459820643573,
-          "taskSwitches": 15
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 7300,
-          "outputs": 93,
-          "totalPixelAcc": 345.2318131974013,
-          "accuracy": 3.712170034380659,
-          "taskSwitches": 28
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 7400,
@@ -530,10 +530,10 @@
         },
         {
           "timeMs": 7500,
-          "outputs": 193,
-          "totalPixelAcc": 1076.9214322512237,
-          "accuracy": 5.579903794047791,
-          "taskSwitches": 65
+          "outputs": 134,
+          "totalPixelAcc": 808.6687334656084,
+          "accuracy": 6.034841294519466,
+          "taskSwitches": 38
         },
         {
           "timeMs": 7600,
@@ -551,10 +551,10 @@
         },
         {
           "timeMs": 7800,
-          "outputs": 127,
-          "totalPixelAcc": 839.9928374260751,
-          "accuracy": 6.614116830126576,
-          "taskSwitches": 37
+          "outputs": 124,
+          "totalPixelAcc": 485.63994774944996,
+          "accuracy": 3.9164511915278224,
+          "taskSwitches": 39
         },
         {
           "timeMs": 7900,
@@ -565,17 +565,17 @@
         },
         {
           "timeMs": 8000,
-          "outputs": 194,
-          "totalPixelAcc": 960.7093728341077,
-          "accuracy": 4.952110169247978,
-          "taskSwitches": 58
+          "outputs": 170,
+          "totalPixelAcc": 1057.0032716547785,
+          "accuracy": 6.217666303851638,
+          "taskSwitches": 50
         },
         {
           "timeMs": 8100,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 11,
+          "totalPixelAcc": 23.83826976347752,
+          "accuracy": 2.167115433043411,
+          "taskSwitches": 3
         },
         {
           "timeMs": 8200,
@@ -586,38 +586,38 @@
         },
         {
           "timeMs": 8300,
-          "outputs": 110,
-          "totalPixelAcc": 489.97073166873577,
-          "accuracy": 4.454279378806689,
-          "taskSwitches": 33
-        },
-        {
-          "timeMs": 8400,
-          "outputs": 60,
-          "totalPixelAcc": 203.32401455139654,
-          "accuracy": 3.3887335758566093,
-          "taskSwitches": 17
-        },
-        {
-          "timeMs": 8500,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
         },
         {
+          "timeMs": 8400,
+          "outputs": 90,
+          "totalPixelAcc": 466.2665536258597,
+          "accuracy": 5.180739484731774,
+          "taskSwitches": 28
+        },
+        {
+          "timeMs": 8500,
+          "outputs": 4,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 2
+        },
+        {
           "timeMs": 8600,
-          "outputs": 133,
-          "totalPixelAcc": 766.077194587126,
-          "accuracy": 5.75997890667012,
-          "taskSwitches": 41
+          "outputs": 28,
+          "totalPixelAcc": 146.12824032530332,
+          "accuracy": 5.21886572590369,
+          "taskSwitches": 8
         },
         {
           "timeMs": 8700,
-          "outputs": 30,
-          "totalPixelAcc": 117.32879818594104,
-          "accuracy": 3.910959939531368,
-          "taskSwitches": 10
+          "outputs": 80,
+          "totalPixelAcc": 387.13739649882757,
+          "accuracy": 4.839217456235344,
+          "taskSwitches": 24
         },
         {
           "timeMs": 8800,
@@ -628,10 +628,10 @@
         },
         {
           "timeMs": 8900,
-          "outputs": 170,
-          "totalPixelAcc": 1207.5384457022562,
-          "accuracy": 7.103167327660331,
-          "taskSwitches": 52
+          "outputs": 140,
+          "totalPixelAcc": 1121.759345489299,
+          "accuracy": 8.012566753494992,
+          "taskSwitches": 44
         },
         {
           "timeMs": 9000,
@@ -649,9 +649,9 @@
         },
         {
           "timeMs": 9200,
-          "outputs": 148,
-          "totalPixelAcc": 819.0373068289733,
-          "accuracy": 5.5340358569525225,
+          "outputs": 134,
+          "totalPixelAcc": 647.8298854120983,
+          "accuracy": 4.834551383672375,
           "taskSwitches": 45
         },
         {
@@ -663,17 +663,17 @@
         },
         {
           "timeMs": 9400,
-          "outputs": 79,
-          "totalPixelAcc": 578.7786925992666,
-          "accuracy": 7.3263125645476785,
-          "taskSwitches": 25
+          "outputs": 92,
+          "totalPixelAcc": 736.286193920911,
+          "accuracy": 8.003110803488164,
+          "taskSwitches": 29
         },
         {
           "timeMs": 9500,
-          "outputs": 73,
-          "totalPixelAcc": 227.88114091597393,
-          "accuracy": 3.1216594646023825,
-          "taskSwitches": 22
+          "outputs": 61,
+          "totalPixelAcc": 150.08341349183593,
+          "accuracy": 2.4603838277350154,
+          "taskSwitches": 18
         },
         {
           "timeMs": 9600,
@@ -684,17 +684,17 @@
         },
         {
           "timeMs": 9700,
-          "outputs": 91,
-          "totalPixelAcc": 499.2942159242092,
-          "accuracy": 5.48674962554076,
-          "taskSwitches": 31
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 9800,
-          "outputs": 63,
-          "totalPixelAcc": 403.66792538870465,
-          "accuracy": 6.407427387122296,
-          "taskSwitches": 21
+          "outputs": 176,
+          "totalPixelAcc": 1006.179274923529,
+          "accuracy": 5.716927698429142,
+          "taskSwitches": 58
         },
         {
           "timeMs": 9900,
@@ -705,2224 +705,2215 @@
         },
         {
           "timeMs": 10000,
-          "outputs": 143,
-          "totalPixelAcc": 802.624169518252,
-          "accuracy": 5.6127564301975665,
-          "taskSwitches": 42
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         }
       ],
-      "totalOutputs": 6003,
-      "totalTaskSwitches": 1848,
-      "trainTimeSec": 10.174942023,
-      "evalAccuracy": 5.169581715035458,
+      "totalOutputs": 4978,
+      "totalTaskSwitches": 1541,
+      "trainTimeSec": 10.026813828,
+      "evalAccuracy": 8.863314464454662,
       "tasksSolved": 0,
-      "avgTrainAccuracy": 3.0084555077438218,
-      "stability": 96.9996282421306,
+      "avgTrainAccuracy": 2.9865777133175455,
+      "stability": 96.95956159565908,
       "consistency": 0,
-      "throughputPerSec": 589.9787916658875,
+      "throughputPerSec": 496.46877716018565,
       "score": 0
     },
     "StepBP": {
       "windows": [
         {
           "timeMs": 100,
-          "outputs": 27,
-          "totalPixelAcc": 96.51020408163265,
-          "accuracy": 3.5744520030234317,
-          "taskSwitches": 9
+          "outputs": 14,
+          "totalPixelAcc": 93.40676327886081,
+          "accuracy": 6.671911662775772,
+          "taskSwitches": 6
         },
         {
           "timeMs": 200,
-          "outputs": 19,
-          "totalPixelAcc": 214.79422514619884,
-          "accuracy": 11.304959218220992,
+          "outputs": 17,
+          "totalPixelAcc": 92.43501690617074,
+          "accuracy": 5.437353935657103,
           "taskSwitches": 6
         },
         {
           "timeMs": 300,
-          "outputs": 21,
-          "totalPixelAcc": 117.08333333333333,
-          "accuracy": 5.575396825396825,
-          "taskSwitches": 6
+          "outputs": 18,
+          "totalPixelAcc": 85.33740035571537,
+          "accuracy": 4.7409666864286315,
+          "taskSwitches": 5
         },
         {
           "timeMs": 400,
-          "outputs": 21,
-          "totalPixelAcc": 237.57928240740736,
-          "accuracy": 11.313299162257493,
+          "outputs": 15,
+          "totalPixelAcc": 165.3398549502446,
+          "accuracy": 11.022656996682972,
           "taskSwitches": 5
         },
         {
           "timeMs": 500,
-          "outputs": 21,
-          "totalPixelAcc": 210.25008862608396,
-          "accuracy": 10.011908982194475,
-          "taskSwitches": 9
+          "outputs": 14,
+          "totalPixelAcc": 71.9766081871345,
+          "accuracy": 5.141186299081036,
+          "taskSwitches": 4
         },
         {
           "timeMs": 600,
-          "outputs": 21,
-          "totalPixelAcc": 341.16666666666663,
-          "accuracy": 16.246031746031743,
-          "taskSwitches": 5
+          "outputs": 12,
+          "totalPixelAcc": 157.77777777777777,
+          "accuracy": 13.148148148148147,
+          "taskSwitches": 3
         },
         {
           "timeMs": 700,
-          "outputs": 21,
-          "totalPixelAcc": 250.94277360066832,
-          "accuracy": 11.949655885746111,
-          "taskSwitches": 7
+          "outputs": 20,
+          "totalPixelAcc": 206.67266821312776,
+          "accuracy": 10.333633410656388,
+          "taskSwitches": 6
         },
         {
           "timeMs": 800,
-          "outputs": 24,
-          "totalPixelAcc": 167.20238095238093,
-          "accuracy": 6.966765873015873,
-          "taskSwitches": 9
+          "outputs": 15,
+          "totalPixelAcc": 91.90123339148117,
+          "accuracy": 6.126748892765411,
+          "taskSwitches": 5
         },
         {
           "timeMs": 900,
-          "outputs": 20,
-          "totalPixelAcc": 203.0033513405362,
-          "accuracy": 10.15016756702681,
-          "taskSwitches": 5
+          "outputs": 11,
+          "totalPixelAcc": 54.31300013118195,
+          "accuracy": 4.937545466471087,
+          "taskSwitches": 4
         },
         {
           "timeMs": 1000,
-          "outputs": 21,
-          "totalPixelAcc": 255.7704826038159,
-          "accuracy": 12.1795467906579,
-          "taskSwitches": 7
+          "outputs": 18,
+          "totalPixelAcc": 117.12830040266228,
+          "accuracy": 6.507127800147904,
+          "taskSwitches": 5
         },
         {
           "timeMs": 1100,
-          "outputs": 26,
-          "totalPixelAcc": 226.29166666666663,
-          "accuracy": 8.703525641025639,
-          "taskSwitches": 7
+          "outputs": 17,
+          "totalPixelAcc": 186.58035449351974,
+          "accuracy": 10.975314970207043,
+          "taskSwitches": 6
         },
         {
           "timeMs": 1200,
-          "outputs": 19,
-          "totalPixelAcc": 338.85827664399096,
-          "accuracy": 17.834646139157417,
-          "taskSwitches": 6
+          "outputs": 20,
+          "totalPixelAcc": 284.0750704647485,
+          "accuracy": 14.203753523237424,
+          "taskSwitches": 4
         },
         {
           "timeMs": 1300,
-          "outputs": 20,
-          "totalPixelAcc": 234.6926807760141,
-          "accuracy": 11.734634038800705,
-          "taskSwitches": 6
+          "outputs": 21,
+          "totalPixelAcc": 271.12646282289137,
+          "accuracy": 12.910783943947209,
+          "taskSwitches": 8
         },
         {
           "timeMs": 1400,
-          "outputs": 17,
-          "totalPixelAcc": 199.41666666666669,
-          "accuracy": 11.730392156862747,
-          "taskSwitches": 5
+          "outputs": 19,
+          "totalPixelAcc": 216.36111111111111,
+          "accuracy": 11.387426900584796,
+          "taskSwitches": 6
         },
         {
           "timeMs": 1500,
           "outputs": 18,
-          "totalPixelAcc": 169.79968962661272,
-          "accuracy": 9.433316090367374,
-          "taskSwitches": 6
+          "totalPixelAcc": 113.04942810457517,
+          "accuracy": 6.280523783587509,
+          "taskSwitches": 5
         },
         {
           "timeMs": 1600,
-          "outputs": 24,
-          "totalPixelAcc": 393.61022927689595,
-          "accuracy": 16.400426219870663,
-          "taskSwitches": 7
+          "outputs": 18,
+          "totalPixelAcc": 169.38494262557919,
+          "accuracy": 9.410274590309955,
+          "taskSwitches": 6
         },
         {
           "timeMs": 1700,
-          "outputs": 20,
-          "totalPixelAcc": 415.0544967298214,
-          "accuracy": 20.75272483649107,
-          "taskSwitches": 6
+          "outputs": 16,
+          "totalPixelAcc": 194.33333333333331,
+          "accuracy": 12.145833333333332,
+          "taskSwitches": 4
         },
         {
           "timeMs": 1800,
           "outputs": 15,
-          "totalPixelAcc": 197.16251803751805,
-          "accuracy": 13.14416786916787,
-          "taskSwitches": 5
+          "totalPixelAcc": 161.29970946712015,
+          "accuracy": 10.753313964474676,
+          "taskSwitches": 4
         },
         {
           "timeMs": 1900,
-          "outputs": 17,
-          "totalPixelAcc": 465.08658008658006,
-          "accuracy": 27.358034122740005,
+          "outputs": 15,
+          "totalPixelAcc": 58.04119318181818,
+          "accuracy": 3.8694128787878785,
           "taskSwitches": 5
         },
         {
           "timeMs": 2000,
-          "outputs": 16,
-          "totalPixelAcc": 335.7139629376471,
-          "accuracy": 20.982122683602945,
-          "taskSwitches": 6
-        },
-        {
-          "timeMs": 2100,
-          "outputs": 17,
-          "totalPixelAcc": 130.00471129747444,
-          "accuracy": 7.647335958674967,
+          "outputs": 12,
+          "totalPixelAcc": 195.72419169488768,
+          "accuracy": 16.310349307907305,
           "taskSwitches": 5
         },
         {
+          "timeMs": 2100,
+          "outputs": 20,
+          "totalPixelAcc": 324.2644144631206,
+          "accuracy": 16.21322072315603,
+          "taskSwitches": 7
+        },
+        {
           "timeMs": 2200,
-          "outputs": 22,
-          "totalPixelAcc": 202.48023054825626,
-          "accuracy": 9.203646843102558,
-          "taskSwitches": 7
-        },
-        {
-          "timeMs": 2300,
-          "outputs": 26,
-          "totalPixelAcc": 311.5164434719757,
-          "accuracy": 11.981401671999066,
-          "taskSwitches": 7
-        },
-        {
-          "timeMs": 2400,
-          "outputs": 21,
-          "totalPixelAcc": 516.7571996808907,
-          "accuracy": 24.607485699090034,
+          "outputs": 20,
+          "totalPixelAcc": 141.7570546737213,
+          "accuracy": 7.0878527336860655,
           "taskSwitches": 6
         },
         {
+          "timeMs": 2300,
+          "outputs": 11,
+          "totalPixelAcc": 99.08041963215894,
+          "accuracy": 9.007310875650813,
+          "taskSwitches": 3
+        },
+        {
+          "timeMs": 2400,
+          "outputs": 10,
+          "totalPixelAcc": 53.67460317460318,
+          "accuracy": 5.367460317460318,
+          "taskSwitches": 2
+        },
+        {
           "timeMs": 2500,
-          "outputs": 21,
-          "totalPixelAcc": 314.11222598378714,
-          "accuracy": 14.957725046847006,
-          "taskSwitches": 8
+          "outputs": 17,
+          "totalPixelAcc": 379.2985090218424,
+          "accuracy": 22.311677001284846,
+          "taskSwitches": 4
         },
         {
           "timeMs": 2600,
           "outputs": 18,
-          "totalPixelAcc": 195.31944444444446,
-          "accuracy": 10.85108024691358,
+          "totalPixelAcc": 301.2141372521426,
+          "accuracy": 16.734118736230144,
           "taskSwitches": 6
         },
         {
           "timeMs": 2700,
-          "outputs": 22,
-          "totalPixelAcc": 289.85984694318023,
-          "accuracy": 13.175447588326374,
-          "taskSwitches": 8
+          "outputs": 20,
+          "totalPixelAcc": 328.7977164235758,
+          "accuracy": 16.43988582117879,
+          "taskSwitches": 6
         },
         {
           "timeMs": 2800,
-          "outputs": 23,
-          "totalPixelAcc": 542.4535588188991,
-          "accuracy": 23.584937339952134,
-          "taskSwitches": 7
+          "outputs": 21,
+          "totalPixelAcc": 194.04753642821828,
+          "accuracy": 9.240358877534204,
+          "taskSwitches": 6
         },
         {
           "timeMs": 2900,
-          "outputs": 23,
-          "totalPixelAcc": 341.9007112648981,
-          "accuracy": 14.865248315865136,
+          "outputs": 25,
+          "totalPixelAcc": 380.959894536878,
+          "accuracy": 15.23839578147512,
           "taskSwitches": 8
         },
         {
           "timeMs": 3000,
-          "outputs": 23,
-          "totalPixelAcc": 692.9451566951566,
-          "accuracy": 30.128050291093764,
-          "taskSwitches": 7
+          "outputs": 11,
+          "totalPixelAcc": 152.22020068711242,
+          "accuracy": 13.838200062464766,
+          "taskSwitches": 3
         },
         {
           "timeMs": 3100,
-          "outputs": 23,
-          "totalPixelAcc": 549.551689005661,
-          "accuracy": 23.893551695898307,
-          "taskSwitches": 8
-        },
-        {
-          "timeMs": 3200,
-          "outputs": 17,
-          "totalPixelAcc": 255.64583333333334,
-          "accuracy": 15.037990196078432,
-          "taskSwitches": 6
-        },
-        {
-          "timeMs": 3300,
-          "outputs": 22,
-          "totalPixelAcc": 420.5392975903811,
-          "accuracy": 19.115422617744596,
-          "taskSwitches": 7
-        },
-        {
-          "timeMs": 3400,
-          "outputs": 24,
-          "totalPixelAcc": 439.0755857898715,
-          "accuracy": 18.29481607457798,
-          "taskSwitches": 7
-        },
-        {
-          "timeMs": 3500,
-          "outputs": 17,
-          "totalPixelAcc": 187.4063852813853,
-          "accuracy": 11.023905016552076,
+          "outputs": 15,
+          "totalPixelAcc": 200.36795137436167,
+          "accuracy": 13.357863424957445,
           "taskSwitches": 5
         },
         {
+          "timeMs": 3200,
+          "outputs": 16,
+          "totalPixelAcc": 209.95370370370372,
+          "accuracy": 13.122106481481483,
+          "taskSwitches": 3
+        },
+        {
+          "timeMs": 3300,
+          "outputs": 16,
+          "totalPixelAcc": 201.48880903047572,
+          "accuracy": 12.593050564404733,
+          "taskSwitches": 4
+        },
+        {
+          "timeMs": 3400,
+          "outputs": 15,
+          "totalPixelAcc": 241.4965076360693,
+          "accuracy": 16.099767175737956,
+          "taskSwitches": 5
+        },
+        {
+          "timeMs": 3500,
+          "outputs": 15,
+          "totalPixelAcc": 62.02267573696145,
+          "accuracy": 4.134845049130764,
+          "taskSwitches": 3
+        },
+        {
           "timeMs": 3600,
-          "outputs": 24,
-          "totalPixelAcc": 115.51375497398224,
-          "accuracy": 4.813073123915927,
+          "outputs": 19,
+          "totalPixelAcc": 283.0803571428571,
+          "accuracy": 14.898966165413531,
           "taskSwitches": 7
         },
         {
           "timeMs": 3700,
-          "outputs": 21,
-          "totalPixelAcc": 178.02056640761745,
-          "accuracy": 8.477169828934164,
-          "taskSwitches": 5
+          "outputs": 20,
+          "totalPixelAcc": 260.8820450885668,
+          "accuracy": 13.044102254428342,
+          "taskSwitches": 6
         },
         {
           "timeMs": 3800,
-          "outputs": 23,
-          "totalPixelAcc": 250.9611966980388,
-          "accuracy": 10.9113563781756,
-          "taskSwitches": 7
+          "outputs": 14,
+          "totalPixelAcc": 131.3275613275613,
+          "accuracy": 9.380540094825808,
+          "taskSwitches": 4
         },
         {
           "timeMs": 3900,
-          "outputs": 23,
-          "totalPixelAcc": 217.91657858810058,
-          "accuracy": 9.474633851656547,
-          "taskSwitches": 7
+          "outputs": 20,
+          "totalPixelAcc": 137.0595238095238,
+          "accuracy": 6.8529761904761894,
+          "taskSwitches": 6
         },
         {
           "timeMs": 4000,
-          "outputs": 23,
-          "totalPixelAcc": 220.82716049382717,
-          "accuracy": 9.601180891035964,
+          "outputs": 22,
+          "totalPixelAcc": 623.6121746944392,
+          "accuracy": 28.346007940656328,
           "taskSwitches": 7
         },
         {
           "timeMs": 4100,
-          "outputs": 25,
-          "totalPixelAcc": 431.54537944572905,
-          "accuracy": 17.261815177829163,
-          "taskSwitches": 7
+          "outputs": 12,
+          "totalPixelAcc": 109.33333333333334,
+          "accuracy": 9.111111111111112,
+          "taskSwitches": 4
         },
         {
           "timeMs": 4200,
-          "outputs": 19,
-          "totalPixelAcc": 277.7190820296768,
-          "accuracy": 14.616793791035622,
-          "taskSwitches": 7
+          "outputs": 16,
+          "totalPixelAcc": 372.6453226260918,
+          "accuracy": 23.290332664130737,
+          "taskSwitches": 5
         },
         {
           "timeMs": 4300,
-          "outputs": 22,
-          "totalPixelAcc": 210.8134645061728,
-          "accuracy": 9.582430204826037,
-          "taskSwitches": 6
+          "outputs": 16,
+          "totalPixelAcc": 247.58150965843274,
+          "accuracy": 15.473844353652046,
+          "taskSwitches": 5
         },
         {
           "timeMs": 4400,
-          "outputs": 22,
-          "totalPixelAcc": 231.95015221942973,
-          "accuracy": 10.543188737246806,
-          "taskSwitches": 6
-        },
-        {
-          "timeMs": 4500,
-          "outputs": 21,
-          "totalPixelAcc": 90.34567901234567,
-          "accuracy": 4.302175191064079,
-          "taskSwitches": 6
-        },
-        {
-          "timeMs": 4600,
-          "outputs": 23,
-          "totalPixelAcc": 226.39263350243925,
-          "accuracy": 9.843157978366923,
-          "taskSwitches": 8
-        },
-        {
-          "timeMs": 4700,
-          "outputs": 23,
-          "totalPixelAcc": 371.9395375877175,
-          "accuracy": 16.17128424294424,
+          "outputs": 20,
+          "totalPixelAcc": 371.027191673771,
+          "accuracy": 18.551359583688548,
           "taskSwitches": 7
         },
         {
-          "timeMs": 4800,
+          "timeMs": 4500,
           "outputs": 20,
-          "totalPixelAcc": 246.34498072733368,
-          "accuracy": 12.317249036366684,
-          "taskSwitches": 6
+          "totalPixelAcc": 249.5475372185174,
+          "accuracy": 12.477376860925869,
+          "taskSwitches": 7
+        },
+        {
+          "timeMs": 4600,
+          "outputs": 11,
+          "totalPixelAcc": 137.59104938271605,
+          "accuracy": 12.50827721661055,
+          "taskSwitches": 3
+        },
+        {
+          "timeMs": 4700,
+          "outputs": 13,
+          "totalPixelAcc": 101.21784258626363,
+          "accuracy": 7.7859878912510485,
+          "taskSwitches": 4
+        },
+        {
+          "timeMs": 4800,
+          "outputs": 15,
+          "totalPixelAcc": 84.98472205573438,
+          "accuracy": 5.665648137048959,
+          "taskSwitches": 5
         },
         {
           "timeMs": 4900,
-          "outputs": 23,
-          "totalPixelAcc": 413.0417574437182,
-          "accuracy": 17.95833728016166,
+          "outputs": 20,
+          "totalPixelAcc": 125.5348226584022,
+          "accuracy": 6.27674113292011,
           "taskSwitches": 6
         },
         {
           "timeMs": 5000,
-          "outputs": 19,
-          "totalPixelAcc": 259.24594486201624,
-          "accuracy": 13.64452341379033,
-          "taskSwitches": 7
+          "outputs": 20,
+          "totalPixelAcc": 115.51112206881437,
+          "accuracy": 5.775556103440719,
+          "taskSwitches": 5
         },
         {
           "timeMs": 5100,
-          "outputs": 18,
-          "totalPixelAcc": 195.86483311273227,
-          "accuracy": 10.881379617374016,
+          "outputs": 19,
+          "totalPixelAcc": 225.28444444444446,
+          "accuracy": 11.857076023391814,
           "taskSwitches": 5
         },
         {
           "timeMs": 5200,
-          "outputs": 24,
-          "totalPixelAcc": 313.7564433330687,
-          "accuracy": 13.073185138877863,
+          "outputs": 27,
+          "totalPixelAcc": 660.9646247472334,
+          "accuracy": 24.48017128693457,
           "taskSwitches": 8
         },
         {
           "timeMs": 5300,
-          "outputs": 18,
-          "totalPixelAcc": 90.68371212121212,
-          "accuracy": 5.037984006734007,
-          "taskSwitches": 4
+          "outputs": 21,
+          "totalPixelAcc": 81.57558304112791,
+          "accuracy": 3.8845515733870437,
+          "taskSwitches": 5
         },
         {
           "timeMs": 5400,
-          "outputs": 21,
-          "totalPixelAcc": 413.55921642460106,
-          "accuracy": 19.693296020219098,
-          "taskSwitches": 6
+          "outputs": 24,
+          "totalPixelAcc": 377.2977152922558,
+          "accuracy": 15.720738137177326,
+          "taskSwitches": 7
         },
         {
           "timeMs": 5500,
-          "outputs": 25,
-          "totalPixelAcc": 364.64758801247774,
-          "accuracy": 14.585903520499109,
+          "outputs": 21,
+          "totalPixelAcc": 311.5522173574302,
+          "accuracy": 14.835819874163343,
           "taskSwitches": 7
         },
         {
           "timeMs": 5600,
-          "outputs": 20,
-          "totalPixelAcc": 297.3055555555555,
-          "accuracy": 14.865277777777774,
-          "taskSwitches": 6
+          "outputs": 13,
+          "totalPixelAcc": 197.45885056038705,
+          "accuracy": 15.189142350799004,
+          "taskSwitches": 4
         },
         {
           "timeMs": 5700,
-          "outputs": 24,
-          "totalPixelAcc": 160.19816326492176,
-          "accuracy": 6.67492346937174,
+          "outputs": 18,
+          "totalPixelAcc": 276.63919413919416,
+          "accuracy": 15.36884411884412,
           "taskSwitches": 6
         },
         {
           "timeMs": 5800,
-          "outputs": 20,
-          "totalPixelAcc": 543.0118810227497,
-          "accuracy": 27.15059405113748,
-          "taskSwitches": 6
+          "outputs": 19,
+          "totalPixelAcc": 302.73614312575353,
+          "accuracy": 15.933481217144923,
+          "taskSwitches": 5
         },
         {
           "timeMs": 5900,
-          "outputs": 27,
-          "totalPixelAcc": 318.0854665239692,
-          "accuracy": 11.780943204591452,
-          "taskSwitches": 9
+          "outputs": 14,
+          "totalPixelAcc": 253.48545155241587,
+          "accuracy": 18.106103682315418,
+          "taskSwitches": 5
         },
         {
           "timeMs": 6000,
-          "outputs": 27,
-          "totalPixelAcc": 377.4961380275145,
-          "accuracy": 13.9813384454635,
-          "taskSwitches": 9
+          "outputs": 20,
+          "totalPixelAcc": 248.38796578658514,
+          "accuracy": 12.419398289329257,
+          "taskSwitches": 7
         },
         {
           "timeMs": 6100,
-          "outputs": 14,
-          "totalPixelAcc": 300.1110008818342,
-          "accuracy": 21.436500062988156,
-          "taskSwitches": 4
+          "outputs": 21,
+          "totalPixelAcc": 507.5594384690591,
+          "accuracy": 24.169497069955195,
+          "taskSwitches": 6
         },
         {
           "timeMs": 6200,
-          "outputs": 17,
-          "totalPixelAcc": 125.71258503401361,
-          "accuracy": 7.394857943177271,
-          "taskSwitches": 6
+          "outputs": 16,
+          "totalPixelAcc": 175.42595171959763,
+          "accuracy": 10.964121982474852,
+          "taskSwitches": 5
         },
         {
           "timeMs": 6300,
-          "outputs": 23,
-          "totalPixelAcc": 267.1148194126135,
-          "accuracy": 11.613687800548412,
-          "taskSwitches": 8
+          "outputs": 13,
+          "totalPixelAcc": 76.36940836940835,
+          "accuracy": 5.874569874569873,
+          "taskSwitches": 3
         },
         {
           "timeMs": 6400,
-          "outputs": 23,
-          "totalPixelAcc": 263.4800637958532,
-          "accuracy": 11.455654947645792,
-          "taskSwitches": 6
-        },
-        {
-          "timeMs": 6500,
-          "outputs": 22,
-          "totalPixelAcc": 150.92857142857144,
-          "accuracy": 6.860389610389611,
-          "taskSwitches": 6
-        },
-        {
-          "timeMs": 6600,
-          "outputs": 22,
-          "totalPixelAcc": 340.46751862764637,
-          "accuracy": 15.475796301256652,
-          "taskSwitches": 8
-        },
-        {
-          "timeMs": 6700,
-          "outputs": 20,
-          "totalPixelAcc": 319.4499295071607,
-          "accuracy": 15.972496475358033,
-          "taskSwitches": 7
-        },
-        {
-          "timeMs": 6800,
-          "outputs": 19,
-          "totalPixelAcc": 259.609857978279,
-          "accuracy": 13.663676735698896,
+          "outputs": 12,
+          "totalPixelAcc": 77.91996891996892,
+          "accuracy": 6.493330743330744,
           "taskSwitches": 4
         },
         {
-          "timeMs": 6900,
+          "timeMs": 6500,
+          "outputs": 12,
+          "totalPixelAcc": 90.32709365119338,
+          "accuracy": 7.527257804266115,
+          "taskSwitches": 4
+        },
+        {
+          "timeMs": 6600,
+          "outputs": 20,
+          "totalPixelAcc": 131.73559184022193,
+          "accuracy": 6.586779592011096,
+          "taskSwitches": 6
+        },
+        {
+          "timeMs": 6700,
           "outputs": 17,
-          "totalPixelAcc": 169.76044277360066,
-          "accuracy": 9.985908398447098,
-          "taskSwitches": 7
+          "totalPixelAcc": 246.91412220258374,
+          "accuracy": 14.52436012956375,
+          "taskSwitches": 5
+        },
+        {
+          "timeMs": 6800,
+          "outputs": 15,
+          "totalPixelAcc": 180.25,
+          "accuracy": 12.016666666666667,
+          "taskSwitches": 3
+        },
+        {
+          "timeMs": 6900,
+          "outputs": 21,
+          "totalPixelAcc": 330.5124598129168,
+          "accuracy": 15.738688562519847,
+          "taskSwitches": 6
         },
         {
           "timeMs": 7000,
-          "outputs": 24,
-          "totalPixelAcc": 272.8769841269841,
-          "accuracy": 11.369874338624337,
+          "outputs": 19,
+          "totalPixelAcc": 89.45268620268622,
+          "accuracy": 4.708036115930854,
           "taskSwitches": 7
         },
         {
           "timeMs": 7100,
-          "outputs": 21,
-          "totalPixelAcc": 301.94328337395564,
-          "accuracy": 14.378251589235983,
-          "taskSwitches": 6
+          "outputs": 18,
+          "totalPixelAcc": 195.98155007812232,
+          "accuracy": 10.887863893229017,
+          "taskSwitches": 7
         },
         {
           "timeMs": 7200,
           "outputs": 19,
-          "totalPixelAcc": 142.67107583774248,
-          "accuracy": 7.509003991460131,
-          "taskSwitches": 6
+          "totalPixelAcc": 252.1730778045848,
+          "accuracy": 13.272267252872885,
+          "taskSwitches": 7
         },
         {
           "timeMs": 7300,
-          "outputs": 20,
-          "totalPixelAcc": 220.38888888888889,
-          "accuracy": 11.019444444444444,
-          "taskSwitches": 6
+          "outputs": 16,
+          "totalPixelAcc": 111.04958668601328,
+          "accuracy": 6.94059916787583,
+          "taskSwitches": 5
         },
         {
           "timeMs": 7400,
-          "outputs": 20,
-          "totalPixelAcc": 331.9268707482993,
-          "accuracy": 16.596343537414963,
-          "taskSwitches": 6
+          "outputs": 14,
+          "totalPixelAcc": 206.4428109539049,
+          "accuracy": 14.745915068136066,
+          "taskSwitches": 4
         },
         {
           "timeMs": 7500,
-          "outputs": 20,
-          "totalPixelAcc": 120.3747795414462,
-          "accuracy": 6.01873897707231,
-          "taskSwitches": 6
+          "outputs": 14,
+          "totalPixelAcc": 155.48659775660408,
+          "accuracy": 11.106185554043149,
+          "taskSwitches": 4
         },
         {
           "timeMs": 7600,
           "outputs": 20,
-          "totalPixelAcc": 286.37195923734384,
-          "accuracy": 14.318597961867193,
-          "taskSwitches": 6
+          "totalPixelAcc": 243.3838322300718,
+          "accuracy": 12.169191611503589,
+          "taskSwitches": 7
         },
         {
           "timeMs": 7700,
-          "outputs": 24,
-          "totalPixelAcc": 340.65260665260666,
-          "accuracy": 14.193858610525277,
-          "taskSwitches": 8
+          "outputs": 15,
+          "totalPixelAcc": 177.88858070539231,
+          "accuracy": 11.859238713692822,
+          "taskSwitches": 5
         },
         {
           "timeMs": 7800,
-          "outputs": 23,
-          "totalPixelAcc": 214.70886873267818,
-          "accuracy": 9.335168205768616,
+          "outputs": 18,
+          "totalPixelAcc": 61.51031782471176,
+          "accuracy": 3.4172398791506535,
           "taskSwitches": 6
         },
         {
           "timeMs": 7900,
-          "outputs": 21,
-          "totalPixelAcc": 331.49230945821853,
-          "accuracy": 15.785348069438978,
-          "taskSwitches": 6
+          "outputs": 15,
+          "totalPixelAcc": 81.9445828289953,
+          "accuracy": 5.462972188599687,
+          "taskSwitches": 5
         },
         {
           "timeMs": 8000,
-          "outputs": 22,
-          "totalPixelAcc": 529.1190476190476,
-          "accuracy": 24.0508658008658,
-          "taskSwitches": 8
-        },
-        {
-          "timeMs": 8100,
-          "outputs": 21,
-          "totalPixelAcc": 425.4743867243867,
-          "accuracy": 20.260685082113653,
-          "taskSwitches": 7
-        },
-        {
-          "timeMs": 8200,
-          "outputs": 14,
-          "totalPixelAcc": 99.53636495083865,
-          "accuracy": 7.109740353631332,
-          "taskSwitches": 4
-        },
-        {
-          "timeMs": 8300,
-          "outputs": 27,
-          "totalPixelAcc": 233.15994944116818,
-          "accuracy": 8.63555368300623,
-          "taskSwitches": 8
-        },
-        {
-          "timeMs": 8400,
-          "outputs": 17,
-          "totalPixelAcc": 218.0752846010199,
-          "accuracy": 12.827957917707053,
+          "outputs": 20,
+          "totalPixelAcc": 215.78688308583415,
+          "accuracy": 10.789344154291708,
           "taskSwitches": 6
         },
         {
+          "timeMs": 8100,
+          "outputs": 23,
+          "totalPixelAcc": 222.01783849634523,
+          "accuracy": 9.652949499841098,
+          "taskSwitches": 8
+        },
+        {
+          "timeMs": 8200,
+          "outputs": 18,
+          "totalPixelAcc": 182.92822204955385,
+          "accuracy": 10.162679002752991,
+          "taskSwitches": 6
+        },
+        {
+          "timeMs": 8300,
+          "outputs": 14,
+          "totalPixelAcc": 132.29761904761904,
+          "accuracy": 9.449829931972788,
+          "taskSwitches": 5
+        },
+        {
+          "timeMs": 8400,
+          "outputs": 16,
+          "totalPixelAcc": 223.0037792894936,
+          "accuracy": 13.93773620559335,
+          "taskSwitches": 4
+        },
+        {
           "timeMs": 8500,
-          "outputs": 21,
-          "totalPixelAcc": 457.5260178188506,
-          "accuracy": 21.786953229469077,
+          "outputs": 10,
+          "totalPixelAcc": 163.96871764738802,
+          "accuracy": 16.3968717647388,
           "taskSwitches": 5
         },
         {
           "timeMs": 8600,
-          "outputs": 22,
-          "totalPixelAcc": 308.99986742206073,
-          "accuracy": 14.045448519184578,
-          "taskSwitches": 8
+          "outputs": 18,
+          "totalPixelAcc": 148.02106027596224,
+          "accuracy": 8.223392237553458,
+          "taskSwitches": 4
         },
         {
           "timeMs": 8700,
-          "outputs": 20,
-          "totalPixelAcc": 191.15277777777777,
-          "accuracy": 9.557638888888889,
-          "taskSwitches": 7
+          "outputs": 17,
+          "totalPixelAcc": 213.55109663064206,
+          "accuracy": 12.56182921356718,
+          "taskSwitches": 6
         },
         {
           "timeMs": 8800,
-          "outputs": 20,
-          "totalPixelAcc": 274.3775068125717,
-          "accuracy": 13.718875340628585,
-          "taskSwitches": 7
+          "outputs": 19,
+          "totalPixelAcc": 139.0929182700016,
+          "accuracy": 7.320679908947453,
+          "taskSwitches": 6
         },
         {
           "timeMs": 8900,
-          "outputs": 25,
-          "totalPixelAcc": 542.9867845945453,
-          "accuracy": 21.719471383781812,
-          "taskSwitches": 8
+          "outputs": 20,
+          "totalPixelAcc": 465.75308641975306,
+          "accuracy": 23.287654320987652,
+          "taskSwitches": 6
         },
         {
           "timeMs": 9000,
-          "outputs": 23,
-          "totalPixelAcc": 348.6531141868512,
-          "accuracy": 15.158831051602226,
-          "taskSwitches": 8
+          "outputs": 19,
+          "totalPixelAcc": 128.48780918856676,
+          "accuracy": 6.762516273082461,
+          "taskSwitches": 4
         },
         {
           "timeMs": 9100,
-          "outputs": 20,
-          "totalPixelAcc": 674.8055555555555,
-          "accuracy": 33.74027777777778,
-          "taskSwitches": 6
+          "outputs": 13,
+          "totalPixelAcc": 47.28030303030303,
+          "accuracy": 3.636946386946387,
+          "taskSwitches": 4
         },
         {
           "timeMs": 9200,
           "outputs": 15,
-          "totalPixelAcc": 308.25499356343516,
-          "accuracy": 20.550332904229013,
+          "totalPixelAcc": 159.76684635762055,
+          "accuracy": 10.651123090508037,
           "taskSwitches": 6
         },
         {
           "timeMs": 9300,
-          "outputs": 16,
-          "totalPixelAcc": 351.4840830026174,
-          "accuracy": 21.967755187663588,
+          "outputs": 18,
+          "totalPixelAcc": 163.21366627868179,
+          "accuracy": 9.06742590437121,
           "taskSwitches": 5
         },
         {
           "timeMs": 9400,
-          "outputs": 25,
-          "totalPixelAcc": 418.1854409892612,
-          "accuracy": 16.727417639570447,
-          "taskSwitches": 8
-        },
-        {
-          "timeMs": 9500,
-          "outputs": 18,
-          "totalPixelAcc": 228.19444444444446,
-          "accuracy": 12.67746913580247,
-          "taskSwitches": 5
-        },
-        {
-          "timeMs": 9600,
-          "outputs": 20,
-          "totalPixelAcc": 346.6040564373898,
-          "accuracy": 17.330202821869488,
+          "outputs": 16,
+          "totalPixelAcc": 197.30382921590302,
+          "accuracy": 12.331489325993939,
           "taskSwitches": 6
         },
         {
+          "timeMs": 9500,
+          "outputs": 19,
+          "totalPixelAcc": 123.92915744729262,
+          "accuracy": 6.522587234068033,
+          "taskSwitches": 6
+        },
+        {
+          "timeMs": 9600,
+          "outputs": 16,
+          "totalPixelAcc": 99.10871832574296,
+          "accuracy": 6.194294895358935,
+          "taskSwitches": 5
+        },
+        {
           "timeMs": 9700,
-          "outputs": 22,
-          "totalPixelAcc": 242.6249817802848,
-          "accuracy": 11.028408262740218,
-          "taskSwitches": 8
+          "outputs": 17,
+          "totalPixelAcc": 162.37874591009268,
+          "accuracy": 9.551690935887805,
+          "taskSwitches": 6
         },
         {
           "timeMs": 9800,
-          "outputs": 20,
-          "totalPixelAcc": 41.94444444444444,
-          "accuracy": 2.0972222222222223,
-          "taskSwitches": 4
+          "outputs": 17,
+          "totalPixelAcc": 44.289283366206455,
+          "accuracy": 2.6052519627180266,
+          "taskSwitches": 5
         },
         {
           "timeMs": 9900,
-          "outputs": 17,
-          "totalPixelAcc": 186.52451307823083,
-          "accuracy": 10.972030181072402,
-          "taskSwitches": 4
+          "outputs": 19,
+          "totalPixelAcc": 86.4498822046899,
+          "accuracy": 4.5499938002468365,
+          "taskSwitches": 6
         },
         {
           "timeMs": 10000,
-          "outputs": 16,
-          "totalPixelAcc": 160.47186147186147,
-          "accuracy": 10.029491341991342,
-          "taskSwitches": 5
+          "outputs": 17,
+          "totalPixelAcc": 96.31848852901484,
+          "accuracy": 5.665793442883226,
+          "taskSwitches": 6
         }
       ],
-      "totalOutputs": 2092,
-      "totalTaskSwitches": 646,
-      "trainTimeSec": 10.002615729,
-      "evalAccuracy": 23.33746189232284,
-      "tasksSolved": 1,
-      "solvedTaskIds": [
-        "642d658d"
-      ],
-      "avgTrainAccuracy": 13.733336395609498,
-      "stability": 94.15539774669058,
-      "consistency": 53,
-      "throughputPerSec": 209.14529325912085,
-      "score": 10.436843885040206
+      "totalOutputs": 1705,
+      "totalTaskSwitches": 527,
+      "trainTimeSec": 10.002164614,
+      "evalAccuracy": 10.703410241904768,
+      "tasksSolved": 0,
+      "avgTrainAccuracy": 11.081213957377955,
+      "stability": 94.81045681923878,
+      "consistency": 43,
+      "throughputPerSec": 170.46310131844027,
+      "score": 6.949524337934968
     },
     "StepTween": {
       "windows": [
         {
           "timeMs": 100,
-          "outputs": 42,
-          "totalPixelAcc": 322.33659297052156,
-          "accuracy": 7.674680785012418,
-          "taskSwitches": 14
+          "outputs": 35,
+          "totalPixelAcc": 194.40907356532355,
+          "accuracy": 5.554544959009244,
+          "taskSwitches": 12
         },
         {
           "timeMs": 200,
-          "outputs": 36,
-          "totalPixelAcc": 417.7619047619047,
-          "accuracy": 11.604497354497353,
-          "taskSwitches": 10
+          "outputs": 34,
+          "totalPixelAcc": 242.60421581843582,
+          "accuracy": 7.135418112306936,
+          "taskSwitches": 11
         },
         {
           "timeMs": 300,
-          "outputs": 40,
-          "totalPixelAcc": 199.0644651055129,
-          "accuracy": 4.976611627637823,
-          "taskSwitches": 13
+          "outputs": 22,
+          "totalPixelAcc": 281.11111111111103,
+          "accuracy": 12.777777777777773,
+          "taskSwitches": 6
         },
         {
           "timeMs": 400,
-          "outputs": 42,
-          "totalPixelAcc": 446.77215766689454,
-          "accuracy": 10.637432325402251,
-          "taskSwitches": 14
+          "outputs": 32,
+          "totalPixelAcc": 212.37639039836844,
+          "accuracy": 6.636762199949014,
+          "taskSwitches": 10
         },
         {
           "timeMs": 500,
-          "outputs": 41,
-          "totalPixelAcc": 212.07210998877667,
-          "accuracy": 5.172490487531139,
-          "taskSwitches": 12
-        },
-        {
-          "timeMs": 600,
-          "outputs": 34,
-          "totalPixelAcc": 384.94444444444446,
-          "accuracy": 11.321895424836601,
-          "taskSwitches": 10
-        },
-        {
-          "timeMs": 700,
-          "outputs": 29,
-          "totalPixelAcc": 100.25113378684807,
-          "accuracy": 3.4569356478223474,
+          "outputs": 28,
+          "totalPixelAcc": 163.9706152433425,
+          "accuracy": 5.856093401547946,
           "taskSwitches": 9
         },
         {
+          "timeMs": 600,
+          "outputs": 23,
+          "totalPixelAcc": 183.0185185185185,
+          "accuracy": 7.9573268921095,
+          "taskSwitches": 8
+        },
+        {
+          "timeMs": 700,
+          "outputs": 24,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 6
+        },
+        {
           "timeMs": 800,
-          "outputs": 33,
-          "totalPixelAcc": 258.0833333333333,
-          "accuracy": 7.82070707070707,
-          "taskSwitches": 10
+          "outputs": 36,
+          "totalPixelAcc": 132.58875425170066,
+          "accuracy": 3.6830209514361294,
+          "taskSwitches": 12
         },
         {
           "timeMs": 900,
-          "outputs": 32,
-          "totalPixelAcc": 258.00900488400487,
-          "accuracy": 8.062781402625152,
-          "taskSwitches": 10
+          "outputs": 38,
+          "totalPixelAcc": 156.33203966605106,
+          "accuracy": 4.114001043843449,
+          "taskSwitches": 11
         },
         {
           "timeMs": 1000,
-          "outputs": 38,
-          "totalPixelAcc": 145.29868320912692,
-          "accuracy": 3.823649558134919,
-          "taskSwitches": 11
+          "outputs": 29,
+          "totalPixelAcc": 148.92361111111111,
+          "accuracy": 5.1352969348659006,
+          "taskSwitches": 9
         },
         {
           "timeMs": 1100,
-          "outputs": 50,
-          "totalPixelAcc": 414.8932909196068,
-          "accuracy": 8.297865818392136,
-          "taskSwitches": 16
-        },
-        {
-          "timeMs": 1200,
-          "outputs": 39,
-          "totalPixelAcc": 538.4624224063066,
-          "accuracy": 13.806728779648887,
-          "taskSwitches": 12
-        },
-        {
-          "timeMs": 1300,
-          "outputs": 45,
-          "totalPixelAcc": 254.28290800876167,
-          "accuracy": 5.650731289083593,
-          "taskSwitches": 14
-        },
-        {
-          "timeMs": 1400,
-          "outputs": 34,
-          "totalPixelAcc": 257.124466023358,
-          "accuracy": 7.562484294804648,
-          "taskSwitches": 12
-        },
-        {
-          "timeMs": 1500,
-          "outputs": 33,
-          "totalPixelAcc": 245.20657873471728,
-          "accuracy": 7.430502385900524,
-          "taskSwitches": 11
-        },
-        {
-          "timeMs": 1600,
-          "outputs": 39,
-          "totalPixelAcc": 270.09949469984065,
-          "accuracy": 6.925628069226684,
+          "outputs": 38,
+          "totalPixelAcc": 390.33725573768857,
+          "accuracy": 10.272033045728646,
           "taskSwitches": 13
         },
         {
+          "timeMs": 1200,
+          "outputs": 34,
+          "totalPixelAcc": 166.5021415973797,
+          "accuracy": 4.897121811687638,
+          "taskSwitches": 10
+        },
+        {
+          "timeMs": 1300,
+          "outputs": 36,
+          "totalPixelAcc": 117.45796037296036,
+          "accuracy": 3.262721121471121,
+          "taskSwitches": 10
+        },
+        {
+          "timeMs": 1400,
+          "outputs": 20,
+          "totalPixelAcc": 241.29090312360987,
+          "accuracy": 12.064545156180493,
+          "taskSwitches": 5
+        },
+        {
+          "timeMs": 1500,
+          "outputs": 40,
+          "totalPixelAcc": 90.82214881078517,
+          "accuracy": 2.2705537202696293,
+          "taskSwitches": 12
+        },
+        {
+          "timeMs": 1600,
+          "outputs": 34,
+          "totalPixelAcc": 138.95994872979034,
+          "accuracy": 4.087057315582069,
+          "taskSwitches": 11
+        },
+        {
           "timeMs": 1700,
-          "outputs": 45,
-          "totalPixelAcc": 446.498347071399,
-          "accuracy": 9.922185490475533,
-          "taskSwitches": 15
+          "outputs": 35,
+          "totalPixelAcc": 156.85139742608837,
+          "accuracy": 4.4814684978882395,
+          "taskSwitches": 8
         },
         {
           "timeMs": 1800,
-          "outputs": 27,
-          "totalPixelAcc": 276.8213921046002,
-          "accuracy": 10.25264415202223,
+          "outputs": 34,
+          "totalPixelAcc": 188.7379375413648,
+          "accuracy": 5.551115810040141,
           "taskSwitches": 9
         },
         {
           "timeMs": 1900,
           "outputs": 38,
-          "totalPixelAcc": 349.16106072058454,
-          "accuracy": 9.188448966331173,
-          "taskSwitches": 11
+          "totalPixelAcc": 283.52570346320346,
+          "accuracy": 7.46120272271588,
+          "taskSwitches": 12
         },
         {
           "timeMs": 2000,
-          "outputs": 23,
-          "totalPixelAcc": 138.49318582651915,
-          "accuracy": 6.021442862022572,
-          "taskSwitches": 7
+          "outputs": 39,
+          "totalPixelAcc": 308.58134920634916,
+          "accuracy": 7.912342287342286,
+          "taskSwitches": 12
         },
         {
           "timeMs": 2100,
-          "outputs": 26,
-          "totalPixelAcc": 293.85864102058173,
-          "accuracy": 11.302255423868528,
-          "taskSwitches": 7
+          "outputs": 30,
+          "totalPixelAcc": 527.4769270646856,
+          "accuracy": 17.58256423548952,
+          "taskSwitches": 10
         },
         {
           "timeMs": 2200,
-          "outputs": 35,
-          "totalPixelAcc": 133.79017834785822,
-          "accuracy": 3.8225765242245204,
+          "outputs": 31,
+          "totalPixelAcc": 189.87284937284937,
+          "accuracy": 6.124930624930625,
           "taskSwitches": 10
         },
         {
           "timeMs": 2300,
-          "outputs": 36,
-          "totalPixelAcc": 254.20447530864197,
-          "accuracy": 7.061235425240055,
-          "taskSwitches": 11
+          "outputs": 39,
+          "totalPixelAcc": 374.85437834458594,
+          "accuracy": 9.611650726784255,
+          "taskSwitches": 13
         },
         {
           "timeMs": 2400,
-          "outputs": 38,
-          "totalPixelAcc": 502.1890993507611,
-          "accuracy": 13.215502614493714,
-          "taskSwitches": 11
+          "outputs": 22,
+          "totalPixelAcc": 190.3942189227277,
+          "accuracy": 8.654282678305805,
+          "taskSwitches": 8
         },
         {
           "timeMs": 2500,
-          "outputs": 40,
-          "totalPixelAcc": 438.8440086148418,
-          "accuracy": 10.971100215371045,
-          "taskSwitches": 13
+          "outputs": 27,
+          "totalPixelAcc": 184.69333097727622,
+          "accuracy": 6.840493739899119,
+          "taskSwitches": 8
         },
         {
           "timeMs": 2600,
-          "outputs": 38,
-          "totalPixelAcc": 179.93236714975845,
-          "accuracy": 4.735062293414696,
-          "taskSwitches": 10
+          "outputs": 29,
+          "totalPixelAcc": 101.72660654872192,
+          "accuracy": 3.5078140189214455,
+          "taskSwitches": 8
         },
         {
           "timeMs": 2700,
-          "outputs": 40,
-          "totalPixelAcc": 396.83202057565853,
-          "accuracy": 9.920800514391463,
-          "taskSwitches": 13
+          "outputs": 31,
+          "totalPixelAcc": 602.3733333333333,
+          "accuracy": 19.431397849462364,
+          "taskSwitches": 7
         },
         {
           "timeMs": 2800,
-          "outputs": 37,
-          "totalPixelAcc": 150.74074074074073,
-          "accuracy": 4.0740740740740735,
-          "taskSwitches": 11
+          "outputs": 34,
+          "totalPixelAcc": 298.663743110754,
+          "accuracy": 8.78422773855159,
+          "taskSwitches": 10
         },
         {
           "timeMs": 2900,
-          "outputs": 40,
-          "totalPixelAcc": 266.71096480550256,
-          "accuracy": 6.6677741201375635,
-          "taskSwitches": 12
+          "outputs": 34,
+          "totalPixelAcc": 227.09589088160516,
+          "accuracy": 6.679290908282504,
+          "taskSwitches": 10
         },
         {
           "timeMs": 3000,
-          "outputs": 35,
-          "totalPixelAcc": 272.3977591036414,
-          "accuracy": 7.782793117246897,
-          "taskSwitches": 11
+          "outputs": 28,
+          "totalPixelAcc": 214.7447504199307,
+          "accuracy": 7.669455372140383,
+          "taskSwitches": 9
         },
         {
           "timeMs": 3100,
-          "outputs": 40,
-          "totalPixelAcc": 453.52220335753987,
-          "accuracy": 11.338055083938496,
-          "taskSwitches": 10
+          "outputs": 41,
+          "totalPixelAcc": 300.3162828032958,
+          "accuracy": 7.324787385446239,
+          "taskSwitches": 12
         },
         {
           "timeMs": 3200,
-          "outputs": 43,
-          "totalPixelAcc": 565.5147238435877,
-          "accuracy": 13.151505205664831,
-          "taskSwitches": 13
-        },
-        {
-          "timeMs": 3300,
-          "outputs": 43,
-          "totalPixelAcc": 292.26979895163225,
-          "accuracy": 6.796972068642611,
-          "taskSwitches": 12
-        },
-        {
-          "timeMs": 3400,
-          "outputs": 43,
-          "totalPixelAcc": 304.85555724623856,
-          "accuracy": 7.089664122005548,
+          "outputs": 40,
+          "totalPixelAcc": 453.5321584569705,
+          "accuracy": 11.338303961424263,
           "taskSwitches": 14
         },
         {
+          "timeMs": 3300,
+          "outputs": 41,
+          "totalPixelAcc": 822.8960146616139,
+          "accuracy": 20.070634503941804,
+          "taskSwitches": 11
+        },
+        {
+          "timeMs": 3400,
+          "outputs": 28,
+          "totalPixelAcc": 108.53366828352138,
+          "accuracy": 3.876202438697192,
+          "taskSwitches": 9
+        },
+        {
           "timeMs": 3500,
-          "outputs": 38,
-          "totalPixelAcc": 209.48119628509838,
-          "accuracy": 5.512663060134168,
-          "taskSwitches": 13
+          "outputs": 34,
+          "totalPixelAcc": 243.56596646374064,
+          "accuracy": 7.163704895992372,
+          "taskSwitches": 11
         },
         {
           "timeMs": 3600,
-          "outputs": 39,
-          "totalPixelAcc": 243.71365413318648,
-          "accuracy": 6.249068054697089,
-          "taskSwitches": 12
+          "outputs": 35,
+          "totalPixelAcc": 248.27128999748044,
+          "accuracy": 7.093465428499441,
+          "taskSwitches": 8
         },
         {
           "timeMs": 3700,
-          "outputs": 36,
-          "totalPixelAcc": 326.5496031746032,
-          "accuracy": 9.070822310405644,
-          "taskSwitches": 10
+          "outputs": 40,
+          "totalPixelAcc": 308.3372269492959,
+          "accuracy": 7.708430673732397,
+          "taskSwitches": 15
         },
         {
           "timeMs": 3800,
-          "outputs": 39,
-          "totalPixelAcc": 569.9067156714902,
-          "accuracy": 14.612992709525392,
-          "taskSwitches": 13
+          "outputs": 28,
+          "totalPixelAcc": 152.064104886172,
+          "accuracy": 5.430860888791857,
+          "taskSwitches": 10
         },
         {
           "timeMs": 3900,
-          "outputs": 45,
-          "totalPixelAcc": 545.0223011231783,
-          "accuracy": 12.111606691626184,
-          "taskSwitches": 15
+          "outputs": 28,
+          "totalPixelAcc": 350.6525971632673,
+          "accuracy": 12.52330704154526,
+          "taskSwitches": 8
         },
         {
           "timeMs": 4000,
-          "outputs": 45,
-          "totalPixelAcc": 634.4361403652371,
-          "accuracy": 14.098580897005268,
-          "taskSwitches": 13
+          "outputs": 31,
+          "totalPixelAcc": 370.4531112047652,
+          "accuracy": 11.950100361444038,
+          "taskSwitches": 10
         },
         {
           "timeMs": 4100,
-          "outputs": 49,
-          "totalPixelAcc": 929.1734693877552,
-          "accuracy": 18.96272386505623,
-          "taskSwitches": 15
+          "outputs": 30,
+          "totalPixelAcc": 245.4748874694329,
+          "accuracy": 8.182496248981098,
+          "taskSwitches": 11
         },
         {
           "timeMs": 4200,
-          "outputs": 31,
-          "totalPixelAcc": 689.7799823633156,
-          "accuracy": 22.25096717301018,
-          "taskSwitches": 9
+          "outputs": 23,
+          "totalPixelAcc": 226.0298440659746,
+          "accuracy": 9.827384524607591,
+          "taskSwitches": 7
         },
         {
           "timeMs": 4300,
           "outputs": 39,
-          "totalPixelAcc": 1024.4226795284487,
-          "accuracy": 26.267248193037148,
-          "taskSwitches": 12
-        },
-        {
-          "timeMs": 4400,
-          "outputs": 37,
-          "totalPixelAcc": 1315.516984028077,
-          "accuracy": 35.55451308183992,
-          "taskSwitches": 11
-        },
-        {
-          "timeMs": 4500,
-          "outputs": 40,
-          "totalPixelAcc": 1774.080618212197,
-          "accuracy": 44.35201545530492,
+          "totalPixelAcc": 493.0440684230704,
+          "accuracy": 12.642155600591549,
           "taskSwitches": 13
         },
         {
-          "timeMs": 4600,
-          "outputs": 38,
-          "totalPixelAcc": 1370.4939212694426,
-          "accuracy": 36.06562950709059,
+          "timeMs": 4400,
+          "outputs": 40,
+          "totalPixelAcc": 504.5398414416272,
+          "accuracy": 12.61349603604068,
           "taskSwitches": 12
+        },
+        {
+          "timeMs": 4500,
+          "outputs": 37,
+          "totalPixelAcc": 366.23060605058913,
+          "accuracy": 9.89812448785376,
+          "taskSwitches": 12
+        },
+        {
+          "timeMs": 4600,
+          "outputs": 27,
+          "totalPixelAcc": 361.0570547578123,
+          "accuracy": 13.372483509548603,
+          "taskSwitches": 9
         },
         {
           "timeMs": 4700,
           "outputs": 28,
-          "totalPixelAcc": 1052.450753851139,
-          "accuracy": 37.58752692325497,
+          "totalPixelAcc": 475.811535493827,
+          "accuracy": 16.993269124779538,
           "taskSwitches": 7
         },
         {
           "timeMs": 4800,
-          "outputs": 35,
-          "totalPixelAcc": 2426.1205248907195,
-          "accuracy": 69.31772928259198,
-          "taskSwitches": 12
+          "outputs": 27,
+          "totalPixelAcc": 402.44149285058364,
+          "accuracy": 14.905240475947542,
+          "taskSwitches": 8
         },
         {
           "timeMs": 4900,
-          "outputs": 33,
-          "totalPixelAcc": 1096.3221756598375,
-          "accuracy": 33.22188411090417,
-          "taskSwitches": 12
+          "outputs": 39,
+          "totalPixelAcc": 967.5412348864759,
+          "accuracy": 24.80874961247374,
+          "taskSwitches": 13
         },
         {
           "timeMs": 5000,
-          "outputs": 34,
-          "totalPixelAcc": 1451.2242060009403,
-          "accuracy": 42.6830648823806,
+          "outputs": 31,
+          "totalPixelAcc": 749.8951252581245,
+          "accuracy": 24.19016533090724,
           "taskSwitches": 11
         },
         {
           "timeMs": 5100,
-          "outputs": 32,
-          "totalPixelAcc": 1432.4733756247595,
-          "accuracy": 44.76479298827373,
+          "outputs": 34,
+          "totalPixelAcc": 948.983930446859,
+          "accuracy": 27.91129207196644,
           "taskSwitches": 11
         },
         {
           "timeMs": 5200,
-          "outputs": 30,
-          "totalPixelAcc": 1557.6273691436031,
-          "accuracy": 51.92091230478677,
-          "taskSwitches": 10
-        },
-        {
-          "timeMs": 5300,
-          "outputs": 26,
-          "totalPixelAcc": 1212.234040402331,
-          "accuracy": 46.624386169320424,
-          "taskSwitches": 8
-        },
-        {
-          "timeMs": 5400,
-          "outputs": 32,
-          "totalPixelAcc": 1048.078212766588,
-          "accuracy": 32.752444148955874,
-          "taskSwitches": 10
-        },
-        {
-          "timeMs": 5500,
-          "outputs": 37,
-          "totalPixelAcc": 1740.1864025224418,
-          "accuracy": 47.03206493303897,
-          "taskSwitches": 12
-        },
-        {
-          "timeMs": 5600,
-          "outputs": 32,
-          "totalPixelAcc": 1669.9641270667184,
-          "accuracy": 52.18637897083495,
-          "taskSwitches": 8
-        },
-        {
-          "timeMs": 5700,
-          "outputs": 33,
-          "totalPixelAcc": 1584.8596550924244,
-          "accuracy": 48.02605015431589,
-          "taskSwitches": 9
-        },
-        {
-          "timeMs": 5800,
-          "outputs": 38,
-          "totalPixelAcc": 1648.564814814815,
-          "accuracy": 43.38328460038987,
-          "taskSwitches": 12
-        },
-        {
-          "timeMs": 5900,
-          "outputs": 32,
-          "totalPixelAcc": 1043.1322898386866,
-          "accuracy": 32.597884057458955,
-          "taskSwitches": 10
-        },
-        {
-          "timeMs": 6000,
-          "outputs": 46,
-          "totalPixelAcc": 2046.7642242100765,
-          "accuracy": 44.49487443934949,
+          "outputs": 44,
+          "totalPixelAcc": 1183.7722876008133,
+          "accuracy": 26.903915627291212,
           "taskSwitches": 14
         },
         {
-          "timeMs": 6100,
-          "outputs": 42,
-          "totalPixelAcc": 1961.8290467028567,
-          "accuracy": 46.710215397687065,
-          "taskSwitches": 12
-        },
-        {
-          "timeMs": 6200,
-          "outputs": 37,
-          "totalPixelAcc": 2034.173025923083,
-          "accuracy": 54.97764934927252,
-          "taskSwitches": 11
-        },
-        {
-          "timeMs": 6300,
-          "outputs": 36,
-          "totalPixelAcc": 1976.4519325536482,
-          "accuracy": 54.90144257093468,
-          "taskSwitches": 11
-        },
-        {
-          "timeMs": 6400,
-          "outputs": 36,
-          "totalPixelAcc": 1883.7750021725863,
-          "accuracy": 52.327083393682955,
-          "taskSwitches": 11
-        },
-        {
-          "timeMs": 6500,
-          "outputs": 39,
-          "totalPixelAcc": 1524.8139981363663,
-          "accuracy": 39.09779482400939,
-          "taskSwitches": 12
-        },
-        {
-          "timeMs": 6600,
+          "timeMs": 5300,
           "outputs": 40,
-          "totalPixelAcc": 1901.4785194773183,
-          "accuracy": 47.536962986932956,
+          "totalPixelAcc": 1759.7157895951343,
+          "accuracy": 43.99289473987836,
+          "taskSwitches": 14
+        },
+        {
+          "timeMs": 5400,
+          "outputs": 47,
+          "totalPixelAcc": 1846.6040644964212,
+          "accuracy": 39.28944818077492,
+          "taskSwitches": 15
+        },
+        {
+          "timeMs": 5500,
+          "outputs": 36,
+          "totalPixelAcc": 1601.1231821918095,
+          "accuracy": 44.47564394977249,
           "taskSwitches": 11
         },
         {
-          "timeMs": 6700,
-          "outputs": 37,
-          "totalPixelAcc": 1879.2633720652448,
-          "accuracy": 50.790901947709315,
-          "taskSwitches": 11
-        },
-        {
-          "timeMs": 6800,
-          "outputs": 42,
-          "totalPixelAcc": 1938.9958243406109,
-          "accuracy": 46.16656724620502,
-          "taskSwitches": 11
-        },
-        {
-          "timeMs": 6900,
-          "outputs": 26,
-          "totalPixelAcc": 1160.948449107222,
-          "accuracy": 44.651863427200844,
+          "timeMs": 5600,
+          "outputs": 30,
+          "totalPixelAcc": 1120.4971003330943,
+          "accuracy": 37.34990334443648,
           "taskSwitches": 9
         },
         {
-          "timeMs": 7000,
-          "outputs": 35,
-          "totalPixelAcc": 1774.487727239167,
-          "accuracy": 50.69964934969049,
+          "timeMs": 5700,
+          "outputs": 34,
+          "totalPixelAcc": 1643.3442169232944,
+          "accuracy": 48.33365343892042,
           "taskSwitches": 11
         },
         {
+          "timeMs": 5800,
+          "outputs": 31,
+          "totalPixelAcc": 1355.0249225174564,
+          "accuracy": 43.710481371530854,
+          "taskSwitches": 9
+        },
+        {
+          "timeMs": 5900,
+          "outputs": 29,
+          "totalPixelAcc": 711.0421388599817,
+          "accuracy": 24.518694443447647,
+          "taskSwitches": 9
+        },
+        {
+          "timeMs": 6000,
+          "outputs": 32,
+          "totalPixelAcc": 1163.1713110843161,
+          "accuracy": 36.34910347138488,
+          "taskSwitches": 11
+        },
+        {
+          "timeMs": 6100,
+          "outputs": 30,
+          "totalPixelAcc": 968.1441574946476,
+          "accuracy": 32.27147191648825,
+          "taskSwitches": 9
+        },
+        {
+          "timeMs": 6200,
+          "outputs": 25,
+          "totalPixelAcc": 423.67353939880684,
+          "accuracy": 16.946941575952273,
+          "taskSwitches": 8
+        },
+        {
+          "timeMs": 6300,
+          "outputs": 41,
+          "totalPixelAcc": 2078.869408600728,
+          "accuracy": 50.704131917090926,
+          "taskSwitches": 13
+        },
+        {
+          "timeMs": 6400,
+          "outputs": 33,
+          "totalPixelAcc": 1658.6674310205979,
+          "accuracy": 50.2626494248666,
+          "taskSwitches": 10
+        },
+        {
+          "timeMs": 6500,
+          "outputs": 41,
+          "totalPixelAcc": 1608.8009149940967,
+          "accuracy": 39.23904670717309,
+          "taskSwitches": 13
+        },
+        {
+          "timeMs": 6600,
+          "outputs": 38,
+          "totalPixelAcc": 2205.2425661604057,
+          "accuracy": 58.03269910948436,
+          "taskSwitches": 10
+        },
+        {
+          "timeMs": 6700,
+          "outputs": 26,
+          "totalPixelAcc": 1097.4419744366985,
+          "accuracy": 42.209306709103785,
+          "taskSwitches": 9
+        },
+        {
+          "timeMs": 6800,
+          "outputs": 31,
+          "totalPixelAcc": 1445.8878724761078,
+          "accuracy": 46.64154427342283,
+          "taskSwitches": 9
+        },
+        {
+          "timeMs": 6900,
+          "outputs": 34,
+          "totalPixelAcc": 1484.728025131915,
+          "accuracy": 43.668471327409264,
+          "taskSwitches": 8
+        },
+        {
+          "timeMs": 7000,
+          "outputs": 20,
+          "totalPixelAcc": 614.0010674835237,
+          "accuracy": 30.700053374176186,
+          "taskSwitches": 7
+        },
+        {
           "timeMs": 7100,
-          "outputs": 39,
-          "totalPixelAcc": 2068.2200109683577,
-          "accuracy": 53.03128233252199,
+          "outputs": 36,
+          "totalPixelAcc": 1901.3734259618943,
+          "accuracy": 52.81592849894151,
           "taskSwitches": 12
         },
         {
           "timeMs": 7200,
-          "outputs": 35,
-          "totalPixelAcc": 1450.6579631504994,
-          "accuracy": 41.44737037572855,
-          "taskSwitches": 12
+          "outputs": 26,
+          "totalPixelAcc": 745.5942625596305,
+          "accuracy": 28.676702406139633,
+          "taskSwitches": 9
         },
         {
           "timeMs": 7300,
-          "outputs": 38,
-          "totalPixelAcc": 1616.1749220521542,
-          "accuracy": 42.53091900137248,
-          "taskSwitches": 11
+          "outputs": 33,
+          "totalPixelAcc": 2361.392341296997,
+          "accuracy": 71.55734367566657,
+          "taskSwitches": 10
         },
         {
           "timeMs": 7400,
-          "outputs": 36,
-          "totalPixelAcc": 1423.0522751736405,
-          "accuracy": 39.52922986593446,
-          "taskSwitches": 11
+          "outputs": 32,
+          "totalPixelAcc": 1326.630919101784,
+          "accuracy": 41.45721622193075,
+          "taskSwitches": 10
         },
         {
           "timeMs": 7500,
-          "outputs": 37,
-          "totalPixelAcc": 1430.7154924347906,
-          "accuracy": 38.66798628202137,
-          "taskSwitches": 13
+          "outputs": 21,
+          "totalPixelAcc": 1103.65507518797,
+          "accuracy": 52.55500358037952,
+          "taskSwitches": 7
         },
         {
           "timeMs": 7600,
-          "outputs": 35,
-          "totalPixelAcc": 793.9264625884025,
-          "accuracy": 22.6836132168115,
+          "outputs": 31,
+          "totalPixelAcc": 1369.7142733828346,
+          "accuracy": 44.18433139944628,
           "taskSwitches": 10
         },
         {
           "timeMs": 7700,
-          "outputs": 38,
-          "totalPixelAcc": 1406.7608024691356,
-          "accuracy": 37.02002111760883,
-          "taskSwitches": 11
-        },
-        {
-          "timeMs": 7800,
-          "outputs": 32,
-          "totalPixelAcc": 1466.2026958931717,
-          "accuracy": 45.818834246661616,
+          "outputs": 37,
+          "totalPixelAcc": 1951.14797618522,
+          "accuracy": 52.733729086087024,
           "taskSwitches": 10
         },
         {
-          "timeMs": 7900,
-          "outputs": 30,
-          "totalPixelAcc": 1129.1967263505721,
-          "accuracy": 37.6398908783524,
-          "taskSwitches": 9
-        },
-        {
-          "timeMs": 8000,
-          "outputs": 47,
-          "totalPixelAcc": 2328.5543224412268,
-          "accuracy": 49.543708988111206,
-          "taskSwitches": 14
-        },
-        {
-          "timeMs": 8100,
-          "outputs": 44,
-          "totalPixelAcc": 2097.972583404103,
-          "accuracy": 47.68119507736597,
-          "taskSwitches": 14
-        },
-        {
-          "timeMs": 8200,
-          "outputs": 40,
-          "totalPixelAcc": 1510.2072571807935,
-          "accuracy": 37.75518142951984,
-          "taskSwitches": 13
-        },
-        {
-          "timeMs": 8300,
-          "outputs": 37,
-          "totalPixelAcc": 1478.6374144328208,
-          "accuracy": 39.963173363049215,
+          "timeMs": 7800,
+          "outputs": 38,
+          "totalPixelAcc": 1880.5606690317488,
+          "accuracy": 49.48843865873023,
           "taskSwitches": 11
         },
         {
-          "timeMs": 8400,
+          "timeMs": 7900,
+          "outputs": 26,
+          "totalPixelAcc": 1128.2210025911436,
+          "accuracy": 43.39311548427475,
+          "taskSwitches": 8
+        },
+        {
+          "timeMs": 8000,
+          "outputs": 22,
+          "totalPixelAcc": 450.0873778998779,
+          "accuracy": 20.458517177267176,
+          "taskSwitches": 7
+        },
+        {
+          "timeMs": 8100,
+          "outputs": 28,
+          "totalPixelAcc": 810.4484997795414,
+          "accuracy": 28.944589277840766,
+          "taskSwitches": 9
+        },
+        {
+          "timeMs": 8200,
           "outputs": 33,
-          "totalPixelAcc": 2413.5576355864914,
-          "accuracy": 73.13811016928761,
+          "totalPixelAcc": 1706.633605423204,
+          "accuracy": 51.71616986130921,
+          "taskSwitches": 11
+        },
+        {
+          "timeMs": 8300,
+          "outputs": 32,
+          "totalPixelAcc": 1894.4927413262767,
+          "accuracy": 59.20289816644615,
+          "taskSwitches": 10
+        },
+        {
+          "timeMs": 8400,
+          "outputs": 31,
+          "totalPixelAcc": 1510.5709991651693,
+          "accuracy": 48.72809674726353,
           "taskSwitches": 10
         },
         {
           "timeMs": 8500,
-          "outputs": 41,
-          "totalPixelAcc": 1735.280589881752,
-          "accuracy": 42.32391682638419,
-          "taskSwitches": 15
+          "outputs": 25,
+          "totalPixelAcc": 1277.7209439865692,
+          "accuracy": 51.108837759462766,
+          "taskSwitches": 9
         },
         {
           "timeMs": 8600,
-          "outputs": 27,
-          "totalPixelAcc": 1273.601204791681,
-          "accuracy": 47.170414992284485,
-          "taskSwitches": 8
-        },
-        {
-          "timeMs": 8700,
-          "outputs": 30,
-          "totalPixelAcc": 1321.6976163014226,
-          "accuracy": 44.05658721004742,
-          "taskSwitches": 11
-        },
-        {
-          "timeMs": 8800,
-          "outputs": 26,
-          "totalPixelAcc": 1302.387667887668,
-          "accuracy": 50.09183338029492,
-          "taskSwitches": 8
-        },
-        {
-          "timeMs": 8900,
-          "outputs": 27,
-          "totalPixelAcc": 1312.4082371699856,
-          "accuracy": 48.60771248777724,
-          "taskSwitches": 9
-        },
-        {
-          "timeMs": 9000,
-          "outputs": 38,
-          "totalPixelAcc": 1307.6501739584721,
-          "accuracy": 34.41184668311769,
-          "taskSwitches": 12
-        },
-        {
-          "timeMs": 9100,
-          "outputs": 31,
-          "totalPixelAcc": 1468.8155706727134,
-          "accuracy": 47.38114744105527,
+          "outputs": 37,
+          "totalPixelAcc": 1540.5467252230299,
+          "accuracy": 41.636397979000805,
           "taskSwitches": 10
         },
         {
+          "timeMs": 8700,
+          "outputs": 32,
+          "totalPixelAcc": 784.5518766184973,
+          "accuracy": 24.51724614432804,
+          "taskSwitches": 9
+        },
+        {
+          "timeMs": 8800,
+          "outputs": 38,
+          "totalPixelAcc": 1828.608339060728,
+          "accuracy": 48.121272080545474,
+          "taskSwitches": 11
+        },
+        {
+          "timeMs": 8900,
+          "outputs": 32,
+          "totalPixelAcc": 782.1073419075312,
+          "accuracy": 24.44085443461035,
+          "taskSwitches": 11
+        },
+        {
+          "timeMs": 9000,
+          "outputs": 32,
+          "totalPixelAcc": 1126.9836860670193,
+          "accuracy": 35.218240189594354,
+          "taskSwitches": 9
+        },
+        {
+          "timeMs": 9100,
+          "outputs": 40,
+          "totalPixelAcc": 1814.6054299078692,
+          "accuracy": 45.365135747696726,
+          "taskSwitches": 14
+        },
+        {
           "timeMs": 9200,
-          "outputs": 27,
-          "totalPixelAcc": 1650.956259929745,
-          "accuracy": 61.146528145546114,
-          "taskSwitches": 7
+          "outputs": 36,
+          "totalPixelAcc": 2073.2427892079754,
+          "accuracy": 57.590077477999316,
+          "taskSwitches": 11
         },
         {
           "timeMs": 9300,
-          "outputs": 35,
-          "totalPixelAcc": 1802.5864996488024,
-          "accuracy": 51.50247141853721,
-          "taskSwitches": 9
+          "outputs": 26,
+          "totalPixelAcc": 1428.0478907867496,
+          "accuracy": 54.92491887641344,
+          "taskSwitches": 7
         },
         {
           "timeMs": 9400,
-          "outputs": 27,
-          "totalPixelAcc": 947.3084177495203,
-          "accuracy": 35.08549695368594,
-          "taskSwitches": 9
+          "outputs": 34,
+          "totalPixelAcc": 1079.8539208292668,
+          "accuracy": 31.760409436154905,
+          "taskSwitches": 10
         },
         {
           "timeMs": 9500,
-          "outputs": 32,
-          "totalPixelAcc": 1512.0950668299151,
-          "accuracy": 47.25297083843485,
-          "taskSwitches": 9
+          "outputs": 40,
+          "totalPixelAcc": 2649.078291275676,
+          "accuracy": 66.2269572818919,
+          "taskSwitches": 13
         },
         {
           "timeMs": 9600,
-          "outputs": 42,
-          "totalPixelAcc": 1334.7318049558908,
-          "accuracy": 31.77932868942597,
+          "outputs": 38,
+          "totalPixelAcc": 1789.7940898211134,
+          "accuracy": 47.09984446897667,
           "taskSwitches": 13
         },
         {
           "timeMs": 9700,
-          "outputs": 40,
-          "totalPixelAcc": 2162.6611022102443,
-          "accuracy": 54.06652755525611,
-          "taskSwitches": 12
+          "outputs": 22,
+          "totalPixelAcc": 892.1606227498447,
+          "accuracy": 40.5527555795384,
+          "taskSwitches": 6
         },
         {
           "timeMs": 9800,
-          "outputs": 34,
-          "totalPixelAcc": 1479.272045855379,
-          "accuracy": 43.50800134868762,
+          "outputs": 35,
+          "totalPixelAcc": 1005.1422629657925,
+          "accuracy": 28.718350370451216,
           "taskSwitches": 10
         },
         {
           "timeMs": 9900,
-          "outputs": 39,
-          "totalPixelAcc": 2368.0537574676437,
-          "accuracy": 60.719327114554964,
-          "taskSwitches": 12
+          "outputs": 31,
+          "totalPixelAcc": 898.0888669269137,
+          "accuracy": 28.970608610545604,
+          "taskSwitches": 10
         },
         {
           "timeMs": 10000,
-          "outputs": 41,
-          "totalPixelAcc": 2154.2101349086643,
-          "accuracy": 52.541710607528394,
-          "taskSwitches": 12
+          "outputs": 36,
+          "totalPixelAcc": 1665.7594891898111,
+          "accuracy": 46.2710969219392,
+          "taskSwitches": 13
         }
       ],
-      "totalOutputs": 3646,
-      "totalTaskSwitches": 1122,
-      "trainTimeSec": 10.000734457,
-      "evalAccuracy": 48.51540316864089,
-      "tasksSolved": 1,
-      "solvedTaskIds": [
-        "642d658d"
-      ],
-      "avgTrainAccuracy": 29.951982920897084,
-      "stability": 80.7180391032034,
-      "consistency": 66,
-      "throughputPerSec": 364.5732236643867,
-      "score": 19.422239577657102
+      "totalOutputs": 3257,
+      "totalTaskSwitches": 1010,
+      "trainTimeSec": 10.001946721,
+      "evalAccuracy": 19.876624460417133,
+      "tasksSolved": 0,
+      "avgTrainAccuracy": 25.598563047612096,
+      "stability": 81.18757781289854,
+      "consistency": 63,
+      "throughputPerSec": 325.6366076377543,
+      "score": 16.655717875430646
     },
     "StepTweenChain": {
       "windows": [
         {
           "timeMs": 100,
-          "outputs": 40,
-          "totalPixelAcc": 322.8467970521542,
-          "accuracy": 8.071169926303856,
-          "taskSwitches": 13
+          "outputs": 20,
+          "totalPixelAcc": 76.7266865079365,
+          "accuracy": 3.8363343253968254,
+          "taskSwitches": 8
         },
         {
           "timeMs": 200,
-          "outputs": 38,
-          "totalPixelAcc": 417.7619047619047,
-          "accuracy": 10.993734335839598,
-          "taskSwitches": 11
+          "outputs": 29,
+          "totalPixelAcc": 195.7599083354578,
+          "accuracy": 6.750341666739924,
+          "taskSwitches": 9
         },
         {
           "timeMs": 300,
-          "outputs": 43,
-          "totalPixelAcc": 253.0644651055129,
-          "accuracy": 5.8852201187328586,
-          "taskSwitches": 15
-        },
-        {
-          "timeMs": 400,
-          "outputs": 39,
-          "totalPixelAcc": 392.77215766689454,
-          "accuracy": 10.071080965817808,
-          "taskSwitches": 12
-        },
-        {
-          "timeMs": 500,
-          "outputs": 46,
-          "totalPixelAcc": 212.07210998877667,
-          "accuracy": 4.61026326062558,
-          "taskSwitches": 13
-        },
-        {
-          "timeMs": 600,
-          "outputs": 31,
-          "totalPixelAcc": 404.94444444444446,
-          "accuracy": 13.062724014336919,
+          "outputs": 33,
+          "totalPixelAcc": 334.52669454036504,
+          "accuracy": 10.137172561829244,
           "taskSwitches": 10
         },
         {
-          "timeMs": 700,
-          "outputs": 45,
-          "totalPixelAcc": 254.25113378684807,
-          "accuracy": 5.65002519526329,
-          "taskSwitches": 13
+          "timeMs": 400,
+          "outputs": 30,
+          "totalPixelAcc": 197.35371466140697,
+          "accuracy": 6.5784571553802325,
+          "taskSwitches": 8
         },
         {
-          "timeMs": 800,
-          "outputs": 41,
-          "totalPixelAcc": 210.4431209815825,
-          "accuracy": 5.13275904833128,
-          "taskSwitches": 13
-        },
-        {
-          "timeMs": 900,
-          "outputs": 36,
-          "totalPixelAcc": 239.6265005236867,
-          "accuracy": 6.65629168121352,
-          "taskSwitches": 11
-        },
-        {
-          "timeMs": 1000,
-          "outputs": 41,
-          "totalPixelAcc": 302.4518303334093,
-          "accuracy": 7.376873910570959,
-          "taskSwitches": 13
-        },
-        {
-          "timeMs": 1100,
-          "outputs": 43,
-          "totalPixelAcc": 630.2812563891707,
-          "accuracy": 14.657703636957459,
-          "taskSwitches": 13
-        },
-        {
-          "timeMs": 1200,
-          "outputs": 41,
-          "totalPixelAcc": 302.4196582489111,
-          "accuracy": 7.376089225583198,
+          "timeMs": 500,
+          "outputs": 35,
+          "totalPixelAcc": 290.1044020914151,
+          "accuracy": 8.28869720261186,
           "taskSwitches": 12
         },
         {
+          "timeMs": 600,
+          "outputs": 24,
+          "totalPixelAcc": 183.0185185185185,
+          "accuracy": 7.625771604938271,
+          "taskSwitches": 8
+        },
+        {
+          "timeMs": 700,
+          "outputs": 20,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 4
+        },
+        {
+          "timeMs": 800,
+          "outputs": 25,
+          "totalPixelAcc": 38.33875425170068,
+          "accuracy": 1.5335501700680272,
+          "taskSwitches": 9
+        },
+        {
+          "timeMs": 900,
+          "outputs": 21,
+          "totalPixelAcc": 94.25,
+          "accuracy": 4.488095238095238,
+          "taskSwitches": 7
+        },
+        {
+          "timeMs": 1000,
+          "outputs": 39,
+          "totalPixelAcc": 156.33203966605106,
+          "accuracy": 4.008513837591053,
+          "taskSwitches": 12
+        },
+        {
+          "timeMs": 1100,
+          "outputs": 38,
+          "totalPixelAcc": 197.7679398148148,
+          "accuracy": 5.204419468810916,
+          "taskSwitches": 11
+        },
+        {
+          "timeMs": 1200,
+          "outputs": 42,
+          "totalPixelAcc": 431.73183254135637,
+          "accuracy": 10.27932934622277,
+          "taskSwitches": 14
+        },
+        {
           "timeMs": 1300,
-          "outputs": 46,
-          "totalPixelAcc": 338.43099982241614,
-          "accuracy": 7.357195648313394,
-          "taskSwitches": 16
+          "outputs": 30,
+          "totalPixelAcc": 150.69223985890653,
+          "accuracy": 5.023074661963551,
+          "taskSwitches": 8
         },
         {
           "timeMs": 1400,
-          "outputs": 32,
-          "totalPixelAcc": 308.3927972780787,
-          "accuracy": 9.63727491493996,
+          "outputs": 37,
+          "totalPixelAcc": 303.78542789186594,
+          "accuracy": 8.210416970050431,
           "taskSwitches": 11
         },
         {
           "timeMs": 1500,
-          "outputs": 39,
-          "totalPixelAcc": 225.74795408359427,
-          "accuracy": 5.788409079066519,
-          "taskSwitches": 13
+          "outputs": 37,
+          "totalPixelAcc": 80.917649269922,
+          "accuracy": 2.1869634937816755,
+          "taskSwitches": 11
         },
         {
           "timeMs": 1600,
-          "outputs": 37,
-          "totalPixelAcc": 450.09506342623234,
-          "accuracy": 12.164731443952226,
-          "taskSwitches": 12
+          "outputs": 36,
+          "totalPixelAcc": 110.33526209855906,
+          "accuracy": 3.0648683916266406,
+          "taskSwitches": 11
         },
         {
           "timeMs": 1700,
-          "outputs": 34,
-          "totalPixelAcc": 449.0130026182012,
-          "accuracy": 13.20626478288827,
-          "taskSwitches": 12
+          "outputs": 27,
+          "totalPixelAcc": 141.22843158740596,
+          "accuracy": 5.230682651385406,
+          "taskSwitches": 7
         },
         {
           "timeMs": 1800,
-          "outputs": 32,
-          "totalPixelAcc": 354.82549316022704,
-          "accuracy": 11.088296661257095,
-          "taskSwitches": 9
+          "outputs": 26,
+          "totalPixelAcc": 124.28179497971163,
+          "accuracy": 4.7800690376812165,
+          "taskSwitches": 6
         },
         {
           "timeMs": 1900,
-          "outputs": 36,
-          "totalPixelAcc": 362.2594195927529,
-          "accuracy": 10.062761655354247,
-          "taskSwitches": 11
-        },
-        {
-          "timeMs": 2000,
-          "outputs": 40,
-          "totalPixelAcc": 420.93875336313897,
-          "accuracy": 10.523468834078475,
+          "outputs": 33,
+          "totalPixelAcc": 188.60554223365227,
+          "accuracy": 5.7153194616258265,
           "taskSwitches": 10
         },
         {
+          "timeMs": 2000,
+          "outputs": 23,
+          "totalPixelAcc": 198.33621933621933,
+          "accuracy": 8.62331388418345,
+          "taskSwitches": 7
+        },
+        {
           "timeMs": 2100,
-          "outputs": 35,
-          "totalPixelAcc": 170.02208414517276,
-          "accuracy": 4.8577738327192215,
-          "taskSwitches": 11
+          "outputs": 32,
+          "totalPixelAcc": 110.1547619047619,
+          "accuracy": 3.4423363095238093,
+          "taskSwitches": 10
         },
         {
           "timeMs": 2200,
-          "outputs": 31,
-          "totalPixelAcc": 387.7875025507601,
-          "accuracy": 12.509274275830972,
-          "taskSwitches": 9
+          "outputs": 22,
+          "totalPixelAcc": 200.60768613000755,
+          "accuracy": 9.118531187727616,
+          "taskSwitches": 6
         },
         {
           "timeMs": 2300,
-          "outputs": 38,
-          "totalPixelAcc": 509.1062249716096,
-          "accuracy": 13.397532236094989,
-          "taskSwitches": 12
+          "outputs": 25,
+          "totalPixelAcc": 469.44526494808446,
+          "accuracy": 18.777810597923377,
+          "taskSwitches": 8
         },
         {
           "timeMs": 2400,
-          "outputs": 36,
-          "totalPixelAcc": 193.19312169312167,
-          "accuracy": 5.366475602586713,
-          "taskSwitches": 11
+          "outputs": 25,
+          "totalPixelAcc": 167.08499833499835,
+          "accuracy": 6.683399933399934,
+          "taskSwitches": 9
         },
         {
           "timeMs": 2500,
-          "outputs": 45,
-          "totalPixelAcc": 389.88985014295577,
-          "accuracy": 8.664218892065684,
-          "taskSwitches": 13
+          "outputs": 43,
+          "totalPixelAcc": 446.9472249172016,
+          "accuracy": 10.394121509702362,
+          "taskSwitches": 14
         },
         {
           "timeMs": 2600,
-          "outputs": 38,
-          "totalPixelAcc": 212.90231536023902,
-          "accuracy": 5.602692509479974,
-          "taskSwitches": 12
+          "outputs": 35,
+          "totalPixelAcc": 230.3939610178645,
+          "accuracy": 6.582684600510414,
+          "taskSwitches": 10
         },
         {
           "timeMs": 2700,
-          "outputs": 38,
-          "totalPixelAcc": 211.54452614379085,
-          "accuracy": 5.566961214310285,
-          "taskSwitches": 11
+          "outputs": 30,
+          "totalPixelAcc": 222.5953371501157,
+          "accuracy": 7.419844571670524,
+          "taskSwitches": 10
         },
         {
           "timeMs": 2800,
           "outputs": 33,
-          "totalPixelAcc": 158.0313346200951,
-          "accuracy": 4.788828321821064,
-          "taskSwitches": 11
+          "totalPixelAcc": 759.1515043361197,
+          "accuracy": 23.004591040488478,
+          "taskSwitches": 8
         },
         {
           "timeMs": 2900,
-          "outputs": 44,
-          "totalPixelAcc": 326.86959935489347,
-          "accuracy": 7.428854530793033,
-          "taskSwitches": 12
+          "outputs": 39,
+          "totalPixelAcc": 325.3473885715734,
+          "accuracy": 8.342240732604447,
+          "taskSwitches": 11
         },
         {
           "timeMs": 3000,
-          "outputs": 38,
-          "totalPixelAcc": 540.7694238916415,
-          "accuracy": 14.230774312937934,
-          "taskSwitches": 11
+          "outputs": 23,
+          "totalPixelAcc": 190.30172902494328,
+          "accuracy": 8.273988218475795,
+          "taskSwitches": 6
         },
         {
           "timeMs": 3100,
-          "outputs": 42,
-          "totalPixelAcc": 458.218642195505,
-          "accuracy": 10.909967671321548,
-          "taskSwitches": 11
+          "outputs": 30,
+          "totalPixelAcc": 103.21209889423186,
+          "accuracy": 3.440403296474395,
+          "taskSwitches": 10
         },
         {
           "timeMs": 3200,
-          "outputs": 37,
-          "totalPixelAcc": 278.3772779695774,
-          "accuracy": 7.523710215393984,
-          "taskSwitches": 12
+          "outputs": 24,
+          "totalPixelAcc": 273.88918847522586,
+          "accuracy": 11.412049519801078,
+          "taskSwitches": 8
         },
         {
           "timeMs": 3300,
-          "outputs": 41,
-          "totalPixelAcc": 388.9059871818267,
-          "accuracy": 9.485511882483577,
-          "taskSwitches": 13
+          "outputs": 35,
+          "totalPixelAcc": 225.57897249455687,
+          "accuracy": 6.4451134998444815,
+          "taskSwitches": 10
         },
         {
           "timeMs": 3400,
-          "outputs": 35,
-          "totalPixelAcc": 269.6547829008146,
-          "accuracy": 7.704422368594703,
-          "taskSwitches": 12
+          "outputs": 28,
+          "totalPixelAcc": 212.9693931799195,
+          "accuracy": 7.606049756425697,
+          "taskSwitches": 10
         },
         {
           "timeMs": 3500,
-          "outputs": 38,
-          "totalPixelAcc": 328.42573328763075,
-          "accuracy": 8.64278245493765,
-          "taskSwitches": 11
+          "outputs": 33,
+          "totalPixelAcc": 709.0347833003826,
+          "accuracy": 21.48590252425402,
+          "taskSwitches": 10
         },
         {
           "timeMs": 3600,
-          "outputs": 49,
-          "totalPixelAcc": 613.5898289871503,
-          "accuracy": 12.522241407901028,
-          "taskSwitches": 15
+          "outputs": 31,
+          "totalPixelAcc": 341.5576124212488,
+          "accuracy": 11.017987497459638,
+          "taskSwitches": 9
         },
         {
           "timeMs": 3700,
-          "outputs": 39,
-          "totalPixelAcc": 852.9442353950707,
-          "accuracy": 21.87036501013002,
-          "taskSwitches": 12
+          "outputs": 26,
+          "totalPixelAcc": 184.33921757080628,
+          "accuracy": 7.089969906569473,
+          "taskSwitches": 8
         },
         {
           "timeMs": 3800,
-          "outputs": 41,
-          "totalPixelAcc": 887.6482177666386,
-          "accuracy": 21.649956530893625,
-          "taskSwitches": 14
+          "outputs": 21,
+          "totalPixelAcc": 127.80580210387903,
+          "accuracy": 6.085990576375192,
+          "taskSwitches": 6
         },
         {
           "timeMs": 3900,
-          "outputs": 42,
-          "totalPixelAcc": 734.4853423692709,
-          "accuracy": 17.487746246887404,
-          "taskSwitches": 12
+          "outputs": 41,
+          "totalPixelAcc": 265.65452080176385,
+          "accuracy": 6.479378556140582,
+          "taskSwitches": 11
         },
         {
           "timeMs": 4000,
-          "outputs": 38,
-          "totalPixelAcc": 1256.203514739229,
-          "accuracy": 33.05798722997971,
+          "outputs": 33,
+          "totalPixelAcc": 291.5322885926334,
+          "accuracy": 8.834311775534346,
           "taskSwitches": 12
         },
         {
           "timeMs": 4100,
-          "outputs": 42,
-          "totalPixelAcc": 1196.3276014109342,
-          "accuracy": 28.48399050978415,
-          "taskSwitches": 12
+          "outputs": 23,
+          "totalPixelAcc": 138.0501775239067,
+          "accuracy": 6.002181631474205,
+          "taskSwitches": 8
         },
         {
           "timeMs": 4200,
-          "outputs": 34,
-          "totalPixelAcc": 1277.553779909549,
-          "accuracy": 37.575111173810264,
-          "taskSwitches": 11
+          "outputs": 23,
+          "totalPixelAcc": 278.8718466485058,
+          "accuracy": 12.124862897761123,
+          "taskSwitches": 8
         },
         {
           "timeMs": 4300,
-          "outputs": 27,
-          "totalPixelAcc": 1455.1560273941227,
-          "accuracy": 53.894667681263805,
+          "outputs": 28,
+          "totalPixelAcc": 314.7336392399405,
+          "accuracy": 11.24048711571216,
           "taskSwitches": 8
         },
         {
           "timeMs": 4400,
-          "outputs": 44,
-          "totalPixelAcc": 1825.145757385889,
-          "accuracy": 41.48058539513384,
-          "taskSwitches": 14
+          "outputs": 36,
+          "totalPixelAcc": 335.24816662019384,
+          "accuracy": 9.312449072783162,
+          "taskSwitches": 12
         },
         {
           "timeMs": 4500,
-          "outputs": 43,
-          "totalPixelAcc": 1513.1257999752731,
-          "accuracy": 35.18897209244821,
-          "taskSwitches": 13
-        },
-        {
-          "timeMs": 4600,
-          "outputs": 35,
-          "totalPixelAcc": 1578.3868706443986,
-          "accuracy": 45.0967677326971,
+          "outputs": 29,
+          "totalPixelAcc": 304.25414584093926,
+          "accuracy": 10.491522270377216,
           "taskSwitches": 10
         },
         {
+          "timeMs": 4600,
+          "outputs": 21,
+          "totalPixelAcc": 316.46561285189324,
+          "accuracy": 15.069791088185392,
+          "taskSwitches": 6
+        },
+        {
           "timeMs": 4700,
-          "outputs": 39,
-          "totalPixelAcc": 2469.4013139955823,
-          "accuracy": 63.31798241014314,
-          "taskSwitches": 13
+          "outputs": 29,
+          "totalPixelAcc": 361.6164892282772,
+          "accuracy": 12.469534111319904,
+          "taskSwitches": 11
         },
         {
           "timeMs": 4800,
-          "outputs": 37,
-          "totalPixelAcc": 1502.1984349625043,
-          "accuracy": 40.599957701689306,
-          "taskSwitches": 14
+          "outputs": 27,
+          "totalPixelAcc": 459.7204442383014,
+          "accuracy": 17.02668311993709,
+          "taskSwitches": 8
         },
         {
           "timeMs": 4900,
-          "outputs": 34,
-          "totalPixelAcc": 1524.688807134597,
-          "accuracy": 44.8437884451352,
+          "outputs": 35,
+          "totalPixelAcc": 269.35065761127294,
+          "accuracy": 7.695733074607798,
           "taskSwitches": 11
         },
         {
           "timeMs": 5000,
           "outputs": 31,
-          "totalPixelAcc": 1431.046805046805,
-          "accuracy": 46.16280016280016,
+          "totalPixelAcc": 603.3490762709513,
+          "accuracy": 19.462873428095204,
           "taskSwitches": 10
         },
         {
           "timeMs": 5100,
-          "outputs": 25,
-          "totalPixelAcc": 1268.7742199312036,
-          "accuracy": 50.75096879724814,
-          "taskSwitches": 8
+          "outputs": 24,
+          "totalPixelAcc": 411.92746913580254,
+          "accuracy": 17.163644547325106,
+          "taskSwitches": 7
         },
         {
           "timeMs": 5200,
-          "outputs": 26,
-          "totalPixelAcc": 930.1199035169624,
-          "accuracy": 35.77384244296009,
-          "taskSwitches": 9
+          "outputs": 39,
+          "totalPixelAcc": 904.4386079837877,
+          "accuracy": 23.19073353804584,
+          "taskSwitches": 11
         },
         {
           "timeMs": 5300,
-          "outputs": 27,
-          "totalPixelAcc": 950.6313377202733,
-          "accuracy": 35.20856806371383,
-          "taskSwitches": 8
+          "outputs": 39,
+          "totalPixelAcc": 928.3302835988493,
+          "accuracy": 23.8033406050987,
+          "taskSwitches": 13
         },
         {
           "timeMs": 5400,
-          "outputs": 35,
-          "totalPixelAcc": 1739.7841601440089,
-          "accuracy": 49.7081188612574,
-          "taskSwitches": 11
+          "outputs": 30,
+          "totalPixelAcc": 838.8656275396482,
+          "accuracy": 27.96218758465494,
+          "taskSwitches": 10
         },
         {
           "timeMs": 5500,
-          "outputs": 40,
-          "totalPixelAcc": 1911.942272378197,
-          "accuracy": 47.79855680945492,
-          "taskSwitches": 10
+          "outputs": 33,
+          "totalPixelAcc": 984.7941556637376,
+          "accuracy": 29.84224714132538,
+          "taskSwitches": 11
         },
         {
           "timeMs": 5600,
-          "outputs": 33,
-          "totalPixelAcc": 1633.1037320031683,
-          "accuracy": 49.48799187888389,
-          "taskSwitches": 10
+          "outputs": 20,
+          "totalPixelAcc": 337.36111111111114,
+          "accuracy": 16.868055555555557,
+          "taskSwitches": 6
         },
         {
           "timeMs": 5700,
-          "outputs": 27,
-          "totalPixelAcc": 1101.3425925925926,
-          "accuracy": 40.790466392318244,
-          "taskSwitches": 8
+          "outputs": 33,
+          "totalPixelAcc": 1240.391739418353,
+          "accuracy": 37.587628467222814,
+          "taskSwitches": 11
         },
         {
           "timeMs": 5800,
-          "outputs": 40,
-          "totalPixelAcc": 1630.0007108913182,
-          "accuracy": 40.75001777228296,
-          "taskSwitches": 12
+          "outputs": 30,
+          "totalPixelAcc": 1454.937739622232,
+          "accuracy": 48.497924654074396,
+          "taskSwitches": 10
         },
         {
           "timeMs": 5900,
-          "outputs": 40,
-          "totalPixelAcc": 1644.895803157445,
-          "accuracy": 41.12239507893612,
-          "taskSwitches": 13
+          "outputs": 36,
+          "totalPixelAcc": 1344.1130782577095,
+          "accuracy": 37.336474396047485,
+          "taskSwitches": 12
         },
         {
           "timeMs": 6000,
-          "outputs": 42,
-          "totalPixelAcc": 1953.8290467028567,
-          "accuracy": 46.519739207210876,
-          "taskSwitches": 11
+          "outputs": 35,
+          "totalPixelAcc": 1530.8603002318168,
+          "accuracy": 43.738865720909054,
+          "taskSwitches": 10
         },
         {
           "timeMs": 6100,
-          "outputs": 39,
-          "totalPixelAcc": 2195.423025923083,
-          "accuracy": 56.29289810059187,
-          "taskSwitches": 13
+          "outputs": 29,
+          "totalPixelAcc": 1145.2825851192956,
+          "accuracy": 39.492502935148124,
+          "taskSwitches": 9
         },
         {
           "timeMs": 6200,
-          "outputs": 38,
-          "totalPixelAcc": 2145.007896605936,
-          "accuracy": 56.447576226471995,
-          "taskSwitches": 11
+          "outputs": 26,
+          "totalPixelAcc": 885.2809816045004,
+          "accuracy": 34.049268523250014,
+          "taskSwitches": 9
         },
         {
           "timeMs": 6300,
-          "outputs": 41,
-          "totalPixelAcc": 2002.9769746282345,
-          "accuracy": 48.853096942152064,
+          "outputs": 42,
+          "totalPixelAcc": 2039.1303360981199,
+          "accuracy": 48.55072228805047,
           "taskSwitches": 13
         },
         {
           "timeMs": 6400,
-          "outputs": 33,
-          "totalPixelAcc": 1267.99356162843,
-          "accuracy": 38.42404732207363,
-          "taskSwitches": 9
+          "outputs": 36,
+          "totalPixelAcc": 1025.397862806365,
+          "accuracy": 28.483273966843473,
+          "taskSwitches": 10
         },
         {
           "timeMs": 6500,
           "outputs": 43,
-          "totalPixelAcc": 2038.0366942178027,
-          "accuracy": 47.39620219111169,
-          "taskSwitches": 12
+          "totalPixelAcc": 1324.1750305103697,
+          "accuracy": 30.794768151403947,
+          "taskSwitches": 14
         },
         {
           "timeMs": 6600,
-          "outputs": 47,
-          "totalPixelAcc": 2016.8510306580931,
-          "accuracy": 42.91172405655517,
+          "outputs": 40,
+          "totalPixelAcc": 1165.9476428330038,
+          "accuracy": 29.148691070825095,
           "taskSwitches": 13
         },
         {
           "timeMs": 6700,
-          "outputs": 44,
-          "totalPixelAcc": 2288.4290604710814,
-          "accuracy": 52.009751374342756,
-          "taskSwitches": 14
+          "outputs": 27,
+          "totalPixelAcc": 1409.8287037037035,
+          "accuracy": 52.21587791495198,
+          "taskSwitches": 8
         },
         {
           "timeMs": 6800,
-          "outputs": 36,
-          "totalPixelAcc": 1682.9051068041244,
-          "accuracy": 46.74736407789234,
-          "taskSwitches": 11
+          "outputs": 37,
+          "totalPixelAcc": 1814.5401907502282,
+          "accuracy": 49.041626777033194,
+          "taskSwitches": 12
         },
         {
           "timeMs": 6900,
-          "outputs": 28,
-          "totalPixelAcc": 1940.1138300999414,
-          "accuracy": 69.28977964642648,
+          "outputs": 30,
+          "totalPixelAcc": 1576.321471803024,
+          "accuracy": 52.5440490601008,
           "taskSwitches": 10
         },
         {
           "timeMs": 7000,
-          "outputs": 40,
-          "totalPixelAcc": 1417.9650861264636,
-          "accuracy": 35.44912715316159,
-          "taskSwitches": 12
+          "outputs": 32,
+          "totalPixelAcc": 1418.385101010101,
+          "accuracy": 44.324534406565654,
+          "taskSwitches": 9
         },
         {
           "timeMs": 7100,
-          "outputs": 33,
-          "totalPixelAcc": 1938.9431216931218,
-          "accuracy": 58.75585217251884,
+          "outputs": 34,
+          "totalPixelAcc": 1713.201113853945,
+          "accuracy": 50.38826805452779,
           "taskSwitches": 10
         },
         {
           "timeMs": 7200,
-          "outputs": 36,
-          "totalPixelAcc": 1576.5664028732042,
-          "accuracy": 43.79351119092234,
-          "taskSwitches": 12
+          "outputs": 38,
+          "totalPixelAcc": 1652.0664123885174,
+          "accuracy": 43.475431904960985,
+          "taskSwitches": 11
         },
         {
           "timeMs": 7300,
-          "outputs": 38,
-          "totalPixelAcc": 824.7376775271513,
-          "accuracy": 21.70362309281977,
-          "taskSwitches": 11
+          "outputs": 30,
+          "totalPixelAcc": 1725.1574245423576,
+          "accuracy": 57.505247484745254,
+          "taskSwitches": 8
         },
         {
           "timeMs": 7400,
-          "outputs": 43,
-          "totalPixelAcc": 1770.8661427533975,
-          "accuracy": 41.18293355240459,
-          "taskSwitches": 14
+          "outputs": 26,
+          "totalPixelAcc": 1033.0258876008304,
+          "accuracy": 39.73176490772425,
+          "taskSwitches": 8
         },
         {
           "timeMs": 7500,
-          "outputs": 37,
-          "totalPixelAcc": 1119.2836414026885,
-          "accuracy": 30.25090922709969,
-          "taskSwitches": 11
+          "outputs": 30,
+          "totalPixelAcc": 1441.9086181298742,
+          "accuracy": 48.06362060432914,
+          "taskSwitches": 10
         },
         {
           "timeMs": 7600,
-          "outputs": 36,
-          "totalPixelAcc": 1538.827097505669,
-          "accuracy": 42.74519715293525,
-          "taskSwitches": 11
+          "outputs": 34,
+          "totalPixelAcc": 1281.3853534783955,
+          "accuracy": 37.68780451407046,
+          "taskSwitches": 12
         },
         {
           "timeMs": 7700,
-          "outputs": 41,
-          "totalPixelAcc": 1621.6322846194635,
-          "accuracy": 39.55200694193813,
-          "taskSwitches": 12
-        },
-        {
-          "timeMs": 7800,
-          "outputs": 29,
-          "totalPixelAcc": 1274.321208112875,
-          "accuracy": 43.94211062458189,
-          "taskSwitches": 10
-        },
-        {
-          "timeMs": 7900,
-          "outputs": 32,
-          "totalPixelAcc": 1428.658852100681,
-          "accuracy": 44.645589128146284,
-          "taskSwitches": 8
-        },
-        {
-          "timeMs": 8000,
-          "outputs": 33,
-          "totalPixelAcc": 1760.437001594896,
-          "accuracy": 53.346575805905935,
-          "taskSwitches": 12
-        },
-        {
-          "timeMs": 8100,
-          "outputs": 39,
-          "totalPixelAcc": 1661.9605137269443,
-          "accuracy": 42.61437214684473,
-          "taskSwitches": 12
-        },
-        {
-          "timeMs": 8200,
           "outputs": 23,
-          "totalPixelAcc": 822.4053741867117,
-          "accuracy": 35.75675539942225,
+          "totalPixelAcc": 1148.242673031634,
+          "accuracy": 49.923594479636265,
           "taskSwitches": 7
         },
         {
-          "timeMs": 8300,
-          "outputs": 32,
-          "totalPixelAcc": 2099.4362244576937,
-          "accuracy": 65.60738201430293,
-          "taskSwitches": 9
-        },
-        {
-          "timeMs": 8400,
-          "outputs": 34,
-          "totalPixelAcc": 1918.9232343867611,
-          "accuracy": 56.43891865843415,
+          "timeMs": 7800,
+          "outputs": 39,
+          "totalPixelAcc": 2438.277441620693,
+          "accuracy": 62.51993440053059,
           "taskSwitches": 12
         },
         {
-          "timeMs": 8500,
-          "outputs": 39,
-          "totalPixelAcc": 1489.6895558345773,
-          "accuracy": 38.19716809832249,
-          "taskSwitches": 13
+          "timeMs": 7900,
+          "outputs": 38,
+          "totalPixelAcc": 1617.6516169889987,
+          "accuracy": 42.56977939444734,
+          "taskSwitches": 12
         },
         {
-          "timeMs": 8600,
-          "outputs": 30,
-          "totalPixelAcc": 1522.562128773078,
-          "accuracy": 50.7520709591026,
+          "timeMs": 8000,
+          "outputs": 23,
+          "totalPixelAcc": 1124.3436473327215,
+          "accuracy": 48.8845064057705,
+          "taskSwitches": 7
+        },
+        {
+          "timeMs": 8100,
+          "outputs": 31,
+          "totalPixelAcc": 1602.4815390869644,
+          "accuracy": 51.692952873773045,
           "taskSwitches": 10
         },
         {
-          "timeMs": 8700,
-          "outputs": 28,
-          "totalPixelAcc": 1252.8836996336995,
-          "accuracy": 44.74584641548927,
-          "taskSwitches": 9
+          "timeMs": 8200,
+          "outputs": 39,
+          "totalPixelAcc": 1961.0613784658872,
+          "accuracy": 50.2836250888689,
+          "taskSwitches": 10
         },
         {
-          "timeMs": 8800,
-          "outputs": 22,
-          "totalPixelAcc": 1123.5441498683979,
-          "accuracy": 51.07018863038172,
-          "taskSwitches": 8
+          "timeMs": 8300,
+          "outputs": 31,
+          "totalPixelAcc": 1589.2388208435607,
+          "accuracy": 51.26576841430841,
+          "taskSwitches": 10
         },
         {
-          "timeMs": 8900,
-          "outputs": 24,
-          "totalPixelAcc": 940.5756043158004,
-          "accuracy": 39.19065017982502,
-          "taskSwitches": 8
+          "timeMs": 8400,
+          "outputs": 33,
+          "totalPixelAcc": 744.2004731379731,
+          "accuracy": 22.551529489029488,
+          "taskSwitches": 10
         },
         {
-          "timeMs": 9000,
-          "outputs": 40,
-          "totalPixelAcc": 1677.6748625376076,
-          "accuracy": 41.94187156344019,
+          "timeMs": 8500,
+          "outputs": 19,
+          "totalPixelAcc": 538.5295756172839,
+          "accuracy": 28.343661874593888,
+          "taskSwitches": 6
+        },
+        {
+          "timeMs": 8600,
+          "outputs": 36,
+          "totalPixelAcc": 1789.9657381731995,
+          "accuracy": 49.721270504811095,
           "taskSwitches": 12
         },
         {
-          "timeMs": 9100,
+          "timeMs": 8700,
+          "outputs": 27,
+          "totalPixelAcc": 1771.0001235194704,
+          "accuracy": 65.5925971673878,
+          "taskSwitches": 8
+        },
+        {
+          "timeMs": 8800,
+          "outputs": 21,
+          "totalPixelAcc": 828.2641286892582,
+          "accuracy": 39.44114898520277,
+          "taskSwitches": 7
+        },
+        {
+          "timeMs": 8900,
+          "outputs": 38,
+          "totalPixelAcc": 2055.700152024956,
+          "accuracy": 54.097372421709366,
+          "taskSwitches": 13
+        },
+        {
+          "timeMs": 9000,
           "outputs": 33,
-          "totalPixelAcc": 1677.4007043741892,
-          "accuracy": 50.83032437497543,
+          "totalPixelAcc": 1168.3245030008077,
+          "accuracy": 35.40377281820629,
+          "taskSwitches": 10
+        },
+        {
+          "timeMs": 9100,
+          "outputs": 41,
+          "totalPixelAcc": 1320.748057174053,
+          "accuracy": 32.213367248147634,
           "taskSwitches": 11
         },
         {
           "timeMs": 9200,
-          "outputs": 32,
-          "totalPixelAcc": 1564.6530580903607,
-          "accuracy": 48.89540806532377,
-          "taskSwitches": 6
+          "outputs": 37,
+          "totalPixelAcc": 1707.9263917466783,
+          "accuracy": 46.160172749910224,
+          "taskSwitches": 12
         },
         {
           "timeMs": 9300,
-          "outputs": 30,
-          "totalPixelAcc": 1526.124336816066,
-          "accuracy": 50.8708112272022,
-          "taskSwitches": 10
+          "outputs": 25,
+          "totalPixelAcc": 608.430004409171,
+          "accuracy": 24.337200176366842,
+          "taskSwitches": 7
         },
         {
           "timeMs": 9400,
-          "outputs": 24,
-          "totalPixelAcc": 877.9135802469135,
-          "accuracy": 36.57973251028806,
-          "taskSwitches": 7
+          "outputs": 38,
+          "totalPixelAcc": 1334.7499649270483,
+          "accuracy": 35.12499907702759,
+          "taskSwitches": 12
         },
         {
           "timeMs": 9500,
-          "outputs": 25,
-          "totalPixelAcc": 1060.5661387951598,
-          "accuracy": 42.42264555180639,
-          "taskSwitches": 7
+          "outputs": 24,
+          "totalPixelAcc": 1027.10520097014,
+          "accuracy": 42.7960500404225,
+          "taskSwitches": 9
         },
         {
           "timeMs": 9600,
-          "outputs": 32,
-          "totalPixelAcc": 1118.7081276704253,
-          "accuracy": 34.95962898970079,
-          "taskSwitches": 11
+          "outputs": 31,
+          "totalPixelAcc": 1733.3658286685147,
+          "accuracy": 55.91502673124241,
+          "taskSwitches": 9
         },
         {
           "timeMs": 9700,
-          "outputs": 40,
-          "totalPixelAcc": 2329.671668833321,
-          "accuracy": 58.24179172083302,
-          "taskSwitches": 11
+          "outputs": 39,
+          "totalPixelAcc": 2036.2142667718754,
+          "accuracy": 52.21062222491988,
+          "taskSwitches": 10
         },
         {
           "timeMs": 9800,
-          "outputs": 39,
-          "totalPixelAcc": 1694.1410934744265,
-          "accuracy": 43.439515217292985,
+          "outputs": 35,
+          "totalPixelAcc": 1382.7948930514888,
+          "accuracy": 39.50842551575682,
           "taskSwitches": 12
         },
         {
           "timeMs": 9900,
-          "outputs": 38,
-          "totalPixelAcc": 2376.3685722824584,
-          "accuracy": 62.5360150600647,
-          "taskSwitches": 12
+          "outputs": 34,
+          "totalPixelAcc": 1956.3969520733278,
+          "accuracy": 57.541086825686115,
+          "taskSwitches": 10
         },
         {
           "timeMs": 10000,
-          "outputs": 33,
-          "totalPixelAcc": 1902.6545793531088,
-          "accuracy": 57.65619937433663,
-          "taskSwitches": 9
+          "outputs": 37,
+          "totalPixelAcc": 1936.8751203814859,
+          "accuracy": 52.34797622652665,
+          "taskSwitches": 13
         }
       ],
-      "totalOutputs": 3643,
-      "totalTaskSwitches": 1121,
-      "trainTimeSec": 10.000462566,
-      "evalAccuracy": 48.53396582255514,
-      "tasksSolved": 1,
-      "solvedTaskIds": [
-        "642d658d"
-      ],
-      "avgTrainAccuracy": 31.536828758332025,
-      "stability": 80.95860848295908,
-      "consistency": 72,
-      "throughputPerSec": 364.2831495000668,
-      "score": 21.234136951666915
+      "totalOutputs": 3121,
+      "totalTaskSwitches": 967,
+      "trainTimeSec": 10.001020599,
+      "evalAccuracy": 19.879374990059603,
+      "tasksSolved": 0,
+      "avgTrainAccuracy": 25.063332104602136,
+      "stability": 81.15163932163891,
+      "consistency": 57.99999999999999,
+      "throughputPerSec": 312.0681503557815,
+      "score": 14.688408349237148
     },
     "Tween": {
       "windows": [
         {
           "timeMs": 100,
-          "outputs": 168,
-          "totalPixelAcc": 1024.8431404912037,
-          "accuracy": 6.100256788638117,
-          "taskSwitches": 53
+          "outputs": 57,
+          "totalPixelAcc": 332.9941828338081,
+          "accuracy": 5.842003207610668,
+          "taskSwitches": 20
         },
         {
           "timeMs": 200,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 93,
+          "totalPixelAcc": 686.0437682092867,
+          "accuracy": 7.376814711927814,
+          "taskSwitches": 28
         },
         {
           "timeMs": 300,
-          "outputs": 85,
-          "totalPixelAcc": 581.7121326645137,
-          "accuracy": 6.843672148994278,
-          "taskSwitches": 26
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 400,
-          "outputs": 62,
-          "totalPixelAcc": 405.5228937728937,
-          "accuracy": 6.540691835046673,
-          "taskSwitches": 18
+          "outputs": 112,
+          "totalPixelAcc": 405.8368818807147,
+          "accuracy": 3.623543588220667,
+          "taskSwitches": 34
         },
         {
           "timeMs": 500,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 17,
+          "totalPixelAcc": 132.7690972222222,
+          "accuracy": 7.809946895424836,
+          "taskSwitches": 5
         },
         {
           "timeMs": 600,
-          "outputs": 182,
-          "totalPixelAcc": 932.0450722357972,
-          "accuracy": 5.121126770526359,
-          "taskSwitches": 56
-        },
-        {
-          "timeMs": 700,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
+        },
+        {
+          "timeMs": 700,
+          "outputs": 113,
+          "totalPixelAcc": 684.4410090971237,
+          "accuracy": 6.057000080505519,
+          "taskSwitches": 34
         },
         {
           "timeMs": 800,
@@ -2933,31 +2924,31 @@
         },
         {
           "timeMs": 900,
-          "outputs": 158,
-          "totalPixelAcc": 1054.0552321686919,
-          "accuracy": 6.671235646637291,
-          "taskSwitches": 53
+          "outputs": 16,
+          "totalPixelAcc": 51.601165501165504,
+          "accuracy": 3.225072843822844,
+          "taskSwitches": 5
         },
         {
           "timeMs": 1000,
+          "outputs": 125,
+          "totalPixelAcc": 615.1299287279218,
+          "accuracy": 4.921039429823374,
+          "taskSwitches": 36
+        },
+        {
+          "timeMs": 1100,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
         },
         {
-          "timeMs": 1100,
-          "outputs": 156,
-          "totalPixelAcc": 1199.9244787894947,
-          "accuracy": 7.6918235819839404,
-          "taskSwitches": 48
-        },
-        {
           "timeMs": 1200,
-          "outputs": 38,
-          "totalPixelAcc": 189.84436537088055,
-          "accuracy": 4.995904351865278,
-          "taskSwitches": 10
+          "outputs": 114,
+          "totalPixelAcc": 703.8372338134951,
+          "accuracy": 6.174010822925395,
+          "taskSwitches": 34
         },
         {
           "timeMs": 1300,
@@ -2968,31 +2959,31 @@
         },
         {
           "timeMs": 1400,
-          "outputs": 170,
-          "totalPixelAcc": 1515.8123007062202,
-          "accuracy": 8.916542945330708,
-          "taskSwitches": 51
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 1500,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 116,
+          "totalPixelAcc": 1086.6230994017835,
+          "accuracy": 9.367440512084341,
+          "taskSwitches": 37
         },
         {
           "timeMs": 1600,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 5,
+          "totalPixelAcc": 86.95359611149085,
+          "accuracy": 17.39071922229817,
+          "taskSwitches": 3
         },
         {
           "timeMs": 1700,
-          "outputs": 162,
-          "totalPixelAcc": 1675.4095237201373,
-          "accuracy": 10.342034097037883,
-          "taskSwitches": 48
+          "outputs": 126,
+          "totalPixelAcc": 916.1181141065463,
+          "accuracy": 7.270778683385288,
+          "taskSwitches": 35
         },
         {
           "timeMs": 1800,
@@ -3003,45 +2994,45 @@
         },
         {
           "timeMs": 1900,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 151,
+          "totalPixelAcc": 1383.8717804697408,
+          "accuracy": 9.164713777945304,
+          "taskSwitches": 47
         },
         {
           "timeMs": 2000,
-          "outputs": 137,
-          "totalPixelAcc": 786.8871486627258,
-          "accuracy": 5.743701815056393,
-          "taskSwitches": 42
-        },
-        {
-          "timeMs": 2100,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
+        },
+        {
+          "timeMs": 2100,
+          "outputs": 38,
+          "totalPixelAcc": 616.8997659291208,
+          "accuracy": 16.23420436655581,
+          "taskSwitches": 10
         },
         {
           "timeMs": 2200,
           "outputs": 95,
-          "totalPixelAcc": 581.0469074034627,
-          "accuracy": 6.116283235825923,
-          "taskSwitches": 31
+          "totalPixelAcc": 507.3601173425764,
+          "accuracy": 5.340632814132383,
+          "taskSwitches": 28
         },
         {
           "timeMs": 2300,
-          "outputs": 16,
-          "totalPixelAcc": 372.6666666666667,
-          "accuracy": 23.291666666666668,
-          "taskSwitches": 3
+          "outputs": 39,
+          "totalPixelAcc": 311.6642524142524,
+          "accuracy": 7.991391087544934,
+          "taskSwitches": 14
         },
         {
           "timeMs": 2400,
-          "outputs": 100,
-          "totalPixelAcc": 1064.8616854060424,
-          "accuracy": 10.648616854060425,
-          "taskSwitches": 32
+          "outputs": 92,
+          "totalPixelAcc": 877.1960086959506,
+          "accuracy": 9.534739224955985,
+          "taskSwitches": 30
         },
         {
           "timeMs": 2500,
@@ -3052,10 +3043,10 @@
         },
         {
           "timeMs": 2600,
-          "outputs": 120,
-          "totalPixelAcc": 2000.901977211501,
-          "accuracy": 16.674183143429175,
-          "taskSwitches": 36
+          "outputs": 101,
+          "totalPixelAcc": 988.2670214691118,
+          "accuracy": 9.78482199474368,
+          "taskSwitches": 34
         },
         {
           "timeMs": 2700,
@@ -3066,31 +3057,31 @@
         },
         {
           "timeMs": 2800,
-          "outputs": 143,
-          "totalPixelAcc": 4509.8387641112795,
-          "accuracy": 31.53733401476419,
-          "taskSwitches": 44
+          "outputs": 86,
+          "totalPixelAcc": 881.6145496727568,
+          "accuracy": 10.251331972939033,
+          "taskSwitches": 27
         },
         {
           "timeMs": 2900,
+          "outputs": 11,
+          "totalPixelAcc": 103.40470679012346,
+          "accuracy": 9.400427890011223,
+          "taskSwitches": 3
+        },
+        {
+          "timeMs": 3000,
+          "outputs": 162,
+          "totalPixelAcc": 2050.0932956322463,
+          "accuracy": 12.654896886618804,
+          "taskSwitches": 51
+        },
+        {
+          "timeMs": 3100,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
-        },
-        {
-          "timeMs": 3000,
-          "outputs": 23,
-          "totalPixelAcc": 1531.356557957218,
-          "accuracy": 66.5807199111834,
-          "taskSwitches": 8
-        },
-        {
-          "timeMs": 3100,
-          "outputs": 127,
-          "totalPixelAcc": 5223.562268749043,
-          "accuracy": 41.13041156495309,
-          "taskSwitches": 43
         },
         {
           "timeMs": 3200,
@@ -3101,45 +3092,45 @@
         },
         {
           "timeMs": 3300,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 166,
+          "totalPixelAcc": 5030.963435552189,
+          "accuracy": 30.307008647904755,
+          "taskSwitches": 53
         },
         {
           "timeMs": 3400,
-          "outputs": 190,
-          "totalPixelAcc": 7877.6879606600105,
-          "accuracy": 41.46151558242111,
-          "taskSwitches": 57
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 3500,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 40,
+          "totalPixelAcc": 1346.1906351359123,
+          "accuracy": 33.65476587839781,
+          "taskSwitches": 14
         },
         {
           "timeMs": 3600,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 65,
+          "totalPixelAcc": 2286.712602896945,
+          "accuracy": 35.18019389072223,
+          "taskSwitches": 19
         },
         {
           "timeMs": 3700,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 11,
+          "totalPixelAcc": 478.82627311279543,
+          "accuracy": 43.52966119207231,
+          "taskSwitches": 3
         },
         {
           "timeMs": 3800,
-          "outputs": 155,
-          "totalPixelAcc": 7107.9246283413695,
-          "accuracy": 45.857578247363676,
-          "taskSwitches": 47
+          "outputs": 152,
+          "totalPixelAcc": 5986.926964638816,
+          "accuracy": 39.38767739893958,
+          "taskSwitches": 49
         },
         {
           "timeMs": 3900,
@@ -3150,17 +3141,17 @@
         },
         {
           "timeMs": 4000,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 72,
+          "totalPixelAcc": 3253.6242499739406,
+          "accuracy": 45.18922569408251,
+          "taskSwitches": 21
         },
         {
           "timeMs": 4100,
-          "outputs": 155,
-          "totalPixelAcc": 7647.830400631271,
-          "accuracy": 49.3408412943953,
-          "taskSwitches": 45
+          "outputs": 68,
+          "totalPixelAcc": 3372.5459037132246,
+          "accuracy": 49.596263289900364,
+          "taskSwitches": 21
         },
         {
           "timeMs": 4200,
@@ -3171,87 +3162,87 @@
         },
         {
           "timeMs": 4300,
-          "outputs": 31,
-          "totalPixelAcc": 1512.6256632942375,
-          "accuracy": 48.79437623529798,
-          "taskSwitches": 9
+          "outputs": 118,
+          "totalPixelAcc": 4837.5403357305195,
+          "accuracy": 40.99610454008915,
+          "taskSwitches": 36
         },
         {
           "timeMs": 4400,
-          "outputs": 128,
-          "totalPixelAcc": 6526.081553613684,
-          "accuracy": 50.98501213760691,
-          "taskSwitches": 39
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 4500,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 150,
+          "totalPixelAcc": 7945.29851009837,
+          "accuracy": 52.96865673398913,
+          "taskSwitches": 46
         },
         {
           "timeMs": 4600,
-          "outputs": 153,
-          "totalPixelAcc": 6187.209312029464,
-          "accuracy": 40.43927654921218,
-          "taskSwitches": 48
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 4700,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 22,
+          "totalPixelAcc": 1316.175825318846,
+          "accuracy": 59.82617387812936,
+          "taskSwitches": 7
         },
         {
           "timeMs": 4800,
-          "outputs": 47,
-          "totalPixelAcc": 1818.585971425607,
-          "accuracy": 38.69331854097037,
-          "taskSwitches": 15
+          "outputs": 55,
+          "totalPixelAcc": 2108.5671401890504,
+          "accuracy": 38.337584367073646,
+          "taskSwitches": 16
         },
         {
           "timeMs": 4900,
-          "outputs": 89,
-          "totalPixelAcc": 3478.8322682608396,
-          "accuracy": 39.08800301416674,
-          "taskSwitches": 26
+          "outputs": 37,
+          "totalPixelAcc": 1035.7044521604937,
+          "accuracy": 27.992012220553885,
+          "taskSwitches": 12
         },
         {
           "timeMs": 5000,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 53,
+          "totalPixelAcc": 2908.154174143854,
+          "accuracy": 54.87083347441234,
+          "taskSwitches": 17
         },
         {
           "timeMs": 5100,
-          "outputs": 159,
-          "totalPixelAcc": 7025.943046507151,
-          "accuracy": 44.188321047214785,
-          "taskSwitches": 50
+          "outputs": 136,
+          "totalPixelAcc": 5480.645712305306,
+          "accuracy": 40.29886553165666,
+          "taskSwitches": 42
         },
         {
           "timeMs": 5200,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 12,
+          "totalPixelAcc": 643.3541821489263,
+          "accuracy": 53.61284851241052,
+          "taskSwitches": 4
         },
         {
           "timeMs": 5300,
-          "outputs": 71,
-          "totalPixelAcc": 4035.534266411504,
-          "accuracy": 56.838510794528226,
-          "taskSwitches": 22
+          "outputs": 69,
+          "totalPixelAcc": 2393.3791825126905,
+          "accuracy": 34.6866548190245,
+          "taskSwitches": 21
         },
         {
           "timeMs": 5400,
-          "outputs": 93,
-          "totalPixelAcc": 4014.794429920604,
-          "accuracy": 43.169832579791446,
-          "taskSwitches": 31
+          "outputs": 129,
+          "totalPixelAcc": 6518.445922420195,
+          "accuracy": 50.53058854589298,
+          "taskSwitches": 40
         },
         {
           "timeMs": 5500,
@@ -3269,10 +3260,10 @@
         },
         {
           "timeMs": 5700,
-          "outputs": 160,
-          "totalPixelAcc": 7894.251898649582,
-          "accuracy": 49.339074366559885,
-          "taskSwitches": 49
+          "outputs": 176,
+          "totalPixelAcc": 7286.410484694926,
+          "accuracy": 41.40005957213026,
+          "taskSwitches": 54
         },
         {
           "timeMs": 5800,
@@ -3290,17 +3281,17 @@
         },
         {
           "timeMs": 6000,
-          "outputs": 110,
-          "totalPixelAcc": 4676.2231034491015,
-          "accuracy": 42.51111912226456,
-          "taskSwitches": 34
+          "outputs": 147,
+          "totalPixelAcc": 5713.272259889154,
+          "accuracy": 38.865797686320775,
+          "taskSwitches": 46
         },
         {
           "timeMs": 6100,
-          "outputs": 66,
-          "totalPixelAcc": 3463.7956925168687,
-          "accuracy": 52.481752916922254,
-          "taskSwitches": 19
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 6200,
@@ -3311,31 +3302,31 @@
         },
         {
           "timeMs": 6300,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 114,
+          "totalPixelAcc": 5388.00521028755,
+          "accuracy": 47.26320359901359,
+          "taskSwitches": 36
         },
         {
           "timeMs": 6400,
-          "outputs": 148,
-          "totalPixelAcc": 7848.096740959655,
-          "accuracy": 53.02768068215983,
-          "taskSwitches": 45
-        },
-        {
-          "timeMs": 6500,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
         },
         {
+          "timeMs": 6500,
+          "outputs": 160,
+          "totalPixelAcc": 5824.52289200082,
+          "accuracy": 36.40326807500513,
+          "taskSwitches": 48
+        },
+        {
           "timeMs": 6600,
-          "outputs": 112,
-          "totalPixelAcc": 5076.472424524783,
-          "accuracy": 45.325646647542705,
-          "taskSwitches": 31
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 6700,
@@ -3346,10 +3337,10 @@
         },
         {
           "timeMs": 6800,
-          "outputs": 117,
-          "totalPixelAcc": 6090.759748789283,
-          "accuracy": 52.05777563067763,
-          "taskSwitches": 37
+          "outputs": 132,
+          "totalPixelAcc": 5554.717757513067,
+          "accuracy": 42.08119513267475,
+          "taskSwitches": 40
         },
         {
           "timeMs": 6900,
@@ -3360,45 +3351,45 @@
         },
         {
           "timeMs": 7000,
-          "outputs": 150,
-          "totalPixelAcc": 6094.699110040098,
-          "accuracy": 40.631327400267324,
-          "taskSwitches": 48
+          "outputs": 35,
+          "totalPixelAcc": 1707.2229026273508,
+          "accuracy": 48.77779721792431,
+          "taskSwitches": 9
         },
         {
           "timeMs": 7100,
+          "outputs": 72,
+          "totalPixelAcc": 3250.873591480217,
+          "accuracy": 45.151022103891904,
+          "taskSwitches": 21
+        },
+        {
+          "timeMs": 7200,
+          "outputs": 27,
+          "totalPixelAcc": 1366.22975718065,
+          "accuracy": 50.60110211780185,
+          "taskSwitches": 8
+        },
+        {
+          "timeMs": 7300,
+          "outputs": 135,
+          "totalPixelAcc": 6413.496272217545,
+          "accuracy": 47.507379794204034,
+          "taskSwitches": 44
+        },
+        {
+          "timeMs": 7400,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
         },
         {
-          "timeMs": 7200,
-          "outputs": 82,
-          "totalPixelAcc": 2843.293840852839,
-          "accuracy": 34.674315132351694,
-          "taskSwitches": 25
-        },
-        {
-          "timeMs": 7300,
-          "outputs": 47,
-          "totalPixelAcc": 1782.4576719576714,
-          "accuracy": 37.92463131824833,
-          "taskSwitches": 13
-        },
-        {
-          "timeMs": 7400,
-          "outputs": 57,
-          "totalPixelAcc": 2963.5751436006176,
-          "accuracy": 51.9925463789582,
-          "taskSwitches": 18
-        },
-        {
           "timeMs": 7500,
-          "outputs": 93,
-          "totalPixelAcc": 4217.248867916615,
-          "accuracy": 45.346762020608764,
-          "taskSwitches": 29
+          "outputs": 95,
+          "totalPixelAcc": 2908.2151534864324,
+          "accuracy": 30.612791089330866,
+          "taskSwitches": 27
         },
         {
           "timeMs": 7600,
@@ -3409,10 +3400,10 @@
         },
         {
           "timeMs": 7700,
-          "outputs": 118,
-          "totalPixelAcc": 5981.879163577831,
-          "accuracy": 50.69389121676128,
-          "taskSwitches": 39
+          "outputs": 145,
+          "totalPixelAcc": 6546.540222751774,
+          "accuracy": 45.14855326035706,
+          "taskSwitches": 44
         },
         {
           "timeMs": 7800,
@@ -3423,94 +3414,94 @@
         },
         {
           "timeMs": 7900,
-          "outputs": 66,
-          "totalPixelAcc": 3186.0001037561483,
-          "accuracy": 48.27272884479012,
-          "taskSwitches": 21
+          "outputs": 98,
+          "totalPixelAcc": 3039.870283409827,
+          "accuracy": 31.019084524590074,
+          "taskSwitches": 30
         },
         {
           "timeMs": 8000,
-          "outputs": 72,
-          "totalPixelAcc": 2853.154372849921,
-          "accuracy": 39.627144067360014,
-          "taskSwitches": 24
+          "outputs": 2,
+          "totalPixelAcc": 55.55555555555555,
+          "accuracy": 27.777777777777775,
+          "taskSwitches": 0
         },
         {
           "timeMs": 8100,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 122,
+          "totalPixelAcc": 4343.790714508888,
+          "accuracy": 35.604841922204,
+          "taskSwitches": 40
         },
         {
           "timeMs": 8200,
-          "outputs": 129,
-          "totalPixelAcc": 6554.323619224513,
-          "accuracy": 50.808710226546616,
-          "taskSwitches": 37
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 8300,
-          "outputs": 21,
-          "totalPixelAcc": 884.7118563254927,
-          "accuracy": 42.129136015499654,
-          "taskSwitches": 6
+          "outputs": 93,
+          "totalPixelAcc": 3179.1305727167787,
+          "accuracy": 34.18419970663203,
+          "taskSwitches": 29
         },
         {
           "timeMs": 8400,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 20,
+          "totalPixelAcc": 1021.6546500113766,
+          "accuracy": 51.08273250056883,
+          "taskSwitches": 7
         },
         {
           "timeMs": 8500,
-          "outputs": 110,
-          "totalPixelAcc": 4979.684470225088,
-          "accuracy": 45.26985882022807,
-          "taskSwitches": 33
+          "outputs": 89,
+          "totalPixelAcc": 3418.8870644493154,
+          "accuracy": 38.41446139830691,
+          "taskSwitches": 29
         },
         {
           "timeMs": 8600,
-          "outputs": 60,
-          "totalPixelAcc": 3639.8433222964236,
-          "accuracy": 60.66405537160706,
-          "taskSwitches": 18
+          "outputs": 2,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 8700,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 106,
+          "totalPixelAcc": 4296.904941795285,
+          "accuracy": 40.53683907354042,
+          "taskSwitches": 32
         },
         {
           "timeMs": 8800,
-          "outputs": 164,
-          "totalPixelAcc": 8041.600859304606,
-          "accuracy": 49.03415158112565,
-          "taskSwitches": 48
-        },
-        {
-          "timeMs": 8900,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
         },
         {
+          "timeMs": 8900,
+          "outputs": 107,
+          "totalPixelAcc": 4272.965980873399,
+          "accuracy": 39.93426150348971,
+          "taskSwitches": 35
+        },
+        {
           "timeMs": 9000,
-          "outputs": 2,
-          "totalPixelAcc": 88.88888888888889,
-          "accuracy": 44.44444444444444,
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
           "taskSwitches": 0
         },
         {
           "timeMs": 9100,
-          "outputs": 123,
-          "totalPixelAcc": 6514.110213225676,
-          "accuracy": 52.9602456359811,
-          "taskSwitches": 40
+          "outputs": 108,
+          "totalPixelAcc": 4540.739647014977,
+          "accuracy": 42.043885620509045,
+          "taskSwitches": 36
         },
         {
           "timeMs": 9200,
@@ -3521,10 +3512,10 @@
         },
         {
           "timeMs": 9300,
-          "outputs": 164,
-          "totalPixelAcc": 6491.944210618531,
-          "accuracy": 39.585025674503235,
-          "taskSwitches": 51
+          "outputs": 151,
+          "totalPixelAcc": 6296.360562491801,
+          "accuracy": 41.69775206948213,
+          "taskSwitches": 46
         },
         {
           "timeMs": 9400,
@@ -3535,17 +3526,17 @@
         },
         {
           "timeMs": 9500,
-          "outputs": 8,
-          "totalPixelAcc": 83.33333333333333,
-          "accuracy": 10.416666666666666,
-          "taskSwitches": 2
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 9600,
-          "outputs": 113,
-          "totalPixelAcc": 4329.57867330434,
-          "accuracy": 38.31485551596761,
-          "taskSwitches": 34
+          "outputs": 166,
+          "totalPixelAcc": 6435.620589899183,
+          "accuracy": 38.76879873433243,
+          "taskSwitches": 53
         },
         {
           "timeMs": 9700,
@@ -3556,48 +3547,45 @@
         },
         {
           "timeMs": 9800,
-          "outputs": 144,
-          "totalPixelAcc": 6790.173217866441,
-          "accuracy": 47.15398067962806,
-          "taskSwitches": 45
-        },
-        {
-          "timeMs": 9900,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
         },
         {
+          "timeMs": 9900,
+          "outputs": 149,
+          "totalPixelAcc": 7326.663557690604,
+          "accuracy": 49.172238642218815,
+          "taskSwitches": 45
+        },
+        {
           "timeMs": 10000,
-          "outputs": 70,
-          "totalPixelAcc": 4005.300749927988,
-          "accuracy": 57.2185821418284,
-          "taskSwitches": 21
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         }
       ],
-      "totalOutputs": 5719,
-      "totalTaskSwitches": 1758,
-      "trainTimeSec": 10.000087915,
-      "evalAccuracy": 48.503458569378424,
-      "tasksSolved": 1,
-      "solvedTaskIds": [
-        "642d658d"
-      ],
-      "avgTrainAccuracy": 19.457088999144677,
-      "stability": 77.7103051190139,
-      "consistency": 41,
-      "throughputPerSec": 571.894972185352,
-      "score": 18.221274441667006
+      "totalOutputs": 5475,
+      "totalTaskSwitches": 1695,
+      "trainTimeSec": 10.058667256,
+      "evalAccuracy": 19.841388817858185,
+      "tasksSolved": 0,
+      "avgTrainAccuracy": 18.44429691751035,
+      "stability": 79.95426008062306,
+      "consistency": 43,
+      "throughputPerSec": 544.3067019374918,
+      "score": 18.713445032444646
     },
     "TweenChain": {
       "windows": [
         {
           "timeMs": 100,
-          "outputs": 139,
-          "totalPixelAcc": 939.2930589369173,
-          "accuracy": 6.757504021128901,
-          "taskSwitches": 43
+          "outputs": 163,
+          "totalPixelAcc": 1186.0968491996425,
+          "accuracy": 7.276667786500874,
+          "taskSwitches": 52
         },
         {
           "timeMs": 200,
@@ -3608,52 +3596,52 @@
         },
         {
           "timeMs": 300,
-          "outputs": 192,
-          "totalPixelAcc": 1243.87172234384,
-          "accuracy": 6.478498553874167,
-          "taskSwitches": 60
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 400,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 41,
+          "totalPixelAcc": 54.629629629629626,
+          "accuracy": 1.3324299909665762,
+          "taskSwitches": 11
         },
         {
           "timeMs": 500,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 71,
+          "totalPixelAcc": 288.9207939177517,
+          "accuracy": 4.069306956588052,
+          "taskSwitches": 23
         },
         {
           "timeMs": 600,
-          "outputs": 173,
-          "totalPixelAcc": 845.5802489277112,
-          "accuracy": 4.887747103628389,
-          "taskSwitches": 52
+          "outputs": 7,
+          "totalPixelAcc": 86.66666666666666,
+          "accuracy": 12.38095238095238,
+          "taskSwitches": 2
         },
         {
           "timeMs": 700,
+          "outputs": 90,
+          "totalPixelAcc": 594.4410090971237,
+          "accuracy": 6.604900101079152,
+          "taskSwitches": 29
+        },
+        {
+          "timeMs": 800,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
         },
         {
-          "timeMs": 800,
-          "outputs": 68,
-          "totalPixelAcc": 515.3696251165222,
-          "accuracy": 7.578965075242974,
-          "taskSwitches": 24
-        },
-        {
           "timeMs": 900,
-          "outputs": 104,
-          "totalPixelAcc": 672.4844316798183,
-          "accuracy": 6.466196458459791,
-          "taskSwitches": 35
+          "outputs": 103,
+          "totalPixelAcc": 520.251955755505,
+          "accuracy": 5.050989861703933,
+          "taskSwitches": 29
         },
         {
           "timeMs": 1000,
@@ -3664,101 +3652,101 @@
         },
         {
           "timeMs": 1100,
-          "outputs": 152,
-          "totalPixelAcc": 993.3812758476246,
-          "accuracy": 6.535403130576477,
-          "taskSwitches": 44
+          "outputs": 41,
+          "totalPixelAcc": 201.32723161287467,
+          "accuracy": 4.910420283240845,
+          "taskSwitches": 13
         },
         {
           "timeMs": 1200,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 59,
+          "totalPixelAcc": 309.4559165441776,
+          "accuracy": 5.245015534647078,
+          "taskSwitches": 14
         },
         {
           "timeMs": 1300,
-          "outputs": 83,
-          "totalPixelAcc": 920.8948936784997,
-          "accuracy": 11.09511920094578,
-          "taskSwitches": 26
+          "outputs": 85,
+          "totalPixelAcc": 697.0572519411804,
+          "accuracy": 8.200673552249182,
+          "taskSwitches": 27
         },
         {
           "timeMs": 1400,
-          "outputs": 95,
-          "totalPixelAcc": 670.0880683544314,
-          "accuracy": 7.053558614257172,
-          "taskSwitches": 28
+          "outputs": 33,
+          "totalPixelAcc": 426.4968290377124,
+          "accuracy": 12.924146334476134,
+          "taskSwitches": 10
         },
         {
           "timeMs": 1500,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 9,
+          "totalPixelAcc": 9.128205128205128,
+          "accuracy": 1.0142450142450141,
+          "taskSwitches": 3
         },
         {
           "timeMs": 1600,
-          "outputs": 101,
-          "totalPixelAcc": 619.071686872107,
-          "accuracy": 6.129422642298088,
-          "taskSwitches": 30
+          "outputs": 116,
+          "totalPixelAcc": 839.6643041877549,
+          "accuracy": 7.238485380928921,
+          "taskSwitches": 37
         },
         {
           "timeMs": 1700,
-          "outputs": 32,
-          "totalPixelAcc": 420.31907835753987,
-          "accuracy": 13.13497119867312,
-          "taskSwitches": 9
+          "outputs": 6,
+          "totalPixelAcc": 57.3686171378479,
+          "accuracy": 9.561436189641316,
+          "taskSwitches": 2
         },
         {
           "timeMs": 1800,
-          "outputs": 81,
-          "totalPixelAcc": 666.7636885770354,
-          "accuracy": 8.231650476259697,
-          "taskSwitches": 23
+          "outputs": 104,
+          "totalPixelAcc": 1112.2017665474511,
+          "accuracy": 10.694247755263953,
+          "taskSwitches": 29
         },
         {
           "timeMs": 1900,
-          "outputs": 98,
-          "totalPixelAcc": 649.5768005788165,
-          "accuracy": 6.628334699783841,
-          "taskSwitches": 31
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 2000,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 149,
+          "totalPixelAcc": 1736.8985603531114,
+          "accuracy": 11.657037317806116,
+          "taskSwitches": 45
         },
         {
           "timeMs": 2100,
-          "outputs": 130,
-          "totalPixelAcc": 1253.6194394409235,
-          "accuracy": 9.643226457237873,
-          "taskSwitches": 40
-        },
-        {
-          "timeMs": 2200,
-          "outputs": 17,
-          "totalPixelAcc": 18.38888888888889,
-          "accuracy": 1.0816993464052287,
-          "taskSwitches": 7
-        },
-        {
-          "timeMs": 2300,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
         },
         {
+          "timeMs": 2200,
+          "outputs": 83,
+          "totalPixelAcc": 471.79099277195337,
+          "accuracy": 5.684228828577751,
+          "taskSwitches": 24
+        },
+        {
+          "timeMs": 2300,
+          "outputs": 52,
+          "totalPixelAcc": 432.70450184735904,
+          "accuracy": 8.32124042014152,
+          "taskSwitches": 18
+        },
+        {
           "timeMs": 2400,
-          "outputs": 133,
-          "totalPixelAcc": 1523.1450381499399,
-          "accuracy": 11.452218331954436,
-          "taskSwitches": 40
+          "outputs": 110,
+          "totalPixelAcc": 920.5224549769423,
+          "accuracy": 8.368385954335839,
+          "taskSwitches": 36
         },
         {
           "timeMs": 2500,
@@ -3769,10 +3757,10 @@
         },
         {
           "timeMs": 2600,
-          "outputs": 99,
-          "totalPixelAcc": 2791.9930415202866,
-          "accuracy": 28.20194991434633,
-          "taskSwitches": 30
+          "outputs": 107,
+          "totalPixelAcc": 1306.9019760602218,
+          "accuracy": 12.214037159441325,
+          "taskSwitches": 36
         },
         {
           "timeMs": 2700,
@@ -3783,10 +3771,10 @@
         },
         {
           "timeMs": 2800,
-          "outputs": 150,
-          "totalPixelAcc": 5634.878648555409,
-          "accuracy": 37.56585765703606,
-          "taskSwitches": 48
+          "outputs": 123,
+          "totalPixelAcc": 1156.4278771352845,
+          "accuracy": 9.401852659636459,
+          "taskSwitches": 36
         },
         {
           "timeMs": 2900,
@@ -3797,38 +3785,38 @@
         },
         {
           "timeMs": 3000,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 61,
+          "totalPixelAcc": 1171.3516136556989,
+          "accuracy": 19.202485469765556,
+          "taskSwitches": 21
         },
         {
           "timeMs": 3100,
-          "outputs": 137,
-          "totalPixelAcc": 5818.00742366061,
-          "accuracy": 42.46720747197525,
-          "taskSwitches": 46
+          "outputs": 25,
+          "totalPixelAcc": 433.1296234663078,
+          "accuracy": 17.325184938652313,
+          "taskSwitches": 8
         },
         {
           "timeMs": 3200,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 74,
+          "totalPixelAcc": 1638.3470958431537,
+          "accuracy": 22.139825619502076,
+          "taskSwitches": 25
         },
         {
           "timeMs": 3300,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 63,
+          "totalPixelAcc": 2587.1539455934217,
+          "accuracy": 41.06593564434003,
+          "taskSwitches": 20
         },
         {
           "timeMs": 3400,
-          "outputs": 160,
-          "totalPixelAcc": 7169.621464612027,
-          "accuracy": 44.81013415382517,
-          "taskSwitches": 47
+          "outputs": 72,
+          "totalPixelAcc": 2573.186535062337,
+          "accuracy": 35.73870187586579,
+          "taskSwitches": 23
         },
         {
           "timeMs": 3500,
@@ -3839,157 +3827,157 @@
         },
         {
           "timeMs": 3600,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 162,
+          "totalPixelAcc": 5999.488813333509,
+          "accuracy": 37.03388156378709,
+          "taskSwitches": 51
         },
         {
           "timeMs": 3700,
-          "outputs": 111,
-          "totalPixelAcc": 4707.902155000948,
-          "accuracy": 42.41353292793647,
-          "taskSwitches": 32
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 3800,
-          "outputs": 23,
-          "totalPixelAcc": 1275.8082277244243,
-          "accuracy": 55.46992294454019,
-          "taskSwitches": 8
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 3900,
-          "outputs": 21,
-          "totalPixelAcc": 1168.005727845872,
-          "accuracy": 55.61932037361295,
-          "taskSwitches": 6
-        },
-        {
-          "timeMs": 4000,
-          "outputs": 129,
-          "totalPixelAcc": 6158.943301010068,
-          "accuracy": 47.74374651945789,
-          "taskSwitches": 39
-        },
-        {
-          "timeMs": 4100,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
-        },
-        {
-          "timeMs": 4200,
-          "outputs": 114,
-          "totalPixelAcc": 5295.6797178192,
-          "accuracy": 46.45333085806316,
+          "outputs": 104,
+          "totalPixelAcc": 4420.407362962034,
+          "accuracy": 42.503916951558026,
           "taskSwitches": 32
         },
         {
-          "timeMs": 4300,
+          "timeMs": 4000,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
+        },
+        {
+          "timeMs": 4100,
+          "outputs": 78,
+          "totalPixelAcc": 3765.046343184141,
+          "accuracy": 48.26982491261719,
+          "taskSwitches": 23
+        },
+        {
+          "timeMs": 4200,
+          "outputs": 65,
+          "totalPixelAcc": 3099.795317624292,
+          "accuracy": 47.68915873268141,
+          "taskSwitches": 19
+        },
+        {
+          "timeMs": 4300,
+          "outputs": 80,
+          "totalPixelAcc": 3623.739985797335,
+          "accuracy": 45.29674982246669,
+          "taskSwitches": 25
         },
         {
           "timeMs": 4400,
-          "outputs": 125,
-          "totalPixelAcc": 6119.05233058578,
-          "accuracy": 48.95241864468624,
-          "taskSwitches": 40
+          "outputs": 10,
+          "totalPixelAcc": 171.94444444444446,
+          "accuracy": 17.194444444444446,
+          "taskSwitches": 3
         },
         {
           "timeMs": 4500,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 90,
+          "totalPixelAcc": 4740.138407178515,
+          "accuracy": 52.66820452420572,
+          "taskSwitches": 30
         },
         {
           "timeMs": 4600,
-          "outputs": 136,
-          "totalPixelAcc": 4940.902154465027,
-          "accuracy": 36.330162900478136,
-          "taskSwitches": 42
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 4700,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 133,
+          "totalPixelAcc": 6604.129378412615,
+          "accuracy": 49.655108108365525,
+          "taskSwitches": 39
         },
         {
           "timeMs": 4800,
-          "outputs": 114,
-          "totalPixelAcc": 4578.099064600438,
-          "accuracy": 40.15876372456525,
-          "taskSwitches": 35
-        },
-        {
-          "timeMs": 4900,
-          "outputs": 12,
-          "totalPixelAcc": 524.2301587301587,
-          "accuracy": 43.68584656084656,
-          "taskSwitches": 4
-        },
-        {
-          "timeMs": 5000,
-          "outputs": 100,
-          "totalPixelAcc": 4449.134052475503,
-          "accuracy": 44.49134052475503,
-          "taskSwitches": 31
-        },
-        {
-          "timeMs": 5100,
-          "outputs": 56,
-          "totalPixelAcc": 2533.1558883020753,
-          "accuracy": 45.23492657682277,
-          "taskSwitches": 16
-        },
-        {
-          "timeMs": 5200,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
         },
         {
+          "timeMs": 4900,
+          "outputs": 73,
+          "totalPixelAcc": 2140.4379191676726,
+          "accuracy": 29.32106738585853,
+          "taskSwitches": 23
+        },
+        {
+          "timeMs": 5000,
+          "outputs": 52,
+          "totalPixelAcc": 3139.2138745883494,
+          "accuracy": 60.369497588237486,
+          "taskSwitches": 16
+        },
+        {
+          "timeMs": 5100,
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
+        },
+        {
+          "timeMs": 5200,
+          "outputs": 167,
+          "totalPixelAcc": 7064.786822830345,
+          "accuracy": 42.30411271155895,
+          "taskSwitches": 51
+        },
+        {
           "timeMs": 5300,
-          "outputs": 1,
-          "totalPixelAcc": 72.72727272727273,
-          "accuracy": 72.72727272727273,
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
           "taskSwitches": 0
         },
         {
           "timeMs": 5400,
-          "outputs": 124,
-          "totalPixelAcc": 6184.790004714304,
-          "accuracy": 49.877338747696,
-          "taskSwitches": 43
+          "outputs": 74,
+          "totalPixelAcc": 2340.4517296548906,
+          "accuracy": 31.627726076417442,
+          "taskSwitches": 24
         },
         {
           "timeMs": 5500,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 85,
+          "totalPixelAcc": 4710.661764549909,
+          "accuracy": 55.4195501711754,
+          "taskSwitches": 25
         },
         {
           "timeMs": 5600,
-          "outputs": 224,
-          "totalPixelAcc": 10392.504647266187,
-          "accuracy": 46.39511003243833,
-          "taskSwitches": 68
-        },
-        {
-          "timeMs": 5700,
           "outputs": 0,
           "totalPixelAcc": 0,
           "accuracy": 0,
           "taskSwitches": 0
+        },
+        {
+          "timeMs": 5700,
+          "outputs": 159,
+          "totalPixelAcc": 7079.971568102647,
+          "accuracy": 44.52812306982797,
+          "taskSwitches": 50
         },
         {
           "timeMs": 5800,
@@ -4000,171 +3988,171 @@
         },
         {
           "timeMs": 5900,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 1,
+          "totalPixelAcc": 76.79738562091504,
+          "accuracy": 76.79738562091504,
+          "taskSwitches": 1
         },
         {
           "timeMs": 6000,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 141,
+          "totalPixelAcc": 5041.843875114867,
+          "accuracy": 35.75775797953806,
+          "taskSwitches": 44
         },
         {
           "timeMs": 6100,
-          "outputs": 157,
-          "totalPixelAcc": 7401.170307014864,
-          "accuracy": 47.14121214659149,
-          "taskSwitches": 47
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 6200,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 116,
+          "totalPixelAcc": 5302.794313708269,
+          "accuracy": 45.71374408369198,
+          "taskSwitches": 35
         },
         {
           "timeMs": 6300,
-          "outputs": 65,
-          "totalPixelAcc": 3423.676049157361,
-          "accuracy": 52.67193921780555,
-          "taskSwitches": 20
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 6400,
-          "outputs": 89,
-          "totalPixelAcc": 4275.497059451782,
-          "accuracy": 48.03929280282901,
-          "taskSwitches": 26
+          "outputs": 55,
+          "totalPixelAcc": 2778.4535670393507,
+          "accuracy": 50.51733758253365,
+          "taskSwitches": 17
         },
         {
           "timeMs": 6500,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 74,
+          "totalPixelAcc": 2272.28246120148,
+          "accuracy": 30.70651974596595,
+          "taskSwitches": 24
         },
         {
           "timeMs": 6600,
-          "outputs": 133,
-          "totalPixelAcc": 6484.061068327649,
-          "accuracy": 48.75233885960638,
-          "taskSwitches": 39
+          "outputs": 30,
+          "totalPixelAcc": 1163.2198067632849,
+          "accuracy": 38.77399355877616,
+          "taskSwitches": 10
         },
         {
           "timeMs": 6700,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 117,
+          "totalPixelAcc": 4122.142983962889,
+          "accuracy": 35.23199131592213,
+          "taskSwitches": 33
         },
         {
           "timeMs": 6800,
-          "outputs": 97,
-          "totalPixelAcc": 5132.392408289899,
-          "accuracy": 52.911261941132985,
-          "taskSwitches": 30
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 6900,
-          "outputs": 60,
-          "totalPixelAcc": 2360.8626991695005,
-          "accuracy": 39.347711652825005,
-          "taskSwitches": 19
+          "outputs": 55,
+          "totalPixelAcc": 2857.764085221223,
+          "accuracy": 51.959347004022234,
+          "taskSwitches": 15
         },
         {
           "timeMs": 7000,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 72,
+          "totalPixelAcc": 3156.172622069112,
+          "accuracy": 43.835730862071,
+          "taskSwitches": 21
         },
         {
           "timeMs": 7100,
-          "outputs": 124,
-          "totalPixelAcc": 4527.251454795102,
-          "accuracy": 36.510092377379856,
-          "taskSwitches": 39
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 7200,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 122,
+          "totalPixelAcc": 5946.983526977529,
+          "accuracy": 48.745766614569916,
+          "taskSwitches": 39
         },
         {
           "timeMs": 7300,
-          "outputs": 121,
-          "totalPixelAcc": 5129.572227535201,
-          "accuracy": 42.39315890524959,
-          "taskSwitches": 36
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
         },
         {
           "timeMs": 7400,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 62,
+          "totalPixelAcc": 2866.030741958909,
+          "accuracy": 46.22630228965982,
+          "taskSwitches": 19
         },
         {
           "timeMs": 7500,
-          "outputs": 165,
-          "totalPixelAcc": 8382.357101036014,
-          "accuracy": 50.802164248703114,
-          "taskSwitches": 53
+          "outputs": 60,
+          "totalPixelAcc": 1740.9739534007501,
+          "accuracy": 29.016232556679167,
+          "taskSwitches": 17
         },
         {
           "timeMs": 7600,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 7,
+          "totalPixelAcc": 31.666666666666664,
+          "accuracy": 4.523809523809524,
+          "taskSwitches": 1
         },
         {
           "timeMs": 7700,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 98,
+          "totalPixelAcc": 4136.619112250239,
+          "accuracy": 42.21039910459427,
+          "taskSwitches": 30
         },
         {
           "timeMs": 7800,
-          "outputs": 122,
-          "totalPixelAcc": 5642.337781706312,
-          "accuracy": 46.24867034185502,
-          "taskSwitches": 40
+          "outputs": 90,
+          "totalPixelAcc": 4084.3278875196197,
+          "accuracy": 45.38142097244022,
+          "taskSwitches": 28
         },
         {
           "timeMs": 7900,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 10,
+          "totalPixelAcc": 254.39130434782606,
+          "accuracy": 25.439130434782605,
+          "taskSwitches": 3
         },
         {
           "timeMs": 8000,
-          "outputs": 25,
-          "totalPixelAcc": 827.6602048226698,
-          "accuracy": 33.10640819290679,
-          "taskSwitches": 9
+          "outputs": 53,
+          "totalPixelAcc": 1629.055125023107,
+          "accuracy": 30.736889151379376,
+          "taskSwitches": 16
         },
         {
           "timeMs": 8100,
-          "outputs": 174,
-          "totalPixelAcc": 8041.864733573122,
-          "accuracy": 46.217613411339784,
-          "taskSwitches": 50
+          "outputs": 87,
+          "totalPixelAcc": 3308.5701744287726,
+          "accuracy": 38.029542234813476,
+          "taskSwitches": 26
         },
         {
           "timeMs": 8200,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
+          "outputs": 38,
+          "totalPixelAcc": 1188.636394731178,
+          "accuracy": 31.279905124504683,
+          "taskSwitches": 14
         },
         {
           "timeMs": 8300,
@@ -4175,52 +4163,52 @@
         },
         {
           "timeMs": 8400,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
-        },
-        {
-          "timeMs": 8500,
-          "outputs": 169,
-          "totalPixelAcc": 8744.256881123752,
-          "accuracy": 51.741164977063626,
-          "taskSwitches": 52
-        },
-        {
-          "timeMs": 8600,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
-        },
-        {
-          "timeMs": 8700,
-          "outputs": 0,
-          "totalPixelAcc": 0,
-          "accuracy": 0,
-          "taskSwitches": 0
-        },
-        {
-          "timeMs": 8800,
-          "outputs": 112,
-          "totalPixelAcc": 5214.855958903819,
-          "accuracy": 46.5612139187841,
+          "outputs": 102,
+          "totalPixelAcc": 3392.998247697458,
+          "accuracy": 33.26468870291625,
           "taskSwitches": 33
         },
         {
-          "timeMs": 8900,
-          "outputs": 2,
-          "totalPixelAcc": 91.66666666666667,
-          "accuracy": 45.833333333333336,
+          "timeMs": 8500,
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
           "taskSwitches": 0
         },
         {
+          "timeMs": 8600,
+          "outputs": 97,
+          "totalPixelAcc": 4090.333161248469,
+          "accuracy": 42.16838310565432,
+          "taskSwitches": 31
+        },
+        {
+          "timeMs": 8700,
+          "outputs": 49,
+          "totalPixelAcc": 1521.8075590044107,
+          "accuracy": 31.057297122538994,
+          "taskSwitches": 16
+        },
+        {
+          "timeMs": 8800,
+          "outputs": 0,
+          "totalPixelAcc": 0,
+          "accuracy": 0,
+          "taskSwitches": 0
+        },
+        {
+          "timeMs": 8900,
+          "outputs": 8,
+          "totalPixelAcc": 412.7182940516274,
+          "accuracy": 51.58978675645343,
+          "taskSwitches": 3
+        },
+        {
           "timeMs": 9000,
-          "outputs": 161,
-          "totalPixelAcc": 8475.917688033145,
-          "accuracy": 52.64545147846674,
-          "taskSwitches": 49
+          "outputs": 105,
+          "totalPixelAcc": 4191.548383074448,
+          "accuracy": 39.91950841023284,
+          "taskSwitches": 32
         },
         {
           "timeMs": 9100,
@@ -4231,10 +4219,10 @@
         },
         {
           "timeMs": 9200,
-          "outputs": 146,
-          "totalPixelAcc": 5735.878954886608,
-          "accuracy": 39.28684215675759,
-          "taskSwitches": 45
+          "outputs": 162,
+          "totalPixelAcc": 7087.50184164914,
+          "accuracy": 43.75001136820457,
+          "taskSwitches": 53
         },
         {
           "timeMs": 9300,
@@ -4245,16 +4233,16 @@
         },
         {
           "timeMs": 9400,
-          "outputs": 38,
-          "totalPixelAcc": 1526.2905643738975,
-          "accuracy": 40.16554116773415,
-          "taskSwitches": 12
+          "outputs": 23,
+          "totalPixelAcc": 602.7761029674967,
+          "accuracy": 26.20765665076073,
+          "taskSwitches": 8
         },
         {
           "timeMs": 9500,
           "outputs": 117,
-          "totalPixelAcc": 4632.5713003354285,
-          "accuracy": 39.594626498593406,
+          "totalPixelAcc": 5158.241391761451,
+          "accuracy": 44.087533262918384,
           "taskSwitches": 35
         },
         {
@@ -4266,10 +4254,10 @@
         },
         {
           "timeMs": 9700,
-          "outputs": 169,
-          "totalPixelAcc": 7654.334889358696,
-          "accuracy": 45.29192242224081,
-          "taskSwitches": 53
+          "outputs": 132,
+          "totalPixelAcc": 4274.369642498108,
+          "accuracy": 32.381588200743245,
+          "taskSwitches": 41
         },
         {
           "timeMs": 9800,
@@ -4280,36 +4268,33 @@
         },
         {
           "timeMs": 9900,
-          "outputs": 0,
+          "outputs": 1,
           "totalPixelAcc": 0,
           "accuracy": 0,
-          "taskSwitches": 0
+          "taskSwitches": 1
         },
         {
           "timeMs": 10000,
-          "outputs": 164,
-          "totalPixelAcc": 8542.490051611428,
-          "accuracy": 52.088353973240416,
-          "taskSwitches": 55
+          "outputs": 119,
+          "totalPixelAcc": 5853.975675933688,
+          "accuracy": 49.19307290700578,
+          "taskSwitches": 38
         }
       ],
-      "totalOutputs": 5844,
-      "totalTaskSwitches": 1801,
-      "trainTimeSec": 10.207435729,
-      "evalAccuracy": 48.46730246230646,
-      "tasksSolved": 1,
-      "solvedTaskIds": [
-        "642d658d"
-      ],
-      "avgTrainAccuracy": 18.99103012595519,
-      "stability": 77.89972153809248,
-      "consistency": 40,
-      "throughputPerSec": 572.5238105978772,
-      "score": 17.839778167800894
+      "totalOutputs": 5382,
+      "totalTaskSwitches": 1668,
+      "trainTimeSec": 10.104259013,
+      "evalAccuracy": 19.84210167785248,
+      "tasksSolved": 0,
+      "avgTrainAccuracy": 20.360069313218474,
+      "stability": 79.6902046394604,
+      "consistency": 50,
+      "throughputPerSec": 532.6466783042273,
+      "score": 21.223361397296355
     }
   },
-  "timestamp": "2025-12-25T20:08:28+11:00",
-  "numTasks": 400,
+  "timestamp": "2025-12-25T22:28:23+11:00",
+  "numTasks": 1000,
   "duration": "10s",
   "windowMs": 100
 }

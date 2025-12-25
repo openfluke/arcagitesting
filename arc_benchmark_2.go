@@ -31,12 +31,11 @@ const (
 	MaxGridSize  = 30
 	InputSize    = MaxGridSize * MaxGridSize // 900
 	NumTasks     = 1000                      // ARC-AGI2 has 1000 training tasks
-	LearningRate = float32(1000.01)          // Same as arc_benchmark.go
-	AdaptLR      = float32(0.01)             // Same LR for adaptation
+	LearningRate = float32(0.01)             // Same as arc_benchmark.go
 	InitScale    = float32(0.5)
 	BudgetScale  = float32(0.8)
 
-	// Architecture params - same as arc_benchmark.go
+	// Architecture params
 	DModel     = 32
 	NumHeads   = 4
 	LSTMHidden = 32
@@ -47,9 +46,6 @@ const (
 
 	// Batch training interval for NormalBP/Tween (this is where they PAUSE!)
 	TrainInterval = 50 * time.Millisecond
-
-	// Few-shot adaptation passes
-	AdaptationPasses = 5
 )
 
 type TrainingMode int
@@ -129,7 +125,7 @@ func main() {
 	fmt.Println("╔══════════════════════════════════════════════════════════════════════════════════════╗")
 	fmt.Println("║     ARC-AGI2 Benchmark (Train + Eval)                                               ║")
 	fmt.Println("║                                                                                      ║")
-	fmt.Printf("║     TRAINING: ARC-AGI2 training set (1000 tasks) — Cycle through (%d seconds)       ║\n", int(TestDuration.Seconds()))
+	fmt.Println("║     TRAINING: ARC-AGI2 training set (1000 tasks) — Cycle through (10 seconds)       ║")
 	fmt.Println("║     EVAL: ARC-AGI2 evaluation set (120 tasks) — Test on unseen tasks!               ║")
 	fmt.Println("║                                                                                      ║")
 	fmt.Println("║     → NormalBP: STOPS to batch train → accuracy DIPS during training               ║")
@@ -156,10 +152,8 @@ func main() {
 	evalSamples := createEvalSamples(evalTasks)
 
 	numWindows := int(TestDuration / WindowDuration)
-	fmt.Printf("\n📦 Loaded %d ARC-AGI2 training tasks\n", len(trainTasks))
-	fmt.Printf("📦 Loaded %d ARC-AGI2 evaluation tasks\n", len(evalTasks))
-	fmt.Printf("📊 Training: %d samples, switching between tasks rapidly\n", len(trainSamples))
-	fmt.Printf("🎯 Eval: %d samples (unseen ARC-AGI2 test examples)\n", len(evalSamples))
+	fmt.Printf("\n📦 Loaded %d training tasks, %d train samples\n", len(trainTasks), len(trainSamples))
+	fmt.Printf("📦 Loaded %d eval tasks, %d eval samples\n", len(evalTasks), len(evalSamples))
 	fmt.Printf("⏱️  Duration: %s with %dms windows (=%d windows)\n\n", TestDuration, WindowDuration.Milliseconds(), numWindows)
 
 	modes := []TrainingMode{
@@ -422,18 +416,19 @@ func runTaskSwitchingBenchmark(mode TrainingMode, trainSamples, evalSamples []Sa
 	// Iterate through TASKS (not flattened samples) for proper few-shot
 	for _, task := range evalTasks {
 		// 1. ADAPTATION PHASE: Train on the task's EXAMPLE pairs first!
+		// This is where "Fluid Intelligence" happens - learning the rule
 		// Only Tween-based modes can adapt fast enough
 		if ts != nil && (mode == ModeStepTweenChain || mode == ModeStepTween || mode == ModeTweenChain || mode == ModeTween) {
-			// Extended adaptation loop for complex ARC-AGI2 rules
-			for k := 0; k < AdaptationPasses; k++ {
+			// Quick 5-pass adaptation loop to learn the rule from examples
+			for k := 0; k < 5; k++ {
 				for _, pair := range task.Train {
 					if len(pair.Input) == 0 || len(pair.Output) == 0 {
 						continue
 					}
 					input := encodeGrid(pair.Input)
 					target := encodeGrid(pair.Output)
-					// Use higher learning rate for adaptation
-					ts.TweenStep(net, input, argmax(target), len(target), AdaptLR)
+					// The network LEARNS the rule here (this is fair - it's the task's examples)
+					ts.TweenStep(net, input, argmax(target), len(target), LearningRate)
 				}
 			}
 		}
@@ -554,41 +549,27 @@ func calculateSummaryMetrics(result *ModeResult) {
 // ============================================================================
 
 func createHiveMindNetwork() *nn.Network {
-	totalLayers := 6 // More layers for stacked architecture
+	totalLayers := 4
 	net := nn.NewNetwork(InputSize, 1, 1, totalLayers)
 	net.BatchSize = 1
 
 	layerIdx := 0
 
-	// Layer 0: Input projection
 	inputLayer := nn.InitDenseLayer(InputSize, DModel, nn.ActivationLeakyReLU)
 	scaleWeights(inputLayer.Kernel, InitScale)
 	net.SetLayer(0, 0, layerIdx, inputLayer)
 	layerIdx++
 
-	// Layer 1: First parallel (2 brains side by side)
-	parallelLayer1 := createParallel2Brains()
-	net.SetLayer(0, 0, layerIdx, parallelLayer1)
+	parallelLayer := createGridScatterHive()
+	net.SetLayer(0, 0, layerIdx, parallelLayer)
 	layerIdx++
 
-	// Layer 2: Merge first parallel (3 brains → DModel)
-	merger1 := nn.InitDenseLayer(DModel*3, DModel, nn.ActivationLeakyReLU)
-	scaleWeights(merger1.Kernel, InitScale)
-	net.SetLayer(0, 0, layerIdx, merger1)
+	mergerInputSize := DModel * 4
+	mergerLayer := nn.InitDenseLayer(mergerInputSize, DModel, nn.ActivationLeakyReLU)
+	scaleWeights(mergerLayer.Kernel, InitScale)
+	net.SetLayer(0, 0, layerIdx, mergerLayer)
 	layerIdx++
 
-	// Layer 3: Second parallel on top - Conv2D | LSTM | Conv2D for spatial patterns
-	parallelLayer2 := createParallel3ConvLSTM()
-	net.SetLayer(0, 0, layerIdx, parallelLayer2)
-	layerIdx++
-
-	// Layer 4: Merge second parallel (3 brains → DModel)
-	merger2 := nn.InitDenseLayer(DModel*3, DModel, nn.ActivationLeakyReLU)
-	scaleWeights(merger2.Kernel, InitScale)
-	net.SetLayer(0, 0, layerIdx, merger2)
-	layerIdx++
-
-	// Layer 5: Output
 	outputLayer := nn.InitDenseLayer(DModel, InputSize, nn.ActivationSigmoid)
 	scaleWeights(outputLayer.Kernel, InitScale)
 	net.SetLayer(0, 0, layerIdx, outputLayer)
@@ -596,104 +577,27 @@ func createHiveMindNetwork() *nn.Network {
 	return net
 }
 
-// 3 brains: LSTM | MHA | LSTM with grid_scatter
-func createParallel2Brains() nn.LayerConfig {
-	brain0 := createLSTMBrain()
-	brain1 := createMHABrain() // MHA in the middle!
-	brain2 := createLSTMBrain()
-
-	parallel := nn.LayerConfig{
-		Type:             nn.LayerParallel,
-		CombineMode:      "grid_scatter",
-		GridOutputRows:   1,
-		GridOutputCols:   3,
-		GridOutputLayers: 1,
-		ParallelBranches: []nn.LayerConfig{brain0, brain1, brain2},
-		GridPositions: []nn.GridPosition{
-			{BranchIndex: 0, TargetRow: 0, TargetCol: 0, TargetLayer: 0},
-			{BranchIndex: 1, TargetRow: 0, TargetCol: 1, TargetLayer: 0},
-			{BranchIndex: 2, TargetRow: 0, TargetCol: 2, TargetLayer: 0},
-		},
-	}
-	return parallel
-}
-
-// 3 brains: Conv2D | MHA | Conv2D with grid_scatter
-func createParallel3ConvLSTM() nn.LayerConfig {
-	conv0 := createConv2DBrain()
-	mha := createMHABrain() // MHA in the middle!
-	conv1 := createConv2DBrain()
-
-	parallel := nn.LayerConfig{
-		Type:             nn.LayerParallel,
-		CombineMode:      "grid_scatter",
-		GridOutputRows:   1,
-		GridOutputCols:   3,
-		GridOutputLayers: 1,
-		ParallelBranches: []nn.LayerConfig{conv0, mha, conv1},
-		GridPositions: []nn.GridPosition{
-			{BranchIndex: 0, TargetRow: 0, TargetCol: 0, TargetLayer: 0},
-			{BranchIndex: 1, TargetRow: 0, TargetCol: 1, TargetLayer: 0},
-			{BranchIndex: 2, TargetRow: 0, TargetCol: 2, TargetLayer: 0},
-		},
-	}
-	return parallel
-}
-
-// Conv2D brain for spatial pattern detection
-// Treats DModel (32) as 8x4 spatial grid for proper 2D convolution
-func createConv2DBrain() nn.LayerConfig {
-	// DModel=32 → reshape to 8x4 grid for 2D processing
-	// 1 filter to keep output at DModel (8×4×1 = 32)
-	conv := nn.LayerConfig{
-		Type:          nn.LayerConv2D,
-		InputHeight:   8, // Treat DModel as 8x4 grid
-		InputWidth:    4,
-		InputChannels: 1,
-		Filters:       1, // 1 filter so output = 8×4×1 = 32 = DModel
-		KernelSize:    3,
-		Stride:        1,
-		Padding:       1, // Same padding to preserve dimensions
-		OutputHeight:  8,
-		OutputWidth:   4,
-		Activation:    nn.ActivationLeakyReLU,
-	}
-	// Kernel: filters × channels × kernelH × kernelW = 1 × 1 × 3 × 3 = 9
-	conv.Kernel = make([]float32, 1*1*3*3)
-	conv.Bias = make([]float32, 1)
-	initRandom(conv.Kernel, 0.2)
-	initRandom(conv.Bias, 0.1)
-	return conv
-}
-
-func createRNNBrain() nn.LayerConfig {
-	rnn := nn.LayerConfig{
-		Type:         nn.LayerRNN,
-		RNNInputSize: DModel,
-		HiddenSize:   DModel,
-		SeqLength:    1,
-		OutputHeight: DModel,
-	}
-	initRNNWeights(&rnn)
-	return rnn
-}
-
-func initRNNWeights(cfg *nn.LayerConfig) {
-	inputSize := cfg.RNNInputSize
-	hiddenSize := cfg.HiddenSize
-
-	cfg.WeightIH = make([]float32, hiddenSize*inputSize)
-	cfg.WeightHH = make([]float32, hiddenSize*hiddenSize)
-	cfg.BiasH = make([]float32, hiddenSize)
-
-	scale := InitScale / float32(math.Sqrt(float64(hiddenSize)))
-	initRandom(cfg.WeightIH, scale)
-	initRandom(cfg.WeightHH, scale)
-}
-
 func createGridScatterHive() nn.LayerConfig {
-	// Legacy 2x4 grid (not used with tiny config)
-	return nn.LayerConfig{}
+	brain00 := createMHABrain()
+	brain01 := createLSTMBrain()
+	brain10 := createMHABrain()
+	brain11 := createMHABrain()
+
+	parallel := nn.LayerConfig{
+		Type:             nn.LayerParallel,
+		CombineMode:      "grid_scatter",
+		GridOutputRows:   2,
+		GridOutputCols:   2,
+		GridOutputLayers: 1,
+		ParallelBranches: []nn.LayerConfig{brain00, brain01, brain10, brain11},
+		GridPositions: []nn.GridPosition{
+			{BranchIndex: 0, TargetRow: 0, TargetCol: 0, TargetLayer: 0},
+			{BranchIndex: 1, TargetRow: 0, TargetCol: 1, TargetLayer: 0},
+			{BranchIndex: 2, TargetRow: 1, TargetCol: 0, TargetLayer: 0},
+			{BranchIndex: 3, TargetRow: 1, TargetCol: 1, TargetLayer: 0},
+		},
+	}
+	return parallel
 }
 
 func createMHABrain() nn.LayerConfig {
@@ -860,36 +764,20 @@ func encodeGrid(grid [][]int) []float32 {
 
 func saveResults(results *BenchmarkResults) {
 	data, _ := json.MarshalIndent(results, "", "  ")
-	os.WriteFile("arc_benchmark_results_2.json", data, 0644)
-	fmt.Println("\n✅ Results saved to arc_benchmark_results_2.json")
+	os.WriteFile("arc_benchmark_results.json", data, 0644)
+	fmt.Println("\n✅ Results saved to arc_benchmark_results.json")
 }
 
 func printTimeline(results *BenchmarkResults) {
-	numSeconds := int(TestDuration / time.Second)
-	numWindows := int(TestDuration / WindowDuration)
-
 	fmt.Println("\n╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Printf("║           TRAINING PIXEL ACCURACY %% (100ms windows) — %d seconds, switching between 1000 tasks in real-time                                  ║\n", numSeconds)
+	fmt.Println("║           TRAINING PIXEL ACCURACY % (100ms windows) — Switching between 400 tasks in real-time                                                 ║")
 	fmt.Println("║           NormalBP PAUSES to batch train → low throughput | StepTweenChain trains EVERY sample → maintains accuracy                           ║")
 	fmt.Println("╠══════════════════════╦════════════════════════════════════════════════════════════════════════════════════════════════════════╦═══════╦════════════╣")
 	fmt.Printf("║ Mode                 ║")
 
-	// Print time headers - show first 10 seconds, then last few if longer
-	windowsPerSec := 10
-	maxDisplaySecs := 10
-	if numSeconds <= maxDisplaySecs {
-		for i := 0; i < numWindows; i += windowsPerSec {
-			fmt.Printf(" %ds ", i/windowsPerSec+1)
-		}
-	} else {
-		// Show first 5 and last 5 seconds
-		for i := 0; i < 5; i++ {
-			fmt.Printf(" %ds ", i+1)
-		}
-		fmt.Printf(" ... ")
-		for i := numSeconds - 5; i < numSeconds; i++ {
-			fmt.Printf(" %ds ", i+1)
-		}
+	// Print time headers (showing every 1s = 10 windows)
+	for i := 0; i < 100; i += 10 {
+		fmt.Printf(" %ds ", i/10+1)
 	}
 	fmt.Printf("║ Eval  ║ Score      ║\n")
 	fmt.Println("╠══════════════════════╬════════════════════════════════════════════════════════════════════════════════════════════════════════╬═══════╬════════════╣")
@@ -898,39 +786,14 @@ func printTimeline(results *BenchmarkResults) {
 		r := results.Results[modeName]
 		fmt.Printf("║ %-20s ║", modeName)
 
-		// Print accuracy for each 1-second block
-		if numSeconds <= maxDisplaySecs {
-			for sec := 0; sec < numSeconds; sec++ {
-				avgAcc := 0.0
-				count := 0
-				for w := sec * windowsPerSec; w < (sec+1)*windowsPerSec && w < len(r.Windows); w++ {
-					avgAcc += r.Windows[w].Accuracy
-					count++
-				}
-				if count > 0 {
-					avgAcc /= float64(count)
-				}
-				fmt.Printf(" %2.0f%%", avgAcc)
+		// Print accuracy for each 1-second block (average of 10 windows)
+		for sec := 0; sec < 10; sec++ {
+			avgAcc := 0.0
+			for w := sec * 10; w < (sec+1)*10 && w < len(r.Windows); w++ {
+				avgAcc += r.Windows[w].Accuracy
 			}
-		} else {
-			// Show first 5 and last 5 seconds
-			for sec := 0; sec < 5; sec++ {
-				avgAcc := 0.0
-				for w := sec * windowsPerSec; w < (sec+1)*windowsPerSec && w < len(r.Windows); w++ {
-					avgAcc += r.Windows[w].Accuracy
-				}
-				avgAcc /= float64(windowsPerSec)
-				fmt.Printf(" %2.0f%%", avgAcc)
-			}
-			fmt.Printf(" ... ")
-			for sec := numSeconds - 5; sec < numSeconds; sec++ {
-				avgAcc := 0.0
-				for w := sec * windowsPerSec; w < (sec+1)*windowsPerSec && w < len(r.Windows); w++ {
-					avgAcc += r.Windows[w].Accuracy
-				}
-				avgAcc /= float64(windowsPerSec)
-				fmt.Printf(" %2.0f%%", avgAcc)
-			}
+			avgAcc /= 10
+			fmt.Printf(" %2.0f%%", avgAcc)
 		}
 		fmt.Printf(" ║ %3.0f%% ║ %10.0f ║\n", r.EvalAccuracy, r.Score)
 	}
