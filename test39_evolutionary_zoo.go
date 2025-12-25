@@ -189,17 +189,25 @@ func main() {
 	fmt.Println("║   Testing SPECIATION: Can different topologies break the 11-task ceiling?                     ║")
 	fmt.Println("╚════════════════════════════════════════════════════════════════════════════════════════════════╝")
 
-	// Load ARC-AGI data
-	tasks, err := loadARCTasks("ARC-AGI/data/training", NumTasks)
+	// Load ARC-AGI training data
+	trainTasks, err := loadARCTasks("ARC-AGI/data/training", NumTasks)
 	if err != nil {
-		fmt.Printf("❌ Failed to load tasks: %v\n", err)
+		fmt.Printf("❌ Failed to load training tasks: %v\n", err)
 		return
 	}
 
-	trainSamples := createSequentialSamples(tasks)
-	evalSamples := createEvalSamples(tasks)
+	// Load ARC-AGI evaluation data (separate 400 tasks)
+	evalTasks, err := loadARCTasks("ARC-AGI/data/evaluation", 400)
+	if err != nil {
+		fmt.Printf("❌ Failed to load eval tasks: %v\n", err)
+		return
+	}
 
-	fmt.Printf("\n📦 Loaded %d tasks, %d train samples, %d eval samples\n", len(tasks), len(trainSamples), len(evalSamples))
+	trainSamples := createSequentialSamples(trainTasks)
+	evalSamples := createEvalSamples(evalTasks)
+
+	fmt.Printf("\n📦 Loaded %d training tasks, %d train samples\n", len(trainTasks), len(trainSamples))
+	fmt.Printf("📦 Loaded %d eval tasks, %d eval samples\n", len(evalTasks), len(evalSamples))
 	fmt.Printf("🦎 Generating %d mutant configurations with deep architectural diversity...\n\n", ZooSize)
 
 	// Generate mutant configurations
@@ -234,7 +242,7 @@ func main() {
 		go func() {
 			defer wg.Done()
 			for idx := range jobs {
-				result := runMutant(configs[idx], trainSamples, evalSamples)
+				result := runMutant(configs[idx], trainSamples, evalSamples, evalTasks)
 				results[idx] = result
 
 				// Update tracking (thread-safe)
@@ -426,7 +434,7 @@ func generateMutantConfigs(count int) []MutantConfig {
 	return configs
 }
 
-func runMutant(config MutantConfig, trainSamples, evalSamples []Sample) MutantResult {
+func runMutant(config MutantConfig, trainSamples, evalSamples []Sample, evalTasks []*ARCTask) MutantResult {
 	numWindows := int(TestDuration / WindowDuration)
 	windows := make([]TimeWindow, numWindows)
 
@@ -493,30 +501,60 @@ func runMutant(config MutantConfig, trainSamples, evalSamples []Sample) MutantRe
 	}
 	avgAcc := sum / float64(len(windows))
 
-	// Eval phase
+	// =========================================================================
+	// EVAL PHASE: Few-Shot Adaptation (Learn from examples -> Solve test)
+	// =========================================================================
 	taskResults := make(map[string]struct {
 		totalAcc float64
 		count    int
 	})
 
-	for _, sample := range evalSamples {
-		state.SetInput(sample.Input)
-		for s := 0; s < numLayers; s++ {
-			net.StepForward(state)
+	// Iterate through TASKS for proper few-shot adaptation
+	for _, task := range evalTasks {
+		// 1. ADAPTATION PHASE: Learn from the task's example pairs
+		for k := 0; k < 5; k++ {
+			for _, pair := range task.Train {
+				if len(pair.Input) == 0 || len(pair.Output) == 0 {
+					continue
+				}
+				input := encodeGrid(pair.Input)
+				target := encodeGrid(pair.Output)
+				ts.TweenStep(net, input, argmax(target), len(target), config.LearningRate)
+			}
 		}
-		output := state.GetOutput()
 
-		acc := calculatePixelAccuracy(output, sample)
-		r := taskResults[sample.TaskID]
-		r.totalAcc += acc
-		r.count++
-		taskResults[sample.TaskID] = r
+		// 2. TESTING PHASE: Solve the test pair(s)
+		for _, pair := range task.Test {
+			if len(pair.Input) == 0 || len(pair.Output) == 0 {
+				continue
+			}
+
+			input := encodeGrid(pair.Input)
+			target := encodeGrid(pair.Output)
+
+			state.SetInput(input)
+			for s := 0; s < numLayers; s++ {
+				net.StepForward(state)
+			}
+			output := state.GetOutput()
+
+			acc := calculatePixelAccuracy(output, Sample{
+				Target: target,
+				Height: len(pair.Output),
+				Width:  len(pair.Output[0]),
+			})
+
+			r := taskResults[task.ID]
+			r.totalAcc += acc
+			r.count++
+			taskResults[task.ID] = r
+		}
 	}
 
-	// Find solved tasks
+	// Find solved tasks (100% accuracy required)
 	var solvedIDs []string
 	for taskID, r := range taskResults {
-		if r.count > 0 && r.totalAcc/float64(r.count) >= 95 {
+		if r.count > 0 && r.totalAcc/float64(r.count) >= 100 {
 			solvedIDs = append(solvedIDs, taskID)
 		}
 	}

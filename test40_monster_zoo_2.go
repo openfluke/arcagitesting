@@ -289,32 +289,32 @@ func main() {
 	numWorkers := runtime.NumCPU()
 
 	fmt.Println("╔════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║   🧬 ARCHITECTURAL DIVERSITY ZOO - Exploring Layer & Combine Mode Variations                           ║")
+	fmt.Println("║   🧬 ARCHITECTURAL DIVERSITY ZOO (ARC-AGI2) - Exploring Layer & Combine Mode Variations              ║")
 	fmt.Println("║                                                                                                        ║")
 	fmt.Printf("║   Spawning %d mutant architectures with %d parallel workers...                                        ║\n", ZooSize, numWorkers)
 	fmt.Println("║   Testing: CombineModes (concat/add/avg), SoftmaxTypes (Sparse/Gumbel/Entmax), SwiGLU brains          ║")
-	fmt.Println("║   Training Duration: 10 seconds per mutant (Test 39 settings)                                         ║")
+	fmt.Println("║   Training Duration: 60 seconds per mutant | Dataset: ARC-AGI2 (harder tasks)                        ║")
 	fmt.Println("╚════════════════════════════════════════════════════════════════════════════════════════════════════════╝")
 
-	// Load ARC-AGI training data
-	trainTasks, err := loadARCTasks("ARC-AGI/data/training", NumTasks)
+	// Load ARC-AGI2 training data
+	trainTasks, err := loadARCTasks("ARC-AGI2/data/training", NumTasks)
 	if err != nil {
-		fmt.Printf("❌ Failed to load training tasks: %v\n", err)
+		fmt.Printf("❌ Failed to load ARC-AGI2 training tasks: %v\n", err)
 		return
 	}
 
-	// Load ARC-AGI evaluation data (separate 400 tasks)
-	evalTasks, err := loadARCTasks("ARC-AGI/data/evaluation", 400)
+	// Load ARC-AGI2 evaluation data (120 tasks)
+	evalTasks, err := loadARCTasks("ARC-AGI2/data/evaluation", 120)
 	if err != nil {
-		fmt.Printf("❌ Failed to load eval tasks: %v\n", err)
+		fmt.Printf("❌ Failed to load ARC-AGI2 eval tasks: %v\n", err)
 		return
 	}
 
 	trainSamples := createSequentialSamples(trainTasks)
 	evalSamples := createEvalSamples(evalTasks)
 
-	fmt.Printf("\n📦 Loaded %d training tasks, %d train samples\n", len(trainTasks), len(trainSamples))
-	fmt.Printf("📦 Loaded %d eval tasks, %d eval samples\n", len(evalTasks), len(evalSamples))
+	fmt.Printf("\n📦 Loaded %d ARC-AGI2 training tasks, %d train samples\n", len(trainTasks), len(trainSamples))
+	fmt.Printf("📦 Loaded %d ARC-AGI2 eval tasks, %d eval samples\n", len(evalTasks), len(evalSamples))
 	fmt.Printf("🧬 Generating %d mutant configurations with architectural diversity...\n\n", ZooSize)
 
 	// Generate mutant configurations

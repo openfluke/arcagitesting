@@ -242,7 +242,7 @@ func main() {
 		go func() {
 			defer wg.Done()
 			for idx := range jobs {
-				result := runMutant(configs[idx], trainSamples, evalSamples)
+				result := runMutant(configs[idx], trainSamples, evalSamples, evalTasks)
 				results[idx] = result
 
 				// Update tracking (thread-safe)
@@ -434,7 +434,7 @@ func generateMutantConfigs(count int) []MutantConfig {
 	return configs
 }
 
-func runMutant(config MutantConfig, trainSamples, evalSamples []Sample) MutantResult {
+func runMutant(config MutantConfig, trainSamples, evalSamples []Sample, evalTasks []*ARCTask) MutantResult {
 	numWindows := int(TestDuration / WindowDuration)
 	windows := make([]TimeWindow, numWindows)
 
@@ -501,24 +501,54 @@ func runMutant(config MutantConfig, trainSamples, evalSamples []Sample) MutantRe
 	}
 	avgAcc := sum / float64(len(windows))
 
-	// Eval phase
+	// =========================================================================
+	// EVAL PHASE: Few-Shot Adaptation (Learn from examples -> Solve test)
+	// =========================================================================
 	taskResults := make(map[string]struct {
 		totalAcc float64
 		count    int
 	})
 
-	for _, sample := range evalSamples {
-		state.SetInput(sample.Input)
-		for s := 0; s < numLayers; s++ {
-			net.StepForward(state)
+	// Iterate through TASKS for proper few-shot adaptation
+	for _, task := range evalTasks {
+		// 1. ADAPTATION PHASE: Learn from the task's example pairs
+		for k := 0; k < 5; k++ {
+			for _, pair := range task.Train {
+				if len(pair.Input) == 0 || len(pair.Output) == 0 {
+					continue
+				}
+				input := encodeGrid(pair.Input)
+				target := encodeGrid(pair.Output)
+				ts.TweenStep(net, input, argmax(target), len(target), config.LearningRate)
+			}
 		}
-		output := state.GetOutput()
 
-		acc := calculatePixelAccuracy(output, sample)
-		r := taskResults[sample.TaskID]
-		r.totalAcc += acc
-		r.count++
-		taskResults[sample.TaskID] = r
+		// 2. TESTING PHASE: Solve the test pair(s)
+		for _, pair := range task.Test {
+			if len(pair.Input) == 0 || len(pair.Output) == 0 {
+				continue
+			}
+
+			input := encodeGrid(pair.Input)
+			target := encodeGrid(pair.Output)
+
+			state.SetInput(input)
+			for s := 0; s < numLayers; s++ {
+				net.StepForward(state)
+			}
+			output := state.GetOutput()
+
+			acc := calculatePixelAccuracy(output, Sample{
+				Target: target,
+				Height: len(pair.Output),
+				Width:  len(pair.Output[0]),
+			})
+
+			r := taskResults[task.ID]
+			r.totalAcc += acc
+			r.count++
+			taskResults[task.ID] = r
+		}
 	}
 
 	// Find solved tasks (100% accuracy required)
