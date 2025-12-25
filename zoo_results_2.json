@@ -3,608 +3,641 @@
   "topMutants": [
     {
       "config": {
-        "id": 2485,
-        "name": "Mutant-2485",
-        "species": "3x2 Rectangle",
-        "mutationStr": "3x2_MHA-RNN-Dense-RNN-RNN-LSTM_Tanh_D64_LR0.0580",
-        "gridRows": 3,
-        "gridCols": 2,
-        "dModel": 64,
-        "numHeads": 4,
-        "learningRate": 0.057959575,
-        "budgetScale": 0.68343616,
-        "activation": "Tanh",
-        "brains": [
-          "MHA",
-          "RNN",
-          "Dense",
-          "RNN",
-          "RNN",
-          "LSTM"
-        ]
-      },
-      "avgTrainAccuracy": 42.24674175417791,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 42.24674175417791,
-      "throughputPerSec": 144.940386511825
-    },
-    {
-      "config": {
-        "id": 691,
-        "name": "Mutant-691",
-        "species": "2x2 Standard",
-        "mutationStr": "2x2_Dense-MHA-MHA-Dense_Tanh_D64_LR0.0738",
-        "gridRows": 2,
-        "gridCols": 2,
-        "dModel": 64,
-        "numHeads": 8,
-        "learningRate": 0.0738482,
-        "budgetScale": 0.8489844,
-        "activation": "Tanh",
-        "brains": [
-          "Dense",
-          "MHA",
-          "MHA",
-          "Dense"
-        ]
-      },
-      "avgTrainAccuracy": 42.16143418653604,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 42.16143418653604,
-      "throughputPerSec": 283.09891944588213
-    },
-    {
-      "config": {
-        "id": 1658,
-        "name": "Mutant-1658",
-        "species": "3x2 Rectangle",
-        "mutationStr": "3x2_MHA-Dense-Dense-Dense-MHA-LSTM_Tanh_D64_LR0.0579",
-        "gridRows": 3,
-        "gridCols": 2,
-        "dModel": 64,
-        "numHeads": 4,
-        "learningRate": 0.057909954,
-        "budgetScale": 0.6496035,
-        "activation": "Tanh",
-        "brains": [
-          "MHA",
-          "Dense",
-          "Dense",
-          "Dense",
-          "MHA",
-          "LSTM"
-        ]
-      },
-      "avgTrainAccuracy": 42.1435869647954,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 42.1435869647954,
-      "throughputPerSec": 178.81686943217258
-    },
-    {
-      "config": {
-        "id": 622,
-        "name": "Mutant-622",
-        "species": "1x1 Monolith",
-        "mutationStr": "1x1_Dense_Tanh_D64_LR0.0552",
-        "gridRows": 1,
-        "gridCols": 1,
-        "dModel": 64,
-        "numHeads": 8,
-        "learningRate": 0.055168938,
-        "budgetScale": 0.8179213,
-        "activation": "Tanh",
-        "brains": [
-          "Dense"
-        ]
-      },
-      "avgTrainAccuracy": 42.11874079747027,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 42.11874079747027,
-      "throughputPerSec": 342.95566001721886
-    },
-    {
-      "config": {
-        "id": 1657,
-        "name": "Mutant-1657",
-        "species": "4x1 Tall",
-        "mutationStr": "4x1_LSTM-MHA-Dense-LSTM_Tanh_D32_LR0.0767",
-        "gridRows": 4,
-        "gridCols": 1,
-        "dModel": 32,
-        "numHeads": 2,
-        "learningRate": 0.076710835,
-        "budgetScale": 0.74025184,
-        "activation": "Tanh",
-        "brains": [
-          "LSTM",
-          "MHA",
-          "Dense",
-          "LSTM"
-        ]
-      },
-      "avgTrainAccuracy": 42.105583755055996,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 42.105583755055996,
-      "throughputPerSec": 369.35427390395523
-    },
-    {
-      "config": {
-        "id": 2054,
-        "name": "Mutant-2054",
-        "species": "3x3 Complex",
-        "mutationStr": "3x3_MHA-Dense-MHA-RNN-LSTM-MHA-Dense-Dense-RNN_Tanh_D32_LR0.0432",
-        "gridRows": 3,
-        "gridCols": 3,
-        "dModel": 32,
-        "numHeads": 2,
-        "learningRate": 0.043237753,
-        "budgetScale": 0.78480583,
-        "activation": "Tanh",
-        "brains": [
-          "MHA",
-          "Dense",
-          "MHA",
-          "RNN",
-          "LSTM",
-          "MHA",
-          "Dense",
-          "Dense",
-          "RNN"
-        ]
-      },
-      "avgTrainAccuracy": 42.032024432562075,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 42.032024432562075,
-      "throughputPerSec": 404.96848899690264
-    },
-    {
-      "config": {
-        "id": 696,
-        "name": "Mutant-696",
-        "species": "1x1 Monolith",
-        "mutationStr": "1x1_Dense_Tanh_D64_LR0.0621",
-        "gridRows": 1,
-        "gridCols": 1,
-        "dModel": 64,
-        "numHeads": 8,
-        "learningRate": 0.062126286,
-        "budgetScale": 0.55483127,
-        "activation": "Tanh",
-        "brains": [
-          "Dense"
-        ]
-      },
-      "avgTrainAccuracy": 42.02816617905513,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 42.02816617905513,
-      "throughputPerSec": 334.3135065767352
-    },
-    {
-      "config": {
-        "id": 2456,
-        "name": "Mutant-2456",
-        "species": "3x2 Rectangle",
-        "mutationStr": "3x2_Dense-LSTM-Dense-RNN-RNN-MHA_Tanh_D64_LR0.0348",
-        "gridRows": 3,
-        "gridCols": 2,
-        "dModel": 64,
-        "numHeads": 4,
-        "learningRate": 0.034829836,
-        "budgetScale": 0.8812345,
-        "activation": "Tanh",
-        "brains": [
-          "Dense",
-          "LSTM",
-          "Dense",
-          "RNN",
-          "RNN",
-          "MHA"
-        ]
-      },
-      "avgTrainAccuracy": 42.02183855395451,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 42.02183855395451,
-      "throughputPerSec": 149.29433210039954
-    },
-    {
-      "config": {
-        "id": 1717,
-        "name": "Mutant-1717",
-        "species": "1x4 Wide",
-        "mutationStr": "1x4_Dense-Dense-Dense-Dense_Tanh_D16_LR0.0486",
-        "gridRows": 1,
-        "gridCols": 4,
-        "dModel": 16,
-        "numHeads": 4,
-        "learningRate": 0.04856358,
-        "budgetScale": 0.6199879,
-        "activation": "Tanh",
-        "brains": [
-          "Dense",
-          "Dense",
-          "Dense",
-          "Dense"
-        ]
-      },
-      "avgTrainAccuracy": 42.01155298070678,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 42.01155298070678,
-      "throughputPerSec": 1040.8961842827675
-    },
-    {
-      "config": {
-        "id": 924,
-        "name": "Mutant-924",
-        "species": "4x1 Tall",
-        "mutationStr": "4x1_Dense-RNN-Dense-MHA_Tanh_D16_LR0.0685",
-        "gridRows": 4,
-        "gridCols": 1,
-        "dModel": 16,
-        "numHeads": 4,
-        "learningRate": 0.06846029,
-        "budgetScale": 0.5407073,
-        "activation": "Tanh",
-        "brains": [
-          "Dense",
-          "RNN",
-          "Dense",
-          "MHA"
-        ]
-      },
-      "avgTrainAccuracy": 41.99483848943678,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 41.99483848943678,
-      "throughputPerSec": 1059.8989579073445
-    },
-    {
-      "config": {
-        "id": 1950,
-        "name": "Mutant-1950",
-        "species": "3x2 Rectangle",
-        "mutationStr": "3x2_Dense-Dense-RNN-MHA-MHA-LSTM_Tanh_D16_LR0.0568",
-        "gridRows": 3,
-        "gridCols": 2,
-        "dModel": 16,
-        "numHeads": 2,
-        "learningRate": 0.056760676,
-        "budgetScale": 0.6708234,
-        "activation": "Tanh",
-        "brains": [
-          "Dense",
-          "Dense",
-          "RNN",
-          "MHA",
-          "MHA",
-          "LSTM"
-        ]
-      },
-      "avgTrainAccuracy": 41.97242704462224,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 41.97242704462224,
-      "throughputPerSec": 718.8388024831756
-    },
-    {
-      "config": {
-        "id": 1667,
-        "name": "Mutant-1667",
-        "species": "4x1 Tall",
-        "mutationStr": "4x1_Dense-MHA-MHA-RNN_Tanh_D64_LR0.0753",
-        "gridRows": 4,
-        "gridCols": 1,
-        "dModel": 64,
-        "numHeads": 4,
-        "learningRate": 0.075341396,
-        "budgetScale": 0.86796474,
-        "activation": "Tanh",
-        "brains": [
-          "Dense",
-          "MHA",
-          "MHA",
-          "RNN"
-        ]
-      },
-      "avgTrainAccuracy": 41.958561829541765,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 41.958561829541765,
-      "throughputPerSec": 279.028248137117
-    },
-    {
-      "config": {
-        "id": 2369,
-        "name": "Mutant-2369",
-        "species": "1x4 Wide",
-        "mutationStr": "1x4_Dense-LSTM-RNN-MHA_Tanh_D32_LR0.0416",
-        "gridRows": 1,
-        "gridCols": 4,
-        "dModel": 32,
-        "numHeads": 8,
-        "learningRate": 0.04162929,
-        "budgetScale": 0.6180876,
-        "activation": "Tanh",
-        "brains": [
-          "Dense",
-          "LSTM",
-          "RNN",
-          "MHA"
-        ]
-      },
-      "avgTrainAccuracy": 41.942848592580916,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 41.942848592580916,
-      "throughputPerSec": 342.52773692334125
-    },
-    {
-      "config": {
-        "id": 1478,
-        "name": "Mutant-1478",
-        "species": "2x2 Standard",
-        "mutationStr": "2x2_Dense-MHA-RNN-RNN_Tanh_D16_LR0.0930",
-        "gridRows": 2,
-        "gridCols": 2,
-        "dModel": 16,
-        "numHeads": 8,
-        "learningRate": 0.093039244,
-        "budgetScale": 0.7370059,
-        "activation": "Tanh",
-        "brains": [
-          "Dense",
-          "MHA",
-          "RNN",
-          "RNN"
-        ]
-      },
-      "avgTrainAccuracy": 41.93310468165865,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 41.93310468165865,
-      "throughputPerSec": 1047.6378826165537
-    },
-    {
-      "config": {
-        "id": 766,
-        "name": "Mutant-766",
-        "species": "3x3 Complex",
-        "mutationStr": "3x3_LSTM-RNN-LSTM-Dense-Dense-MHA-Dense-MHA-Dense_Tanh_D16_LR0.0679",
-        "gridRows": 3,
-        "gridCols": 3,
-        "dModel": 16,
-        "numHeads": 2,
-        "learningRate": 0.067870274,
-        "budgetScale": 0.9795713,
-        "activation": "Tanh",
-        "brains": [
-          "LSTM",
-          "RNN",
-          "LSTM",
-          "Dense",
-          "Dense",
-          "MHA",
-          "Dense",
-          "MHA",
-          "Dense"
-        ]
-      },
-      "avgTrainAccuracy": 41.93296010763126,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 41.93296010763126,
-      "throughputPerSec": 771.7790609394755
-    },
-    {
-      "config": {
-        "id": 1160,
-        "name": "Mutant-1160",
-        "species": "1x4 Wide",
-        "mutationStr": "1x4_RNN-Dense-Dense-MHA_Tanh_D16_LR0.0584",
-        "gridRows": 1,
-        "gridCols": 4,
-        "dModel": 16,
-        "numHeads": 4,
-        "learningRate": 0.058397215,
-        "budgetScale": 0.591624,
-        "activation": "Tanh",
-        "brains": [
-          "RNN",
-          "Dense",
-          "Dense",
-          "MHA"
-        ]
-      },
-      "avgTrainAccuracy": 41.927876762759595,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 41.927876762759595,
-      "throughputPerSec": 1052.8974478818761
-    },
-    {
-      "config": {
-        "id": 1540,
-        "name": "Mutant-1540",
-        "species": "3x2 Rectangle",
-        "mutationStr": "3x2_RNN-Dense-MHA-MHA-RNN-Dense_Tanh_D16_LR0.0959",
-        "gridRows": 3,
-        "gridCols": 2,
-        "dModel": 16,
-        "numHeads": 4,
-        "learningRate": 0.09591072,
-        "budgetScale": 0.9586454,
-        "activation": "Tanh",
-        "brains": [
-          "RNN",
-          "Dense",
-          "MHA",
-          "MHA",
-          "RNN",
-          "Dense"
-        ]
-      },
-      "avgTrainAccuracy": 41.91387587542508,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 41.91387587542508,
-      "throughputPerSec": 1008.3533832180818
-    },
-    {
-      "config": {
-        "id": 2172,
-        "name": "Mutant-2172",
-        "species": "2x2 Standard",
-        "mutationStr": "2x2_MHA-LSTM-LSTM-Dense_Tanh_D32_LR0.0972",
-        "gridRows": 2,
-        "gridCols": 2,
-        "dModel": 32,
-        "numHeads": 4,
-        "learningRate": 0.09718549,
-        "budgetScale": 0.58392394,
-        "activation": "Tanh",
-        "brains": [
-          "MHA",
-          "LSTM",
-          "LSTM",
-          "Dense"
-        ]
-      },
-      "avgTrainAccuracy": 41.90712380918225,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 41.90712380918225,
-      "throughputPerSec": 367.7247567118688
-    },
-    {
-      "config": {
-        "id": 889,
-        "name": "Mutant-889",
-        "species": "1x1 Monolith",
-        "mutationStr": "1x1_Dense_Tanh_D64_LR0.0709",
-        "gridRows": 1,
-        "gridCols": 1,
-        "dModel": 64,
-        "numHeads": 2,
-        "learningRate": 0.07087042,
-        "budgetScale": 0.6959629,
-        "activation": "Tanh",
-        "brains": [
-          "Dense"
-        ]
-      },
-      "avgTrainAccuracy": 41.903665006895125,
-      "tasksSolved": 0,
-      "solvedTaskIds": null,
-      "score": 41.903665006895125,
-      "throughputPerSec": 336.2072303725441
-    },
-    {
-      "config": {
-        "id": 957,
-        "name": "Mutant-957",
+        "id": 1922,
+        "name": "Mutant-1922",
         "species": "2x3 Rectangle",
-        "mutationStr": "2x3_Dense-Dense-RNN-RNN-LSTM-LSTM_Tanh_D64_LR0.0633",
+        "mutationStr": "2x3_RNN-MHA-LSTM-LSTM-Dense-LSTM_Tanh_D64_LR0.0694",
         "gridRows": 2,
         "gridCols": 3,
         "dModel": 64,
         "numHeads": 8,
-        "learningRate": 0.063289925,
-        "budgetScale": 0.7362189,
+        "learningRate": 0.06944227,
+        "budgetScale": 0.58344144,
+        "activation": "Tanh",
+        "brains": [
+          "RNN",
+          "MHA",
+          "LSTM",
+          "LSTM",
+          "Dense",
+          "LSTM"
+        ]
+      },
+      "avgTrainAccuracy": 43.30028766174684,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 43.30028766174684,
+      "throughputPerSec": 111.04759732242537
+    },
+    {
+      "config": {
+        "id": 1311,
+        "name": "Mutant-1311",
+        "species": "2x2 Standard",
+        "mutationStr": "2x2_Dense-LSTM-MHA-MHA_Tanh_D64_LR0.0962",
+        "gridRows": 2,
+        "gridCols": 2,
+        "dModel": 64,
+        "numHeads": 2,
+        "learningRate": 0.096189834,
+        "budgetScale": 0.7685568,
         "activation": "Tanh",
         "brains": [
           "Dense",
+          "LSTM",
+          "MHA",
+          "MHA"
+        ]
+      },
+      "avgTrainAccuracy": 43.22794764097959,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 43.22794764097959,
+      "throughputPerSec": 143.96701254009946
+    },
+    {
+      "config": {
+        "id": 357,
+        "name": "Mutant-357",
+        "species": "2x3 Rectangle",
+        "mutationStr": "2x3_Dense-RNN-RNN-LSTM-LSTM-MHA_Tanh_D64_LR0.0988",
+        "gridRows": 2,
+        "gridCols": 3,
+        "dModel": 64,
+        "numHeads": 4,
+        "learningRate": 0.098798454,
+        "budgetScale": 0.8375547,
+        "activation": "Tanh",
+        "brains": [
           "Dense",
           "RNN",
           "RNN",
           "LSTM",
+          "LSTM",
+          "MHA"
+        ]
+      },
+      "avgTrainAccuracy": 42.94805281699447,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.94805281699447,
+      "throughputPerSec": 143.07578073275582
+    },
+    {
+      "config": {
+        "id": 177,
+        "name": "Mutant-177",
+        "species": "3x3 Complex",
+        "mutationStr": "3x3_Dense-Dense-Dense-RNN-Dense-Dense-RNN-RNN-LSTM_Tanh_D32_LR0.0623",
+        "gridRows": 3,
+        "gridCols": 3,
+        "dModel": 32,
+        "numHeads": 8,
+        "learningRate": 0.062285036,
+        "budgetScale": 0.8570648,
+        "activation": "Tanh",
+        "brains": [
+          "Dense",
+          "Dense",
+          "Dense",
+          "RNN",
+          "Dense",
+          "Dense",
+          "RNN",
+          "RNN",
           "LSTM"
         ]
       },
-      "avgTrainAccuracy": 41.89609211442532,
+      "avgTrainAccuracy": 42.64594376670765,
       "tasksSolved": 0,
       "solvedTaskIds": null,
-      "score": 41.89609211442532,
-      "throughputPerSec": 141.76379814745297
+      "score": 42.64594376670765,
+      "throughputPerSec": 435.9971474886625
+    },
+    {
+      "config": {
+        "id": 2218,
+        "name": "Mutant-2218",
+        "species": "3x2 Rectangle",
+        "mutationStr": "3x2_MHA-Dense-RNN-LSTM-RNN-RNN_Tanh_D64_LR0.0315",
+        "gridRows": 3,
+        "gridCols": 2,
+        "dModel": 64,
+        "numHeads": 4,
+        "learningRate": 0.031530682,
+        "budgetScale": 0.52728426,
+        "activation": "Tanh",
+        "brains": [
+          "MHA",
+          "Dense",
+          "RNN",
+          "LSTM",
+          "RNN",
+          "RNN"
+        ]
+      },
+      "avgTrainAccuracy": 42.59154540120285,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.59154540120285,
+      "throughputPerSec": 124.14607779666862
+    },
+    {
+      "config": {
+        "id": 1742,
+        "name": "Mutant-1742",
+        "species": "3x2 Rectangle",
+        "mutationStr": "3x2_LSTM-MHA-RNN-LSTM-Dense-MHA_Tanh_D64_LR0.0511",
+        "gridRows": 3,
+        "gridCols": 2,
+        "dModel": 64,
+        "numHeads": 2,
+        "learningRate": 0.0511295,
+        "budgetScale": 0.85319424,
+        "activation": "Tanh",
+        "brains": [
+          "LSTM",
+          "MHA",
+          "RNN",
+          "LSTM",
+          "Dense",
+          "MHA"
+        ]
+      },
+      "avgTrainAccuracy": 42.58292590397669,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.58292590397669,
+      "throughputPerSec": 121.98350713452942
+    },
+    {
+      "config": {
+        "id": 906,
+        "name": "Mutant-906",
+        "species": "3x2 Rectangle",
+        "mutationStr": "3x2_RNN-LSTM-LSTM-MHA-LSTM-LSTM_Tanh_D64_LR0.0859",
+        "gridRows": 3,
+        "gridCols": 2,
+        "dModel": 64,
+        "numHeads": 8,
+        "learningRate": 0.085945606,
+        "budgetScale": 0.97076523,
+        "activation": "Tanh",
+        "brains": [
+          "RNN",
+          "LSTM",
+          "LSTM",
+          "MHA",
+          "LSTM",
+          "LSTM"
+        ]
+      },
+      "avgTrainAccuracy": 42.5622482584225,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.5622482584225,
+      "throughputPerSec": 89.73275261513429
+    },
+    {
+      "config": {
+        "id": 1580,
+        "name": "Mutant-1580",
+        "species": "1x4 Wide",
+        "mutationStr": "1x4_MHA-RNN-Dense-MHA_Tanh_D32_LR0.0826",
+        "gridRows": 1,
+        "gridCols": 4,
+        "dModel": 32,
+        "numHeads": 4,
+        "learningRate": 0.08261376,
+        "budgetScale": 0.51742196,
+        "activation": "Tanh",
+        "brains": [
+          "MHA",
+          "RNN",
+          "Dense",
+          "MHA"
+        ]
+      },
+      "avgTrainAccuracy": 42.51825024011106,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.51825024011106,
+      "throughputPerSec": 465.6719371654834
+    },
+    {
+      "config": {
+        "id": 1869,
+        "name": "Mutant-1869",
+        "species": "3x2 Rectangle",
+        "mutationStr": "3x2_MHA-RNN-Dense-LSTM-Dense-Dense_Tanh_D32_LR0.0760",
+        "gridRows": 3,
+        "gridCols": 2,
+        "dModel": 32,
+        "numHeads": 2,
+        "learningRate": 0.076043576,
+        "budgetScale": 0.9303626,
+        "activation": "Tanh",
+        "brains": [
+          "MHA",
+          "RNN",
+          "Dense",
+          "LSTM",
+          "Dense",
+          "Dense"
+        ]
+      },
+      "avgTrainAccuracy": 42.48985183808301,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.48985183808301,
+      "throughputPerSec": 432.94344555018336
+    },
+    {
+      "config": {
+        "id": 1481,
+        "name": "Mutant-1481",
+        "species": "2x3 Rectangle",
+        "mutationStr": "2x3_Dense-RNN-LSTM-LSTM-Dense-MHA_Tanh_D32_LR0.0655",
+        "gridRows": 2,
+        "gridCols": 3,
+        "dModel": 32,
+        "numHeads": 8,
+        "learningRate": 0.06553562,
+        "budgetScale": 0.8014942,
+        "activation": "Tanh",
+        "brains": [
+          "Dense",
+          "RNN",
+          "LSTM",
+          "LSTM",
+          "Dense",
+          "MHA"
+        ]
+      },
+      "avgTrainAccuracy": 42.456541368534374,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.456541368534374,
+      "throughputPerSec": 249.3613420846677
+    },
+    {
+      "config": {
+        "id": 664,
+        "name": "Mutant-664",
+        "species": "3x3 Complex",
+        "mutationStr": "3x3_MHA-MHA-RNN-Dense-RNN-Dense-Dense-RNN-MHA_Tanh_D32_LR0.0489",
+        "gridRows": 3,
+        "gridCols": 3,
+        "dModel": 32,
+        "numHeads": 4,
+        "learningRate": 0.04888631,
+        "budgetScale": 0.92906934,
+        "activation": "Tanh",
+        "brains": [
+          "MHA",
+          "MHA",
+          "RNN",
+          "Dense",
+          "RNN",
+          "Dense",
+          "Dense",
+          "RNN",
+          "MHA"
+        ]
+      },
+      "avgTrainAccuracy": 42.41926878548295,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.41926878548295,
+      "throughputPerSec": 470.9832159008232
+    },
+    {
+      "config": {
+        "id": 919,
+        "name": "Mutant-919",
+        "species": "3x3 Complex",
+        "mutationStr": "3x3_RNN-LSTM-Dense-RNN-RNN-RNN-LSTM-Dense-Dense_Tanh_D32_LR0.0618",
+        "gridRows": 3,
+        "gridCols": 3,
+        "dModel": 32,
+        "numHeads": 8,
+        "learningRate": 0.061805468,
+        "budgetScale": 0.8843314,
+        "activation": "Tanh",
+        "brains": [
+          "RNN",
+          "LSTM",
+          "Dense",
+          "RNN",
+          "RNN",
+          "RNN",
+          "LSTM",
+          "Dense",
+          "Dense"
+        ]
+      },
+      "avgTrainAccuracy": 42.392493257664285,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.392493257664285,
+      "throughputPerSec": 320.0281531995645
+    },
+    {
+      "config": {
+        "id": 1263,
+        "name": "Mutant-1263",
+        "species": "1x4 Wide",
+        "mutationStr": "1x4_MHA-MHA-Dense-LSTM_Tanh_D32_LR0.0778",
+        "gridRows": 1,
+        "gridCols": 4,
+        "dModel": 32,
+        "numHeads": 8,
+        "learningRate": 0.07782062,
+        "budgetScale": 0.54318273,
+        "activation": "Tanh",
+        "brains": [
+          "MHA",
+          "MHA",
+          "Dense",
+          "LSTM"
+        ]
+      },
+      "avgTrainAccuracy": 42.35206416757336,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.35206416757336,
+      "throughputPerSec": 448.20258567793735
+    },
+    {
+      "config": {
+        "id": 2473,
+        "name": "Mutant-2473",
+        "species": "3x3 Complex",
+        "mutationStr": "3x3_RNN-Dense-MHA-RNN-LSTM-LSTM-Dense-Dense-LSTM_Tanh_D32_LR0.0972",
+        "gridRows": 3,
+        "gridCols": 3,
+        "dModel": 32,
+        "numHeads": 8,
+        "learningRate": 0.097240694,
+        "budgetScale": 0.62009835,
+        "activation": "Tanh",
+        "brains": [
+          "RNN",
+          "Dense",
+          "MHA",
+          "RNN",
+          "LSTM",
+          "LSTM",
+          "Dense",
+          "Dense",
+          "LSTM"
+        ]
+      },
+      "avgTrainAccuracy": 42.34298122333163,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.34298122333163,
+      "throughputPerSec": 291.29910306093177
+    },
+    {
+      "config": {
+        "id": 1056,
+        "name": "Mutant-1056",
+        "species": "2x3 Rectangle",
+        "mutationStr": "2x3_RNN-Dense-Dense-Dense-RNN-MHA_Tanh_D64_LR0.0632",
+        "gridRows": 2,
+        "gridCols": 3,
+        "dModel": 64,
+        "numHeads": 2,
+        "learningRate": 0.063158706,
+        "budgetScale": 0.76301515,
+        "activation": "Tanh",
+        "brains": [
+          "RNN",
+          "Dense",
+          "Dense",
+          "Dense",
+          "RNN",
+          "MHA"
+        ]
+      },
+      "avgTrainAccuracy": 42.26947789929932,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.26947789929932,
+      "throughputPerSec": 258.8274427218026
+    },
+    {
+      "config": {
+        "id": 2057,
+        "name": "Mutant-2057",
+        "species": "4x1 Tall",
+        "mutationStr": "4x1_Dense-LSTM-RNN-RNN_Tanh_D32_LR0.0684",
+        "gridRows": 4,
+        "gridCols": 1,
+        "dModel": 32,
+        "numHeads": 2,
+        "learningRate": 0.06840222,
+        "budgetScale": 0.6026929,
+        "activation": "Tanh",
+        "brains": [
+          "Dense",
+          "LSTM",
+          "RNN",
+          "RNN"
+        ]
+      },
+      "avgTrainAccuracy": 42.258284533610116,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.258284533610116,
+      "throughputPerSec": 423.60273191709445
+    },
+    {
+      "config": {
+        "id": 1463,
+        "name": "Mutant-1463",
+        "species": "2x2 Standard",
+        "mutationStr": "2x2_Dense-Dense-MHA-MHA_Tanh_D16_LR0.0720",
+        "gridRows": 2,
+        "gridCols": 2,
+        "dModel": 16,
+        "numHeads": 8,
+        "learningRate": 0.071968816,
+        "budgetScale": 0.79411364,
+        "activation": "Tanh",
+        "brains": [
+          "Dense",
+          "Dense",
+          "MHA",
+          "MHA"
+        ]
+      },
+      "avgTrainAccuracy": 42.2454269572915,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.2454269572915,
+      "throughputPerSec": 760.7511413665467
+    },
+    {
+      "config": {
+        "id": 1865,
+        "name": "Mutant-1865",
+        "species": "3x3 Complex",
+        "mutationStr": "3x3_MHA-MHA-LSTM-MHA-MHA-RNN-Dense-LSTM-MHA_Tanh_D64_LR0.0602",
+        "gridRows": 3,
+        "gridCols": 3,
+        "dModel": 64,
+        "numHeads": 4,
+        "learningRate": 0.060214844,
+        "budgetScale": 0.72246224,
+        "activation": "Tanh",
+        "brains": [
+          "MHA",
+          "MHA",
+          "LSTM",
+          "MHA",
+          "MHA",
+          "RNN",
+          "Dense",
+          "LSTM",
+          "MHA"
+        ]
+      },
+      "avgTrainAccuracy": 42.24350327009322,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.24350327009322,
+      "throughputPerSec": 127.8942730862926
+    },
+    {
+      "config": {
+        "id": 674,
+        "name": "Mutant-674",
+        "species": "3x3 Complex",
+        "mutationStr": "3x3_Dense-MHA-RNN-MHA-LSTM-Dense-Dense-Dense-RNN_Tanh_D32_LR0.0600",
+        "gridRows": 3,
+        "gridCols": 3,
+        "dModel": 32,
+        "numHeads": 8,
+        "learningRate": 0.059955355,
+        "budgetScale": 0.541834,
+        "activation": "Tanh",
+        "brains": [
+          "Dense",
+          "MHA",
+          "RNN",
+          "MHA",
+          "LSTM",
+          "Dense",
+          "Dense",
+          "Dense",
+          "RNN"
+        ]
+      },
+      "avgTrainAccuracy": 42.23899107373291,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.23899107373291,
+      "throughputPerSec": 387.7196643692268
+    },
+    {
+      "config": {
+        "id": 1237,
+        "name": "Mutant-1237",
+        "species": "2x2 Standard",
+        "mutationStr": "2x2_Dense-Dense-Dense-MHA_Tanh_D32_LR0.0357",
+        "gridRows": 2,
+        "gridCols": 2,
+        "dModel": 32,
+        "numHeads": 8,
+        "learningRate": 0.035683326,
+        "budgetScale": 0.84896874,
+        "activation": "Tanh",
+        "brains": [
+          "Dense",
+          "Dense",
+          "Dense",
+          "MHA"
+        ]
+      },
+      "avgTrainAccuracy": 42.238208596495504,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 42.238208596495504,
+      "throughputPerSec": 563.7933217553451
     }
   ],
   "speciesBreakdown": [
     {
       "species": "1x1 Monolith",
-      "count": 370,
+      "count": 374,
       "totalSolved": 0,
       "uniqueTasks": [],
       "uniqueCount": 0,
       "bestMutant": "",
       "bestSolved": 0,
-      "avgAccuracy": 19.73344100187888
+      "avgAccuracy": 20.907765932671367
     },
     {
       "species": "2x2 Standard",
-      "count": 354,
+      "count": 331,
       "totalSolved": 0,
       "uniqueTasks": [],
       "uniqueCount": 0,
       "bestMutant": "",
       "bestSolved": 0,
-      "avgAccuracy": 20.910288537194514
+      "avgAccuracy": 19.956342844858575
     },
     {
       "species": "3x3 Complex",
-      "count": 349,
+      "count": 355,
       "totalSolved": 0,
       "uniqueTasks": [],
       "uniqueCount": 0,
       "bestMutant": "",
       "bestSolved": 0,
-      "avgAccuracy": 18.741689363591885
+      "avgAccuracy": 18.562378129620306
     },
     {
       "species": "4x1 Tall",
-      "count": 364,
+      "count": 382,
       "totalSolved": 0,
       "uniqueTasks": [],
       "uniqueCount": 0,
       "bestMutant": "",
       "bestSolved": 0,
-      "avgAccuracy": 21.395914098519246
+      "avgAccuracy": 19.86761821443415
     },
     {
       "species": "1x4 Wide",
-      "count": 358,
+      "count": 328,
       "totalSolved": 0,
       "uniqueTasks": [],
       "uniqueCount": 0,
       "bestMutant": "",
       "bestSolved": 0,
-      "avgAccuracy": 20.18995935631019
+      "avgAccuracy": 19.89278693316221
     },
     {
       "species": "2x3 Rectangle",
-      "count": 349,
+      "count": 363,
       "totalSolved": 0,
       "uniqueTasks": [],
       "uniqueCount": 0,
       "bestMutant": "",
       "bestSolved": 0,
-      "avgAccuracy": 19.180102390610994
+      "avgAccuracy": 19.652660814092982
     },
     {
       "species": "3x2 Rectangle",
-      "count": 356,
+      "count": 367,
       "totalSolved": 0,
       "uniqueTasks": [],
       "uniqueCount": 0,
       "bestMutant": "",
       "bestSolved": 0,
-      "avgAccuracy": 19.429572677788833
+      "avgAccuracy": 19.841692289399077
     }
   ],
   "collectiveTasks": null,
@@ -1011,7 +1044,7 @@
       "cumulativeUnique": 0
     }
   ],
-  "timestamp": "2025-12-25T19:38:43+11:00",
-  "duration": "26m54.752333262s",
+  "timestamp": "2025-12-25T23:17:30+11:00",
+  "duration": "34m42.356739648s",
   "workerCount": 16
 }

@@ -31,9 +31,9 @@ const (
 	MaxGridSize  = 30
 	InputSize    = MaxGridSize * MaxGridSize // 900
 	NumTasks     = 1000                      // ARC-AGI2 has 1000 training tasks
-	LearningRate = float32(0.01)             // Same as arc_benchmark.go
-	InitScale    = float32(0.5)
-	BudgetScale  = float32(0.8)
+	LearningRate = float32(1000.01)          // Same as arc_benchmark.go
+	InitScale    = float32(1000.5)
+	BudgetScale  = float32(1000.8)
 
 	// Architecture params
 	DModel     = 32
@@ -46,6 +46,8 @@ const (
 
 	// Batch training interval for NormalBP/Tween (this is where they PAUSE!)
 	TrainInterval = 50 * time.Millisecond
+
+	numHives = 10
 )
 
 type TrainingMode int
@@ -104,11 +106,12 @@ type ModeResult struct {
 	SolvedTaskIDs []string `json:"solvedTaskIds,omitempty"`
 
 	// Summary metrics (matching SPARTA dashboard)
-	AvgTrainAccuracy float64 `json:"avgTrainAccuracy"`
-	Stability        float64 `json:"stability"`   // 100 - stddev
-	Consistency      float64 `json:"consistency"` // % windows above 30%
-	ThroughputPerSec float64 `json:"throughputPerSec"`
-	Score            float64 `json:"score"` // T×S×C / 100000
+	AvgTrainAccuracy float64           `json:"avgTrainAccuracy"`
+	Stability        float64           `json:"stability"`   // 100 - stddev
+	Consistency      float64           `json:"consistency"` // % windows above 30%
+	ThroughputPerSec float64           `json:"throughputPerSec"`
+	Score            float64           `json:"score"`           // T×S×C / 100000
+	TrainDeviations  *DeviationMetrics `json:"trainDeviations"` // Deviation buckets for training data
 }
 
 // BenchmarkResults is the full output
@@ -253,7 +256,8 @@ func createEvalSamples(tasks []*ARCTask) []Sample {
 func runTaskSwitchingBenchmark(mode TrainingMode, trainSamples, evalSamples []Sample, evalTasks []*ARCTask) *ModeResult {
 	numWindows := int(TestDuration / WindowDuration) // 100 windows at 100ms each
 	result := &ModeResult{
-		Windows: make([]TimeWindow, numWindows),
+		Windows:         make([]TimeWindow, numWindows),
+		TrainDeviations: NewDeviationMetrics(),
 	}
 
 	// Initialize windows
@@ -331,8 +335,8 @@ func runTaskSwitchingBenchmark(mode TrainingMode, trainSamples, evalSamples []Sa
 			output = state.GetOutput()
 		}
 
-		// Calculate PIXEL ACCURACY % on this sample (not just solved/not)
-		pixelAccuracy := calculatePixelAccuracy(output, sample)
+		// Calculate PIXEL ACCURACY % on this sample and track DEVIATION
+		pixelAccuracy := calculatePixelAccuracy(output, sample, result.TrainDeviations)
 
 		// Record to current window
 		if currentWindow < numWindows {
@@ -457,7 +461,7 @@ func runTaskSwitchingBenchmark(mode TrainingMode, trainSamples, evalSamples []Sa
 				Target: target,
 				Height: len(pair.Output),
 				Width:  len(pair.Output[0]),
-			})
+			}, nil)
 			evalTotalAcc += acc
 			evalCount++
 
@@ -488,7 +492,8 @@ func runTaskSwitchingBenchmark(mode TrainingMode, trainSamples, evalSamples []Sa
 }
 
 // calculatePixelAccuracy returns the percentage of pixels that match (0-100)
-func calculatePixelAccuracy(output []float32, sample Sample) float64 {
+// Also updates deviation metrics if tracker is provided
+func calculatePixelAccuracy(output []float32, sample Sample, tracker *DeviationMetrics) float64 {
 	correct, total := 0, 0
 	for r := 0; r < sample.Height; r++ {
 		for c := 0; c < sample.Width; c++ {
@@ -500,6 +505,13 @@ func calculatePixelAccuracy(output []float32, sample Sample) float64 {
 					correct++
 				}
 				total++
+
+				if tracker != nil {
+					// Update deviation bucket for this pixel
+					// Use raw float values for deviation calculation to be precise
+					res := EvaluatePrediction(idx, float64(sample.Target[idx]), float64(output[idx]))
+					tracker.UpdateMetrics(res)
+				}
 			}
 		}
 	}
@@ -549,7 +561,8 @@ func calculateSummaryMetrics(result *ModeResult) {
 // ============================================================================
 
 func createHiveMindNetwork() *nn.Network {
-	totalLayers := 4
+
+	totalLayers := 1 + (numHives * 2) + 1 // Input + 3*(Hive+Merger) + Output
 	net := nn.NewNetwork(InputSize, 1, 1, totalLayers)
 	net.BatchSize = 1
 
@@ -560,15 +573,18 @@ func createHiveMindNetwork() *nn.Network {
 	net.SetLayer(0, 0, layerIdx, inputLayer)
 	layerIdx++
 
-	parallelLayer := createGridScatterHive()
-	net.SetLayer(0, 0, layerIdx, parallelLayer)
-	layerIdx++
+	// Stack 3 Hives
+	for i := 0; i < numHives; i++ {
+		parallelLayer := createGridScatterHive()
+		net.SetLayer(0, 0, layerIdx, parallelLayer)
+		layerIdx++
 
-	mergerInputSize := DModel * 4
-	mergerLayer := nn.InitDenseLayer(mergerInputSize, DModel, nn.ActivationLeakyReLU)
-	scaleWeights(mergerLayer.Kernel, InitScale)
-	net.SetLayer(0, 0, layerIdx, mergerLayer)
-	layerIdx++
+		mergerInputSize := DModel * 4
+		mergerLayer := nn.InitDenseLayer(mergerInputSize, DModel, nn.ActivationLeakyReLU)
+		scaleWeights(mergerLayer.Kernel, InitScale)
+		net.SetLayer(0, 0, layerIdx, mergerLayer)
+		layerIdx++
+	}
 
 	outputLayer := nn.InitDenseLayer(DModel, InputSize, nn.ActivationSigmoid)
 	scaleWeights(outputLayer.Kernel, InitScale)
@@ -812,6 +828,12 @@ func printSummary(results *BenchmarkResults) {
 		r := results.Results[modeName]
 		fmt.Printf("║ %-20s ║ %8.1f%% ║ %8.0f%% ║ %10.0f/s ║ %12.0f%% ║ %12.1f%% ║ %14d ║ %26.0f   ║\n",
 			modeName, r.AvgTrainAccuracy, r.Stability, r.ThroughputPerSec, r.Consistency, r.EvalAccuracy, r.TasksSolved, r.Score)
+
+		if r.TrainDeviations != nil {
+			fmt.Printf("\n--- [%s] Training Deviation Distribution (Learning Progress) ---\n", modeName)
+			r.TrainDeviations.PrintSummary()
+			fmt.Println("---------------------------------------------------------------")
+		}
 	}
 
 	fmt.Println("╚══════════════════════╩════════════╩════════════╩══════════════╩════════════════╩════════════════╩════════════════╩══════════════════════════════╝")
@@ -827,4 +849,132 @@ func printSummary(results *BenchmarkResults) {
 	fmt.Println("│ ★ StepTweenChain should score highest: trains every sample, maintains accuracy          │")
 	fmt.Println("│ ★ NormalBP should score lowest: stops to batch train, disrupts throughput                │")
 	fmt.Println("└─────────────────────────────────────────────────────────────────────────────────────────┘")
+}
+
+// ============================================================================
+// Deviation Metrics (Buckets)
+// ============================================================================
+
+// DeviationBucket represents a specific deviation percentage range
+type DeviationBucket struct {
+	RangeMin float64 `json:"range_min"`
+	RangeMax float64 `json:"range_max"`
+	Count    int     `json:"count"`
+}
+
+// PredictionResult represents the performance of the model on one prediction
+type PredictionResult struct {
+	SampleIndex    int     `json:"sample_index"`
+	ExpectedOutput float64 `json:"expected"`
+	ActualOutput   float64 `json:"actual"`
+	Deviation      float64 `json:"deviation"` // Percentage deviation
+	Bucket         string  `json:"bucket"`
+}
+
+// DeviationMetrics stores the full model performance breakdown
+type DeviationMetrics struct {
+	Buckets          map[string]*DeviationBucket `json:"buckets"`
+	Score            float64                     `json:"score"` // Average quality score (0-100)
+	TotalSamples     int                         `json:"total_samples"`
+	Failures         int                         `json:"failures"`      // Count of 100%+ deviations
+	AverageDeviation float64                     `json:"avg_deviation"` // Mean deviation across all samples
+}
+
+// NewDeviationMetrics initializes an empty metrics struct
+func NewDeviationMetrics() *DeviationMetrics {
+	return &DeviationMetrics{
+		Buckets: map[string]*DeviationBucket{
+			"0-10%":   {0, 10, 0},
+			"10-20%":  {10, 20, 0},
+			"20-30%":  {20, 30, 0},
+			"30-40%":  {30, 40, 0},
+			"40-50%":  {40, 50, 0},
+			"50-100%": {50, 100, 0},
+			"100%+":   {100, math.Inf(1), 0},
+		},
+		Score: 0,
+	}
+}
+
+// EvaluatePrediction categorizes an expected vs actual output into a deviation bucket
+func EvaluatePrediction(sampleIndex int, expected, actual float64) PredictionResult {
+	var deviation float64
+	if math.Abs(expected) < 1e-10 { // Handle near-zero expected values
+		deviation = math.Abs(actual-expected) * 100 // Scale to percentage (e.g. 0.1 diff = 10%)
+	} else {
+		// Avoid division by zero if expected is very small but not zero (shouldn't happen with 1e-10 check)
+		deviation = math.Abs((actual - expected) / expected * 100)
+	}
+
+	// Prevent NaN/Inf issues
+	if math.IsNaN(deviation) || math.IsInf(deviation, 0) {
+		deviation = 100 // Default worst case
+	}
+
+	var bucketName string
+	switch {
+	case deviation <= 10:
+		bucketName = "0-10%"
+	case deviation <= 20:
+		bucketName = "10-20%"
+	case deviation <= 30:
+		bucketName = "20-30%"
+	case deviation <= 40:
+		bucketName = "30-40%"
+	case deviation <= 50:
+		bucketName = "40-50%"
+	case deviation <= 100:
+		bucketName = "50-100%"
+	default:
+		bucketName = "100%+"
+	}
+
+	return PredictionResult{
+		SampleIndex:    sampleIndex,
+		ExpectedOutput: expected,
+		ActualOutput:   actual,
+		Deviation:      deviation,
+		Bucket:         bucketName,
+	}
+}
+
+// UpdateMetrics updates the metrics with a single prediction result
+func (dm *DeviationMetrics) UpdateMetrics(result PredictionResult) {
+	bucket := dm.Buckets[result.Bucket]
+	bucket.Count++
+
+	dm.TotalSamples++
+	if result.Bucket == "100%+" {
+		dm.Failures++
+	}
+
+	// Compute score: lower deviations contribute more positively
+	dm.Score += math.Max(0, 100-result.Deviation)
+	dm.AverageDeviation += result.Deviation // Accumulate sum
+}
+
+// PrintSummary prints a human-readable summary of the deviation metrics
+func (dm *DeviationMetrics) PrintSummary() {
+	if dm.TotalSamples == 0 {
+		fmt.Println("No training samples recorded.")
+		return
+	}
+	avgDev := dm.AverageDeviation / float64(dm.TotalSamples)
+	score := dm.Score / float64(dm.TotalSamples)
+
+	fmt.Printf("Total Pixels: %d | Quality Score: %.2f/100 | Avg Dev: %.2f%%\n", dm.TotalSamples, score, avgDev)
+	fmt.Printf("Failures (>100%%): %d (%.1f%%)\n", dm.Failures, float64(dm.Failures)/float64(dm.TotalSamples)*100)
+
+	fmt.Printf("Deviation Distribution:\n")
+	bucketOrder := []string{"0-10%", "10-20%", "20-30%", "30-40%", "40-50%", "50-100%", "100%+"}
+	for _, bucketName := range bucketOrder {
+		bucket := dm.Buckets[bucketName]
+		percentage := float64(bucket.Count) / float64(dm.TotalSamples) * 100
+		barLen := int(percentage / 100 * 50)
+		bar := ""
+		for i := 0; i < barLen; i++ {
+			bar += "█"
+		}
+		fmt.Printf("  %8s: %4d (%.1f%%) %s\n", bucketName, bucket.Count, percentage, bar)
+	}
 }

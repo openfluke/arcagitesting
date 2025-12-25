@@ -31,7 +31,7 @@ const (
 	MaxGridSize  = 30
 	InputSize    = MaxGridSize * MaxGridSize // 900
 	NumTasks     = 400                       // All training tasks
-	LearningRate = float32(0.01)             // Increased for faster adaptation
+	LearningRate = float32(0.001)            // Increased for faster adaptation
 	InitScale    = float32(0.5)
 	BudgetScale  = float32(0.8)
 
@@ -41,7 +41,7 @@ const (
 	LSTMHidden = 32
 
 	// Timing - 10 second training run with 100ms windows (100 windows total)
-	TestDuration   = 10 * time.Second
+	TestDuration   = 15 * time.Second
 	WindowDuration = 100 * time.Millisecond // 100ms for fine-grained accuracy tracking
 
 	// Batch training interval for NormalBP/Tween (this is where they PAUSE!)
