@@ -134,20 +134,26 @@ func main() {
 	fmt.Println("║     Score = (Throughput × Stability × Consistency) / 100000                        ║")
 	fmt.Println("╚══════════════════════════════════════════════════════════════════════════════════════╝")
 
-	// Load ARC-AGI data
-	tasks, err := loadARCTasks("ARC-AGI/data/training", NumTasks)
+	// Load ARC-AGI training data
+	trainTasks, err := loadARCTasks("ARC-AGI/data/training", NumTasks)
 	if err != nil {
-		fmt.Printf("❌ Failed to load tasks: %v\n", err)
+		fmt.Printf("❌ Failed to load training tasks: %v\n", err)
 		return
 	}
 
-	trainSamples := createSequentialSamples(tasks)
-	evalSamples := createEvalSamples(tasks)
+	// Load ARC-AGI evaluation data (separate 400 tasks)
+	evalTasks, err := loadARCTasks("ARC-AGI/data/evaluation", 400)
+	if err != nil {
+		fmt.Printf("❌ Failed to load eval tasks: %v\n", err)
+		return
+	}
+
+	trainSamples := createSequentialSamples(trainTasks)
+	evalSamples := createEvalSamples(evalTasks)
 
 	numWindows := int(TestDuration / WindowDuration)
-	fmt.Printf("\n📦 Loaded %d tasks\n", len(tasks))
-	fmt.Printf("📊 Training: %d samples, switching between tasks rapidly\n", len(trainSamples))
-	fmt.Printf("🎯 Eval: %d samples (unseen test examples)\n", len(evalSamples))
+	fmt.Printf("\n📦 Loaded %d training tasks, %d train samples\n", len(trainTasks), len(trainSamples))
+	fmt.Printf("📦 Loaded %d eval tasks, %d eval samples\n", len(evalTasks), len(evalSamples))
 	fmt.Printf("⏱️  Duration: %s with %dms windows (=%d windows)\n\n", TestDuration, WindowDuration.Milliseconds(), numWindows)
 
 	modes := []TrainingMode{
@@ -163,7 +169,7 @@ func main() {
 		Modes:     make([]string, len(modes)),
 		Results:   make(map[string]*ModeResult),
 		Timestamp: time.Now().Format(time.RFC3339),
-		NumTasks:  len(tasks),
+		NumTasks:  len(trainTasks),
 		Duration:  TestDuration.String(),
 		WindowMs:  int(WindowDuration.Milliseconds()),
 	}
@@ -760,19 +766,19 @@ func printTimeline(results *BenchmarkResults) {
 }
 
 func printSummary(results *BenchmarkResults) {
-	fmt.Println("\n╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║                         ARC-AGI MODE COMPARISON — Score = (Throughput × Stability × Consistency) / 100000                      ║")
-	fmt.Println("╠══════════════════════╦════════════╦════════════╦══════════════╦════════════════╦════════════════╦══════════════════════════════╣")
-	fmt.Println("║ Mode                 ║ Train Acc  ║ Stability  ║ Throughput   ║ Consistency    ║ Eval Acc       ║ = Score                      ║")
-	fmt.Println("╠══════════════════════╬════════════╬════════════╬══════════════╬════════════════╬════════════════╬══════════════════════════════╣")
+	fmt.Println("\n╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
+	fmt.Println("║                         ARC-AGI MODE COMPARISON — Score = (Throughput × Stability × Consistency) / 100000                                     ║")
+	fmt.Println("╠══════════════════════╦════════════╦════════════╦══════════════╦════════════════╦════════════════╦════════════════╦══════════════════════════════╣")
+	fmt.Println("║ Mode                 ║ Train Acc  ║ Stability  ║ Throughput   ║ Consistency    ║ Eval Acc       ║ Tasks Solved   ║ = Score                      ║")
+	fmt.Println("╠══════════════════════╬════════════╬════════════╬══════════════╬════════════════╬════════════════╬════════════════╬══════════════════════════════╣")
 
 	for _, modeName := range results.Modes {
 		r := results.Results[modeName]
-		fmt.Printf("║ %-20s ║ %8.1f%% ║ %8.0f%% ║ %10.0f/s ║ %12.0f%% ║ %12.1f%% ║ %26.0f   ║\n",
-			modeName, r.AvgTrainAccuracy, r.Stability, r.ThroughputPerSec, r.Consistency, r.EvalAccuracy, r.Score)
+		fmt.Printf("║ %-20s ║ %8.1f%% ║ %8.0f%% ║ %10.0f/s ║ %12.0f%% ║ %12.1f%% ║ %14d ║ %26.0f   ║\n",
+			modeName, r.AvgTrainAccuracy, r.Stability, r.ThroughputPerSec, r.Consistency, r.EvalAccuracy, r.TasksSolved, r.Score)
 	}
 
-	fmt.Println("╚══════════════════════╩════════════╩════════════╩══════════════╩════════════════╩════════════════╩══════════════════════════════╝")
+	fmt.Println("╚══════════════════════╩════════════╩════════════╩══════════════╩════════════════╩════════════════╩════════════════╩══════════════════════════════╝")
 
 	fmt.Println("\n┌─────────────────────────────────────────────────────────────────────────────────────────┐")
 	fmt.Println("│                                    KEY METRICS                                          │")

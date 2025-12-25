@@ -40,8 +40,8 @@ const (
 	NumHeads   = 4
 	LSTMHidden = 32
 
-	// Timing - 10 second training run with 100ms windows (100 windows total)
-	TestDuration   = 10 * time.Second
+	// Timing - 20 second training run with 100ms windows (200 windows total)
+	TestDuration   = 20 * time.Second
 	WindowDuration = 100 * time.Millisecond // 100ms for fine-grained accuracy tracking
 
 	// Batch training interval for NormalBP/Tween (this is where they PAUSE!)
@@ -125,7 +125,7 @@ func main() {
 	fmt.Println("╔══════════════════════════════════════════════════════════════════════════════════════╗")
 	fmt.Println("║     ARC-AGI2 Benchmark (Train + Eval)                                               ║")
 	fmt.Println("║                                                                                      ║")
-	fmt.Println("║     TRAINING: ARC-AGI2 training set (1000 tasks) — Cycle through (10 seconds)       ║")
+	fmt.Printf("║     TRAINING: ARC-AGI2 training set (1000 tasks) — Cycle through (%d seconds)       ║\n", int(TestDuration.Seconds()))
 	fmt.Println("║     EVAL: ARC-AGI2 evaluation set (120 tasks) — Test on unseen tasks!               ║")
 	fmt.Println("║                                                                                      ║")
 	fmt.Println("║     → NormalBP: STOPS to batch train → accuracy DIPS during training               ║")
@@ -530,7 +530,8 @@ func createHiveMindNetwork() *nn.Network {
 	net.SetLayer(0, 0, layerIdx, parallelLayer)
 	layerIdx++
 
-	mergerInputSize := DModel * 4
+	// 2x4 grid = 8 brains
+	mergerInputSize := DModel * 8
 	mergerLayer := nn.InitDenseLayer(mergerInputSize, DModel, nn.ActivationLeakyReLU)
 	scaleWeights(mergerLayer.Kernel, InitScale)
 	net.SetLayer(0, 0, layerIdx, mergerLayer)
@@ -544,23 +545,32 @@ func createHiveMindNetwork() *nn.Network {
 }
 
 func createGridScatterHive() nn.LayerConfig {
+	// 2x4 grid = 8 brains (4 MHA + 4 LSTM)
 	brain00 := createMHABrain()
 	brain01 := createLSTMBrain()
+	brain02 := createMHABrain()
+	brain03 := createLSTMBrain()
 	brain10 := createMHABrain()
-	brain11 := createMHABrain()
+	brain11 := createLSTMBrain()
+	brain12 := createMHABrain()
+	brain13 := createLSTMBrain()
 
 	parallel := nn.LayerConfig{
 		Type:             nn.LayerParallel,
 		CombineMode:      "grid_scatter",
 		GridOutputRows:   2,
-		GridOutputCols:   2,
+		GridOutputCols:   4,
 		GridOutputLayers: 1,
-		ParallelBranches: []nn.LayerConfig{brain00, brain01, brain10, brain11},
+		ParallelBranches: []nn.LayerConfig{brain00, brain01, brain02, brain03, brain10, brain11, brain12, brain13},
 		GridPositions: []nn.GridPosition{
 			{BranchIndex: 0, TargetRow: 0, TargetCol: 0, TargetLayer: 0},
 			{BranchIndex: 1, TargetRow: 0, TargetCol: 1, TargetLayer: 0},
-			{BranchIndex: 2, TargetRow: 1, TargetCol: 0, TargetLayer: 0},
-			{BranchIndex: 3, TargetRow: 1, TargetCol: 1, TargetLayer: 0},
+			{BranchIndex: 2, TargetRow: 0, TargetCol: 2, TargetLayer: 0},
+			{BranchIndex: 3, TargetRow: 0, TargetCol: 3, TargetLayer: 0},
+			{BranchIndex: 4, TargetRow: 1, TargetCol: 0, TargetLayer: 0},
+			{BranchIndex: 5, TargetRow: 1, TargetCol: 1, TargetLayer: 0},
+			{BranchIndex: 6, TargetRow: 1, TargetCol: 2, TargetLayer: 0},
+			{BranchIndex: 7, TargetRow: 1, TargetCol: 3, TargetLayer: 0},
 		},
 	}
 	return parallel
@@ -735,15 +745,31 @@ func saveResults(results *BenchmarkResults) {
 }
 
 func printTimeline(results *BenchmarkResults) {
+	numSeconds := int(TestDuration / time.Second)
+	numWindows := int(TestDuration / WindowDuration)
+
 	fmt.Println("\n╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║           TRAINING PIXEL ACCURACY % (100ms windows) — Switching between 400 tasks in real-time                                                 ║")
+	fmt.Printf("║           TRAINING PIXEL ACCURACY %% (100ms windows) — %d seconds, switching between 1000 tasks in real-time                                  ║\n", numSeconds)
 	fmt.Println("║           NormalBP PAUSES to batch train → low throughput | StepTweenChain trains EVERY sample → maintains accuracy                           ║")
 	fmt.Println("╠══════════════════════╦════════════════════════════════════════════════════════════════════════════════════════════════════════╦═══════╦════════════╣")
 	fmt.Printf("║ Mode                 ║")
 
-	// Print time headers (showing every 1s = 10 windows)
-	for i := 0; i < 100; i += 10 {
-		fmt.Printf(" %ds ", i/10+1)
+	// Print time headers - show first 10 seconds, then last few if longer
+	windowsPerSec := 10
+	maxDisplaySecs := 10
+	if numSeconds <= maxDisplaySecs {
+		for i := 0; i < numWindows; i += windowsPerSec {
+			fmt.Printf(" %ds ", i/windowsPerSec+1)
+		}
+	} else {
+		// Show first 5 and last 5 seconds
+		for i := 0; i < 5; i++ {
+			fmt.Printf(" %ds ", i+1)
+		}
+		fmt.Printf(" ... ")
+		for i := numSeconds - 5; i < numSeconds; i++ {
+			fmt.Printf(" %ds ", i+1)
+		}
 	}
 	fmt.Printf("║ Eval  ║ Score      ║\n")
 	fmt.Println("╠══════════════════════╬════════════════════════════════════════════════════════════════════════════════════════════════════════╬═══════╬════════════╣")
@@ -752,14 +778,39 @@ func printTimeline(results *BenchmarkResults) {
 		r := results.Results[modeName]
 		fmt.Printf("║ %-20s ║", modeName)
 
-		// Print accuracy for each 1-second block (average of 10 windows)
-		for sec := 0; sec < 10; sec++ {
-			avgAcc := 0.0
-			for w := sec * 10; w < (sec+1)*10 && w < len(r.Windows); w++ {
-				avgAcc += r.Windows[w].Accuracy
+		// Print accuracy for each 1-second block
+		if numSeconds <= maxDisplaySecs {
+			for sec := 0; sec < numSeconds; sec++ {
+				avgAcc := 0.0
+				count := 0
+				for w := sec * windowsPerSec; w < (sec+1)*windowsPerSec && w < len(r.Windows); w++ {
+					avgAcc += r.Windows[w].Accuracy
+					count++
+				}
+				if count > 0 {
+					avgAcc /= float64(count)
+				}
+				fmt.Printf(" %2.0f%%", avgAcc)
 			}
-			avgAcc /= 10
-			fmt.Printf(" %2.0f%%", avgAcc)
+		} else {
+			// Show first 5 and last 5 seconds
+			for sec := 0; sec < 5; sec++ {
+				avgAcc := 0.0
+				for w := sec * windowsPerSec; w < (sec+1)*windowsPerSec && w < len(r.Windows); w++ {
+					avgAcc += r.Windows[w].Accuracy
+				}
+				avgAcc /= float64(windowsPerSec)
+				fmt.Printf(" %2.0f%%", avgAcc)
+			}
+			fmt.Printf(" ... ")
+			for sec := numSeconds - 5; sec < numSeconds; sec++ {
+				avgAcc := 0.0
+				for w := sec * windowsPerSec; w < (sec+1)*windowsPerSec && w < len(r.Windows); w++ {
+					avgAcc += r.Windows[w].Accuracy
+				}
+				avgAcc /= float64(windowsPerSec)
+				fmt.Printf(" %2.0f%%", avgAcc)
+			}
 		}
 		fmt.Printf(" ║ %3.0f%% ║ %10.0f ║\n", r.EvalAccuracy, r.Score)
 	}

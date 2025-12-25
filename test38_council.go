@@ -122,17 +122,25 @@ func main() {
 	fmt.Println("║   Testing statistical saturation: How many unique tasks can 1000 minds solve?           ║")
 	fmt.Println("╚══════════════════════════════════════════════════════════════════════════════════════════╝")
 
-	// Load ARC-AGI data
-	tasks, err := loadARCTasks("ARC-AGI/data/training", NumTasks)
+	// Load ARC-AGI training data
+	trainTasks, err := loadARCTasks("ARC-AGI/data/training", NumTasks)
 	if err != nil {
-		fmt.Printf("❌ Failed to load tasks: %v\n", err)
+		fmt.Printf("❌ Failed to load training tasks: %v\n", err)
 		return
 	}
 
-	trainSamples := createSequentialSamples(tasks)
-	evalSamples := createEvalSamples(tasks)
+	// Load ARC-AGI evaluation data (separate 400 tasks)
+	evalTasks, err := loadARCTasks("ARC-AGI/data/evaluation", 400)
+	if err != nil {
+		fmt.Printf("❌ Failed to load eval tasks: %v\n", err)
+		return
+	}
 
-	fmt.Printf("\n📦 Loaded %d tasks, %d train samples, %d eval samples\n", len(tasks), len(trainSamples), len(evalSamples))
+	trainSamples := createSequentialSamples(trainTasks)
+	evalSamples := createEvalSamples(evalTasks)
+
+	fmt.Printf("\n📦 Loaded %d training tasks, %d train samples\n", len(trainTasks), len(trainSamples))
+	fmt.Printf("📦 Loaded %d eval tasks, %d eval samples\n", len(evalTasks), len(evalSamples))
 	fmt.Printf("👑 Generating %d Council member configurations...\n\n", CouncilSize)
 
 	// Generate random configurations
@@ -374,10 +382,10 @@ func runCouncilMember(config AgentConfig, trainSamples, evalSamples []Sample) Ag
 		taskResults[sample.TaskID] = r
 	}
 
-	// Find solved tasks
+	// Find solved tasks (100% accuracy required)
 	var solvedIDs []string
 	for taskID, r := range taskResults {
-		if r.count > 0 && r.totalAcc/float64(r.count) >= 95 {
+		if r.count > 0 && r.totalAcc/float64(r.count) >= 100 {
 			solvedIDs = append(solvedIDs, taskID)
 		}
 	}
