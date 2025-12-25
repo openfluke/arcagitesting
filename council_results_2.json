@@ -1,0 +1,905 @@
+{
+  "councilSize": 1000,
+  "topExperts": [
+    {
+      "config": {
+        "id": 928,
+        "name": "Agent-928",
+        "gridSize": 1,
+        "dModel": 16,
+        "numHeads": 2,
+        "learningRate": 0.09963177,
+        "budgetScale": 0.8264951,
+        "brains": [
+          "MHA"
+        ]
+      },
+      "avgTrainAccuracy": 41.273267012619314,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.273267012619314,
+      "throughputPerSec": 1144.4310447107061
+    },
+    {
+      "config": {
+        "id": 950,
+        "name": "Agent-950",
+        "gridSize": 2,
+        "dModel": 16,
+        "numHeads": 2,
+        "learningRate": 0.093143374,
+        "budgetScale": 0.593696,
+        "brains": [
+          "RNN",
+          "MHA",
+          "Dense",
+          "RNN"
+        ]
+      },
+      "avgTrainAccuracy": 41.25185370144044,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.25185370144044,
+      "throughputPerSec": 1080.707350202372
+    },
+    {
+      "config": {
+        "id": 12,
+        "name": "Agent-12",
+        "gridSize": 2,
+        "dModel": 16,
+        "numHeads": 4,
+        "learningRate": 0.08392795,
+        "budgetScale": 0.9717297,
+        "brains": [
+          "MHA",
+          "LSTM",
+          "RNN",
+          "MHA"
+        ]
+      },
+      "avgTrainAccuracy": 41.20515744419308,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.20515744419308,
+      "throughputPerSec": 1020.7744772695124
+    },
+    {
+      "config": {
+        "id": 310,
+        "name": "Agent-310",
+        "gridSize": 1,
+        "dModel": 16,
+        "numHeads": 2,
+        "learningRate": 0.09987596,
+        "budgetScale": 0.8684456,
+        "brains": [
+          "MHA"
+        ]
+      },
+      "avgTrainAccuracy": 41.19920071706695,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.19920071706695,
+      "throughputPerSec": 1132.8896341184222
+    },
+    {
+      "config": {
+        "id": 905,
+        "name": "Agent-905",
+        "gridSize": 1,
+        "dModel": 16,
+        "numHeads": 4,
+        "learningRate": 0.0967408,
+        "budgetScale": 0.654393,
+        "brains": [
+          "Dense"
+        ]
+      },
+      "avgTrainAccuracy": 41.19596060997661,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.19596060997661,
+      "throughputPerSec": 1144.5410086396032
+    },
+    {
+      "config": {
+        "id": 599,
+        "name": "Agent-599",
+        "gridSize": 1,
+        "dModel": 16,
+        "numHeads": 2,
+        "learningRate": 0.09901643,
+        "budgetScale": 0.96077293,
+        "brains": [
+          "Dense"
+        ]
+      },
+      "avgTrainAccuracy": 41.185882007507345,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.185882007507345,
+      "throughputPerSec": 1146.1497021372415
+    },
+    {
+      "config": {
+        "id": 772,
+        "name": "Agent-772",
+        "gridSize": 1,
+        "dModel": 16,
+        "numHeads": 4,
+        "learningRate": 0.095814414,
+        "budgetScale": 0.72073543,
+        "brains": [
+          "LSTM"
+        ]
+      },
+      "avgTrainAccuracy": 41.17889494040465,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.17889494040465,
+      "throughputPerSec": 996.1355079957142
+    },
+    {
+      "config": {
+        "id": 532,
+        "name": "Agent-532",
+        "gridSize": 1,
+        "dModel": 16,
+        "numHeads": 2,
+        "learningRate": 0.0907826,
+        "budgetScale": 0.7908397,
+        "brains": [
+          "Dense"
+        ]
+      },
+      "avgTrainAccuracy": 41.162087066365736,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.162087066365736,
+      "throughputPerSec": 1149.7622137547023
+    },
+    {
+      "config": {
+        "id": 17,
+        "name": "Agent-17",
+        "gridSize": 1,
+        "dModel": 16,
+        "numHeads": 8,
+        "learningRate": 0.09679501,
+        "budgetScale": 0.5914122,
+        "brains": [
+          "LSTM"
+        ]
+      },
+      "avgTrainAccuracy": 41.141928238542086,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.141928238542086,
+      "throughputPerSec": 1036.2771341305247
+    },
+    {
+      "config": {
+        "id": 560,
+        "name": "Agent-560",
+        "gridSize": 1,
+        "dModel": 16,
+        "numHeads": 8,
+        "learningRate": 0.08036368,
+        "budgetScale": 0.8833259,
+        "brains": [
+          "MHA"
+        ]
+      },
+      "avgTrainAccuracy": 41.12804385052548,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.12804385052548,
+      "throughputPerSec": 1097.195018624896
+    },
+    {
+      "config": {
+        "id": 783,
+        "name": "Agent-783",
+        "gridSize": 1,
+        "dModel": 16,
+        "numHeads": 2,
+        "learningRate": 0.09334659,
+        "budgetScale": 0.96884686,
+        "brains": [
+          "MHA"
+        ]
+      },
+      "avgTrainAccuracy": 41.11903360789177,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.11903360789177,
+      "throughputPerSec": 1161.4102348352317
+    },
+    {
+      "config": {
+        "id": 398,
+        "name": "Agent-398",
+        "gridSize": 1,
+        "dModel": 16,
+        "numHeads": 2,
+        "learningRate": 0.09852797,
+        "budgetScale": 0.99296224,
+        "brains": [
+          "Dense"
+        ]
+      },
+      "avgTrainAccuracy": 41.113457856508916,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.113457856508916,
+      "throughputPerSec": 905.6316429235922
+    },
+    {
+      "config": {
+        "id": 349,
+        "name": "Agent-349",
+        "gridSize": 1,
+        "dModel": 16,
+        "numHeads": 2,
+        "learningRate": 0.09666411,
+        "budgetScale": 0.74800986,
+        "brains": [
+          "RNN"
+        ]
+      },
+      "avgTrainAccuracy": 41.0943522410138,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.0943522410138,
+      "throughputPerSec": 1041.469994207997
+    },
+    {
+      "config": {
+        "id": 254,
+        "name": "Agent-254",
+        "gridSize": 1,
+        "dModel": 16,
+        "numHeads": 8,
+        "learningRate": 0.097141005,
+        "budgetScale": 0.88107705,
+        "brains": [
+          "RNN"
+        ]
+      },
+      "avgTrainAccuracy": 41.093758704973794,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.093758704973794,
+      "throughputPerSec": 1171.3224800041576
+    },
+    {
+      "config": {
+        "id": 340,
+        "name": "Agent-340",
+        "gridSize": 1,
+        "dModel": 16,
+        "numHeads": 2,
+        "learningRate": 0.08663927,
+        "budgetScale": 0.84737617,
+        "brains": [
+          "RNN"
+        ]
+      },
+      "avgTrainAccuracy": 41.092122413199476,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.092122413199476,
+      "throughputPerSec": 1031.564389881479
+    },
+    {
+      "config": {
+        "id": 678,
+        "name": "Agent-678",
+        "gridSize": 1,
+        "dModel": 16,
+        "numHeads": 2,
+        "learningRate": 0.08938057,
+        "budgetScale": 0.8316329,
+        "brains": [
+          "LSTM"
+        ]
+      },
+      "avgTrainAccuracy": 41.071236815376,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.071236815376,
+      "throughputPerSec": 971.5561040265084
+    },
+    {
+      "config": {
+        "id": 332,
+        "name": "Agent-332",
+        "gridSize": 1,
+        "dModel": 16,
+        "numHeads": 4,
+        "learningRate": 0.096459955,
+        "budgetScale": 0.7232788,
+        "brains": [
+          "Dense"
+        ]
+      },
+      "avgTrainAccuracy": 41.067567817224315,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.067567817224315,
+      "throughputPerSec": 1175.5053466637792
+    },
+    {
+      "config": {
+        "id": 58,
+        "name": "Agent-58",
+        "gridSize": 1,
+        "dModel": 32,
+        "numHeads": 4,
+        "learningRate": 0.09484878,
+        "budgetScale": 0.94735384,
+        "brains": [
+          "MHA"
+        ]
+      },
+      "avgTrainAccuracy": 41.05952184439456,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.05952184439456,
+      "throughputPerSec": 685.9428897668837
+    },
+    {
+      "config": {
+        "id": 874,
+        "name": "Agent-874",
+        "gridSize": 2,
+        "dModel": 16,
+        "numHeads": 2,
+        "learningRate": 0.0862146,
+        "budgetScale": 0.81949115,
+        "brains": [
+          "MHA",
+          "Dense",
+          "RNN",
+          "Dense"
+        ]
+      },
+      "avgTrainAccuracy": 41.04583994046754,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.04583994046754,
+      "throughputPerSec": 1082.9327243206073
+    },
+    {
+      "config": {
+        "id": 181,
+        "name": "Agent-181",
+        "gridSize": 2,
+        "dModel": 16,
+        "numHeads": 8,
+        "learningRate": 0.09533626,
+        "budgetScale": 0.88208836,
+        "brains": [
+          "Dense",
+          "MHA",
+          "RNN",
+          "Dense"
+        ]
+      },
+      "avgTrainAccuracy": 41.04390946581647,
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "score": 41.04390946581647,
+      "throughputPerSec": 1109.289048100157
+    }
+  ],
+  "collectiveTasks": null,
+  "collectiveCount": 0,
+  "discoveryTimeline": [
+    {
+      "agentNum": 10,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 20,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 30,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 40,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 50,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 60,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 70,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 80,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 90,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 100,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 110,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 120,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 130,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 140,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 150,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 160,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 170,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 180,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 190,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 200,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 210,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 220,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 230,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 240,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 250,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 260,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 270,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 280,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 290,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 300,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 310,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 320,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 330,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 340,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 350,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 360,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 370,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 380,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 390,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 400,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 410,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 420,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 430,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 440,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 450,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 460,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 470,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 480,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 490,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 500,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 510,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 520,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 530,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 540,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 550,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 560,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 570,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 580,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 590,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 600,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 610,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 620,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 630,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 640,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 650,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 660,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 670,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 680,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 690,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 700,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 710,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 720,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 730,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 740,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 750,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 760,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 770,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 780,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 790,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 800,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 810,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 820,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 830,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 840,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 850,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 860,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 870,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 880,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 890,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 900,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 910,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 920,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 930,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 940,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 950,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 960,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 970,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 980,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 990,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    },
+    {
+      "agentNum": 1000,
+      "cumulativeUnique": 0,
+      "newTasksThisAgent": 0
+    }
+  ],
+  "councilEfficiency": 0,
+  "timestamp": "2025-12-25T19:11:31+11:00",
+  "duration": "10m37.647596336s",
+  "workerCount": 16
+}

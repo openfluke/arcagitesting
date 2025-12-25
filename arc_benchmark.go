@@ -433,7 +433,7 @@ func runTaskSwitchingBenchmark(mode TrainingMode, trainSamples, evalSamples []Sa
 
 	// Count tasks "solved" (>= 95% average pixel accuracy on that task's eval samples)
 	for taskID, r := range taskResults {
-		if r.count > 0 && r.totalAcc/float64(r.count) >= 95 {
+		if r.count > 0 && r.totalAcc/float64(r.count) >= 100 {
 			result.TasksSolved++
 			result.SolvedTaskIDs = append(result.SolvedTaskIDs, taskID)
 		}
