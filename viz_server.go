@@ -48,14 +48,14 @@ func main() {
 	fs := http.FileServer(http.Dir(vizDir))
 	http.Handle("/", fs)
 
+	fmt.Printf("🌐 Starting ARC-AGI visualization server at http://localhost%s\n", port)
+	fmt.Println("📊 Dashboard is live! Press Ctrl+C to stop.")
+
 	// Serve the JSON file explicitly
 	http.HandleFunc("/arc_benchmark_results.json", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		http.ServeFile(w, r, resultsPath)
 	})
-
-	fmt.Printf("🌐 Starting ARC-AGI visualization server at http://localhost%s\n", port)
-	fmt.Println("📊 Dashboard is live! Press Ctrl+C to stop.")
 
 	// Open browser
 	go func() {

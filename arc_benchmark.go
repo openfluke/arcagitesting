@@ -189,7 +189,7 @@ func main() {
 			modeName := modeNames[m]
 			fmt.Printf("🚀 [%s] Starting...\n", modeName)
 
-			result := runTaskSwitchingBenchmark(m, trainSamples, evalSamples)
+			result := runTaskSwitchingBenchmark(m, trainSamples, evalSamples, evalTasks)
 
 			mu.Lock()
 			results.Results[modeName] = result
@@ -250,7 +250,7 @@ func createEvalSamples(tasks []*ARCTask) []Sample {
 }
 
 // runTaskSwitchingBenchmark runs real-time task switching
-func runTaskSwitchingBenchmark(mode TrainingMode, trainSamples, evalSamples []Sample) *ModeResult {
+func runTaskSwitchingBenchmark(mode TrainingMode, trainSamples, evalSamples []Sample, evalTasks []*ARCTask) *ModeResult {
 	numWindows := int(TestDuration / WindowDuration) // 100 windows at 100ms each
 	result := &ModeResult{
 		Windows: make([]TimeWindow, numWindows),
@@ -403,41 +403,77 @@ func runTaskSwitchingBenchmark(mode TrainingMode, trainSamples, evalSamples []Sa
 	result.TrainTimeSec = time.Since(start).Seconds()
 
 	// =========================================================================
-	// EVAL PHASE: Test on unseen evaluation samples
+	// EVAL PHASE: Few-Shot Adaptation (Learn from examples -> Solve test)
+	// This is the "real" ARC test: adapt to each task's examples, then solve
 	// =========================================================================
 	evalTotalAcc := 0.0
+	evalCount := 0
 	taskResults := make(map[string]struct {
 		totalAcc float64
 		count    int
 	})
 
-	for _, sample := range evalSamples {
-		var output []float32
-		if state != nil {
-			state.SetInput(sample.Input)
-			for s := 0; s < numLayers; s++ {
-				net.StepForward(state)
+	// Iterate through TASKS (not flattened samples) for proper few-shot
+	for _, task := range evalTasks {
+		// 1. ADAPTATION PHASE: Train on the task's EXAMPLE pairs first!
+		// This is where "Fluid Intelligence" happens - learning the rule
+		// Only Tween-based modes can adapt fast enough
+		if ts != nil && (mode == ModeStepTweenChain || mode == ModeStepTween || mode == ModeTweenChain || mode == ModeTween) {
+			// Quick 5-pass adaptation loop to learn the rule from examples
+			for k := 0; k < 5; k++ {
+				for _, pair := range task.Train {
+					if len(pair.Input) == 0 || len(pair.Output) == 0 {
+						continue
+					}
+					input := encodeGrid(pair.Input)
+					target := encodeGrid(pair.Output)
+					// The network LEARNS the rule here (this is fair - it's the task's examples)
+					ts.TweenStep(net, input, argmax(target), len(target), LearningRate)
+				}
 			}
-			output = state.GetOutput()
-		} else {
-			output, _ = net.ForwardCPU(sample.Input)
 		}
 
-		acc := calculatePixelAccuracy(output, sample)
-		evalTotalAcc += acc
+		// 2. TESTING PHASE: Now solve the unseen test pair(s)
+		for _, pair := range task.Test {
+			if len(pair.Input) == 0 || len(pair.Output) == 0 {
+				continue
+			}
 
-		// Track per-task results
-		r := taskResults[sample.TaskID]
-		r.totalAcc += acc
-		r.count++
-		taskResults[sample.TaskID] = r
+			input := encodeGrid(pair.Input)
+			target := encodeGrid(pair.Output)
+
+			var output []float32
+			if state != nil {
+				state.SetInput(input)
+				for s := 0; s < numLayers; s++ {
+					net.StepForward(state)
+				}
+				output = state.GetOutput()
+			} else {
+				output, _ = net.ForwardCPU(input)
+			}
+
+			acc := calculatePixelAccuracy(output, Sample{
+				Target: target,
+				Height: len(pair.Output),
+				Width:  len(pair.Output[0]),
+			})
+			evalTotalAcc += acc
+			evalCount++
+
+			// Track per-task results
+			r := taskResults[task.ID]
+			r.totalAcc += acc
+			r.count++
+			taskResults[task.ID] = r
+		}
 	}
 
-	if len(evalSamples) > 0 {
-		result.EvalAccuracy = evalTotalAcc / float64(len(evalSamples))
+	if evalCount > 0 {
+		result.EvalAccuracy = evalTotalAcc / float64(evalCount)
 	}
 
-	// Count tasks "solved" (>= 95% average pixel accuracy on that task's eval samples)
+	// Count tasks "solved" (100% pixel accuracy required)
 	for taskID, r := range taskResults {
 		if r.count > 0 && r.totalAcc/float64(r.count) >= 100 {
 			result.TasksSolved++

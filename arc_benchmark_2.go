@@ -30,22 +30,26 @@ import (
 const (
 	MaxGridSize  = 30
 	InputSize    = MaxGridSize * MaxGridSize // 900
-	NumTasks     = 1000                      // All ARC-AGI2 training tasks
-	LearningRate = float32(0.01)             // Increased for faster adaptation
+	NumTasks     = 400                       // Focus on fewer tasks for better pattern learning
+	LearningRate = float32(0.01)             // Learning rate for training
+	AdaptLR      = float32(0.02)             // Balanced LR for few-shot adaptation
 	InitScale    = float32(0.5)
 	BudgetScale  = float32(0.8)
 
-	// Architecture params
-	DModel     = 32
-	NumHeads   = 4
-	LSTMHidden = 32
+	// Architecture params - balanced for speed + capacity
+	DModel     = 64
+	NumHeads   = 8
+	LSTMHidden = 64
 
-	// Timing - 20 second training run with 100ms windows (200 windows total)
-	TestDuration   = 20 * time.Second
+	// Timing - 90 seconds for better pattern learning
+	TestDuration   = 10 * time.Minute
 	WindowDuration = 100 * time.Millisecond // 100ms for fine-grained accuracy tracking
 
 	// Batch training interval for NormalBP/Tween (this is where they PAUSE!)
 	TrainInterval = 50 * time.Millisecond
+
+	// Few-shot adaptation - aggressive for complex ARC-AGI2 rules
+	AdaptationPasses = 200
 )
 
 type TrainingMode int
@@ -191,7 +195,7 @@ func main() {
 			modeName := modeNames[m]
 			fmt.Printf("🚀 [%s] Starting...\n", modeName)
 
-			result := runTaskSwitchingBenchmark(m, trainSamples, evalSamples)
+			result := runTaskSwitchingBenchmark(m, trainSamples, evalSamples, evalTasks)
 
 			mu.Lock()
 			results.Results[modeName] = result
@@ -252,7 +256,7 @@ func createEvalSamples(tasks []*ARCTask) []Sample {
 }
 
 // runTaskSwitchingBenchmark runs real-time task switching
-func runTaskSwitchingBenchmark(mode TrainingMode, trainSamples, evalSamples []Sample) *ModeResult {
+func runTaskSwitchingBenchmark(mode TrainingMode, trainSamples, evalSamples []Sample, evalTasks []*ARCTask) *ModeResult {
 	numWindows := int(TestDuration / WindowDuration) // 100 windows at 100ms each
 	result := &ModeResult{
 		Windows: make([]TimeWindow, numWindows),
@@ -405,41 +409,76 @@ func runTaskSwitchingBenchmark(mode TrainingMode, trainSamples, evalSamples []Sa
 	result.TrainTimeSec = time.Since(start).Seconds()
 
 	// =========================================================================
-	// EVAL PHASE: Test on unseen evaluation samples
+	// EVAL PHASE: Few-Shot Adaptation (Learn from examples -> Solve test)
+	// This is the "real" ARC test: adapt to each task's examples, then solve
 	// =========================================================================
 	evalTotalAcc := 0.0
+	evalCount := 0
 	taskResults := make(map[string]struct {
 		totalAcc float64
 		count    int
 	})
 
-	for _, sample := range evalSamples {
-		var output []float32
-		if state != nil {
-			state.SetInput(sample.Input)
-			for s := 0; s < numLayers; s++ {
-				net.StepForward(state)
+	// Iterate through TASKS (not flattened samples) for proper few-shot
+	for _, task := range evalTasks {
+		// 1. ADAPTATION PHASE: Train on the task's EXAMPLE pairs first!
+		// Only Tween-based modes can adapt fast enough
+		if ts != nil && (mode == ModeStepTweenChain || mode == ModeStepTween || mode == ModeTweenChain || mode == ModeTween) {
+			// Extended adaptation loop for complex ARC-AGI2 rules
+			for k := 0; k < AdaptationPasses; k++ {
+				for _, pair := range task.Train {
+					if len(pair.Input) == 0 || len(pair.Output) == 0 {
+						continue
+					}
+					input := encodeGrid(pair.Input)
+					target := encodeGrid(pair.Output)
+					// Use higher learning rate for adaptation
+					ts.TweenStep(net, input, argmax(target), len(target), AdaptLR)
+				}
 			}
-			output = state.GetOutput()
-		} else {
-			output, _ = net.ForwardCPU(sample.Input)
 		}
 
-		acc := calculatePixelAccuracy(output, sample)
-		evalTotalAcc += acc
+		// 2. TESTING PHASE: Now solve the unseen test pair(s)
+		for _, pair := range task.Test {
+			if len(pair.Input) == 0 || len(pair.Output) == 0 {
+				continue
+			}
 
-		// Track per-task results
-		r := taskResults[sample.TaskID]
-		r.totalAcc += acc
-		r.count++
-		taskResults[sample.TaskID] = r
+			input := encodeGrid(pair.Input)
+			target := encodeGrid(pair.Output)
+
+			var output []float32
+			if state != nil {
+				state.SetInput(input)
+				for s := 0; s < numLayers; s++ {
+					net.StepForward(state)
+				}
+				output = state.GetOutput()
+			} else {
+				output, _ = net.ForwardCPU(input)
+			}
+
+			acc := calculatePixelAccuracy(output, Sample{
+				Target: target,
+				Height: len(pair.Output),
+				Width:  len(pair.Output[0]),
+			})
+			evalTotalAcc += acc
+			evalCount++
+
+			// Track per-task results
+			r := taskResults[task.ID]
+			r.totalAcc += acc
+			r.count++
+			taskResults[task.ID] = r
+		}
 	}
 
-	if len(evalSamples) > 0 {
-		result.EvalAccuracy = evalTotalAcc / float64(len(evalSamples))
+	if evalCount > 0 {
+		result.EvalAccuracy = evalTotalAcc / float64(evalCount)
 	}
 
-	// Count tasks "solved" (100% pixel accuracy on that task's eval samples)
+	// Count tasks "solved" (100% pixel accuracy required)
 	for taskID, r := range taskResults {
 		if r.count > 0 && r.totalAcc/float64(r.count) >= 100 {
 			result.TasksSolved++

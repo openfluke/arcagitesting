@@ -133,17 +133,25 @@ func main() {
 	fmt.Println("║     Each runs 10s on 400 ARC tasks, then we find the WINNER!                        ║")
 	fmt.Println("╚══════════════════════════════════════════════════════════════════════════════════════╝")
 
-	// Load ARC-AGI data
-	tasks, err := loadARCTasks("ARC-AGI/data/training", NumTasks)
+	// Load ARC-AGI training data
+	trainTasks, err := loadARCTasks("ARC-AGI/data/training", NumTasks)
 	if err != nil {
-		fmt.Printf("❌ Failed to load tasks: %v\n", err)
+		fmt.Printf("❌ Failed to load training tasks: %v\n", err)
 		return
 	}
 
-	trainSamples := createSequentialSamples(tasks)
-	evalSamples := createEvalSamples(tasks)
+	// Load ARC-AGI evaluation data (separate 400 tasks)
+	evalTasks, err := loadARCTasks("ARC-AGI/data/evaluation", 400)
+	if err != nil {
+		fmt.Printf("❌ Failed to load eval tasks: %v\n", err)
+		return
+	}
 
-	fmt.Printf("\n📦 Loaded %d tasks, %d train samples, %d eval samples\n", len(tasks), len(trainSamples), len(evalSamples))
+	trainSamples := createSequentialSamples(trainTasks)
+	evalSamples := createEvalSamples(evalTasks)
+
+	fmt.Printf("\n📦 Loaded %d training tasks, %d train samples\n", len(trainTasks), len(trainSamples))
+	fmt.Printf("📦 Loaded %d eval tasks, %d eval samples\n", len(evalTasks), len(evalSamples))
 	fmt.Printf("🧬 Generating %d random network configurations...\n\n", SwarmSize)
 
 	// Generate random configurations
@@ -163,7 +171,7 @@ func main() {
 			semaphore <- struct{}{}        // Acquire
 			defer func() { <-semaphore }() // Release
 
-			result := runSwarmMember(config, trainSamples, evalSamples)
+			result := runSwarmMember(config, trainSamples, evalSamples, evalTasks)
 			results[idx] = result
 
 			if (idx+1)%10 == 0 {
@@ -247,7 +255,7 @@ func generateRandomConfigs(count int) []NanoHiveConfig {
 	return configs
 }
 
-func runSwarmMember(config NanoHiveConfig, trainSamples, evalSamples []Sample) SwarmResult {
+func runSwarmMember(config NanoHiveConfig, trainSamples, evalSamples []Sample, evalTasks []*ARCTask) SwarmResult {
 	numWindows := int(TestDuration / WindowDuration)
 	result := SwarmResult{
 		Config:  config,
@@ -312,36 +320,67 @@ func runSwarmMember(config NanoHiveConfig, trainSamples, evalSamples []Sample) S
 
 	result.TrainTimeSec = time.Since(start).Seconds()
 
-	// Eval phase
+	// =========================================================================
+	// EVAL PHASE: Few-Shot Adaptation (Learn from examples -> Solve test)
+	// =========================================================================
 	taskResults := make(map[string]struct {
 		totalAcc float64
 		count    int
 	})
 	evalTotal := 0.0
+	evalCount := 0
 
-	for _, sample := range evalSamples {
-		state.SetInput(sample.Input)
-		for s := 0; s < numLayers; s++ {
-			net.StepForward(state)
+	// Iterate through TASKS for proper few-shot adaptation
+	for _, task := range evalTasks {
+		// 1. ADAPTATION PHASE: Learn from the task's example pairs
+		for k := 0; k < 5; k++ {
+			for _, pair := range task.Train {
+				if len(pair.Input) == 0 || len(pair.Output) == 0 {
+					continue
+				}
+				input := encodeGrid(pair.Input)
+				target := encodeGrid(pair.Output)
+				ts.TweenStep(net, input, argmax(target), len(target), config.LearningRate)
+			}
 		}
-		output := state.GetOutput()
 
-		acc := calculatePixelAccuracy(output, sample)
-		evalTotal += acc
+		// 2. TESTING PHASE: Solve the test pair(s)
+		for _, pair := range task.Test {
+			if len(pair.Input) == 0 || len(pair.Output) == 0 {
+				continue
+			}
 
-		r := taskResults[sample.TaskID]
-		r.totalAcc += acc
-		r.count++
-		taskResults[sample.TaskID] = r
+			input := encodeGrid(pair.Input)
+			target := encodeGrid(pair.Output)
+
+			state.SetInput(input)
+			for s := 0; s < numLayers; s++ {
+				net.StepForward(state)
+			}
+			output := state.GetOutput()
+
+			acc := calculatePixelAccuracy(output, Sample{
+				Target: target,
+				Height: len(pair.Output),
+				Width:  len(pair.Output[0]),
+			})
+			evalTotal += acc
+			evalCount++
+
+			r := taskResults[task.ID]
+			r.totalAcc += acc
+			r.count++
+			taskResults[task.ID] = r
+		}
 	}
 
-	if len(evalSamples) > 0 {
-		result.EvalAccuracy = evalTotal / float64(len(evalSamples))
+	if evalCount > 0 {
+		result.EvalAccuracy = evalTotal / float64(evalCount)
 	}
 
-	// Count solved tasks (≥95% average)
+	// Count solved tasks (100% accuracy required)
 	for _, r := range taskResults {
-		if r.count > 0 && r.totalAcc/float64(r.count) >= 95 {
+		if r.count > 0 && r.totalAcc/float64(r.count) >= 100 {
 			result.TasksSolved++
 		}
 	}
