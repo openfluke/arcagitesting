@@ -211,6 +211,57 @@ type FusionResults struct {
 	Duration           string           `json:"duration"`
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// UNSUPERVISED OUTPUT CATEGORIZATION - Network Specialization Profiling
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// OutputProfile captures WHERE a network performs best on the grid
+type OutputProfile struct {
+	// Spatial buckets: accuracy in each quadrant/region
+	TopLeftAcc     float64 `json:"topLeftAcc"`
+	TopRightAcc    float64 `json:"topRightAcc"`
+	BottomLeftAcc  float64 `json:"bottomLeftAcc"`
+	BottomRightAcc float64 `json:"bottomRightAcc"`
+	CenterAcc      float64 `json:"centerAcc"`
+	EdgeAcc        float64 `json:"edgeAcc"`
+
+	// Color prediction profile: accuracy per color (0-9)
+	ColorAccuracies [10]float64 `json:"colorAccuracies"`
+
+	// Aggregated stats
+	OverallAcc float64 `json:"overallAcc"`
+}
+
+// NetworkSpecialist extends NetworkState with output profiling
+type NetworkSpecialist struct {
+	*NetworkState
+	Profile        OutputProfile      `json:"profile"`
+	ClusterID      int                `json:"clusterId"`
+	TaskAffinities map[string]float64 `json:"taskAffinities"`
+}
+
+// SpecialistCluster groups networks with similar output profiles
+type SpecialistCluster struct {
+	ID              int                  `json:"id"`
+	Name            string               `json:"name"`
+	CentroidProfile OutputProfile        `json:"centroidProfile"`
+	Members         []*NetworkSpecialist `json:"-"`
+	MemberIDs       []int                `json:"memberIds"`
+	BestCombineMode string               `json:"bestCombineMode"`
+	TasksSolved     int                  `json:"tasksSolved"`
+	SolvedTaskIDs   []string             `json:"solvedTaskIds"`
+	Specialty       string               `json:"specialty"` // Human-readable description of what this cluster is good at
+}
+
+// ClusterEnsembleResult tracks results from specialist cluster ensembles
+type ClusterEnsembleResult struct {
+	ClusterID     int      `json:"clusterId"`
+	CombineMode   string   `json:"combineMode"`
+	TasksSolved   int      `json:"tasksSolved"`
+	SolvedTaskIDs []string `json:"solvedTaskIds"`
+	AvgAccuracy   float64  `json:"avgAccuracy"`
+}
+
 // Data types
 type ARCTask43 struct {
 	ID          string
@@ -312,12 +363,92 @@ func main() {
 	fmt.Printf("✅ Phase 1 complete: Trained %d diverse networks in %s\n\n", totalNetworks, trainingTime)
 
 	// ===========================================================================
+	// PHASE 1.5: Unsupervised Network Profiling and Clustering
+	// ===========================================================================
+	fmt.Println("🧠 Phase 1.5: Profiling networks and clustering by output specialization...")
+
+	// Create NetworkSpecialist wrappers with output profiles
+	specialists := make([]*NetworkSpecialist, totalNetworks)
+	for i, ns := range networks {
+		specialists[i] = &NetworkSpecialist{
+			NetworkState:   ns,
+			ClusterID:      -1,
+			TaskAffinities: make(map[string]float64),
+		}
+		specialists[i].Profile = analyzeOutputProfile(ns, trainTasks)
+	}
+
+	// Cluster networks by their output profiles (5 clusters)
+	numClusters := 5
+	clusters := clusterNetworksByProfile(specialists, numClusters)
+
+	// Print cluster analysis
+	fmt.Printf("   📊 Created %d specialist clusters:\n", len(clusters))
+	for _, cluster := range clusters {
+		if len(cluster.Members) > 0 {
+			fmt.Printf("      Cluster %d: %d networks | Specialty: %s | Avg Accuracy: %.1f%%\n",
+				cluster.ID, len(cluster.Members), cluster.Specialty,
+				cluster.CentroidProfile.OverallAcc*100)
+		}
+	}
+
+	// ===========================================================================
+	// PHASE 1.6: Evaluate Specialist Clusters
+	// ===========================================================================
+	fmt.Println("\n🎯 Phase 1.6: Evaluating specialist cluster ensembles...")
+
+	clusterResults := make([][]ClusterEnsembleResult, len(clusters))
+	for i, cluster := range clusters {
+		if len(cluster.Members) > 0 {
+			clusterResults[i] = evaluateSpecialistCluster(cluster, evalTasks)
+		}
+	}
+
+	// Create and evaluate monolithic ensemble
+	monolithicResult := createMonolithicEnsemble(clusters, evalTasks)
+
+	// Display specialist cluster results
+	printSpecialistResults(clusters, clusterResults, monolithicResult)
+
+	// COLLECT ALL SOLVED TASKS FROM SPECIALIST CLUSTERS
+	specialistCollective := make(map[string]bool)
+	for _, cluster := range clusters {
+		for _, taskID := range cluster.SolvedTaskIDs {
+			specialistCollective[taskID] = true
+		}
+	}
+	// Also add monolithic results
+	if monolithicResult != nil {
+		for _, taskID := range monolithicResult.SolvedTaskIDs {
+			specialistCollective[taskID] = true
+		}
+	}
+
+	fmt.Printf("\n📈 SPECIALIST APPROACH: Solved %d/%d unique tasks (%.1f%% of total)\n",
+		len(specialistCollective), len(evalTasks), float64(len(specialistCollective))*100/float64(len(evalTasks)))
+
+	// List the solved task IDs if there are any
+	if len(specialistCollective) > 0 && len(specialistCollective) <= 50 {
+		solvedList := make([]string, 0, len(specialistCollective))
+		for taskID := range specialistCollective {
+			solvedList = append(solvedList, taskID)
+		}
+		sort.Strings(solvedList)
+		fmt.Printf("   ✅ Solved tasks: %v\n", solvedList)
+	}
+
+	// ===========================================================================
 	// PHASE 2: Form Ensembles and Test Fusion Strategies (PARALLELIZED)
 	// ===========================================================================
-	fmt.Printf("🔮 Phase 2: Testing %d ensemble configurations with different fusion strategies (parallel)...\n\n", NumEnsembles)
+	fmt.Printf("\n🔮 Phase 2: Testing %d ensemble configurations with different fusion strategies (parallel)...\n\n", NumEnsembles)
 
 	var collectiveTasksMu sync.Mutex
 	collectiveTasks := make(map[string]bool)
+	// Pre-populate with specialist-solved tasks
+	for taskID := range specialistCollective {
+		collectiveTasks[taskID] = true
+	}
+
 	strategyStats := make(map[string]int)
 	results := make([]EnsembleResult, NumEnsembles*len(fusionNames))
 
@@ -1274,6 +1405,599 @@ func createEvalSamples43(tasks []*ARCTask43) []Sample43 {
 	return samples
 }
 
+// ============================================================================
+// UNSUPERVISED CATEGORIZATION FUNCTIONS
+// ============================================================================
+
+// analyzeOutputProfile analyzes a network's predictions on training data to populate its OutputProfile
+func analyzeOutputProfile(ns *NetworkState, trainTasks []*ARCTask43) OutputProfile {
+	profile := OutputProfile{}
+
+	samples := createEvalSamples43(trainTasks)
+	if len(samples) == 0 {
+		return profile
+	}
+
+	var totalPixels, correctPixels int
+	var centerCorrect, centerTotal int
+	var edgeCorrect, edgeTotal int
+	quadrantCorrect := make([]int, 4)
+	quadrantTotal := make([]int, 4)
+	colorCorrect := [10]int{}
+	colorTotal := [10]int{}
+
+	for _, sample := range samples {
+		output, _ := ns.Network.ForwardCPU(sample.Input)
+
+		height, width := sample.Height, sample.Width
+		numColors := 10
+
+		for y := 0; y < height; y++ {
+			for x := 0; x < width; x++ {
+				pixelIdx := y*width + x
+				base := pixelIdx * numColors
+
+				if base+numColors > len(output) || base+numColors > len(sample.Target) {
+					continue
+				}
+
+				// Get predicted and target color
+				predColor := argmax43(output[base : base+numColors])
+				targetColor := argmax43(sample.Target[base : base+numColors])
+
+				totalPixels++
+				if predColor == targetColor {
+					correctPixels++
+
+					// Track quadrant accuracy
+					quadrant := getQuadrant(y, x, height, width)
+					quadrantCorrect[quadrant]++
+
+					// Track center vs edge
+					if isCenterPixel(y, x, height, width) {
+						centerCorrect++
+					} else {
+						edgeCorrect++
+					}
+
+					// Track per-color accuracy
+					if targetColor >= 0 && targetColor < 10 {
+						colorCorrect[targetColor]++
+					}
+				}
+
+				// Update totals
+				quadrant := getQuadrant(y, x, height, width)
+				quadrantTotal[quadrant]++
+
+				if isCenterPixel(y, x, height, width) {
+					centerTotal++
+				} else {
+					edgeTotal++
+				}
+
+				if targetColor >= 0 && targetColor < 10 {
+					colorTotal[targetColor]++
+				}
+			}
+		}
+	}
+
+	// Calculate profile metrics
+	if totalPixels > 0 {
+		profile.OverallAcc = float64(correctPixels) / float64(totalPixels)
+	}
+
+	if centerTotal > 0 {
+		profile.CenterAcc = float64(centerCorrect) / float64(centerTotal)
+	}
+
+	if edgeTotal > 0 {
+		profile.EdgeAcc = float64(edgeCorrect) / float64(edgeTotal)
+	}
+
+	// Quadrant accuracies
+	if quadrantTotal[0] > 0 {
+		profile.TopLeftAcc = float64(quadrantCorrect[0]) / float64(quadrantTotal[0])
+	}
+	if quadrantTotal[1] > 0 {
+		profile.TopRightAcc = float64(quadrantCorrect[1]) / float64(quadrantTotal[1])
+	}
+	if quadrantTotal[2] > 0 {
+		profile.BottomLeftAcc = float64(quadrantCorrect[2]) / float64(quadrantTotal[2])
+	}
+	if quadrantTotal[3] > 0 {
+		profile.BottomRightAcc = float64(quadrantCorrect[3]) / float64(quadrantTotal[3])
+	}
+
+	// Color accuracies
+	for i := 0; i < 10; i++ {
+		if colorTotal[i] > 0 {
+			profile.ColorAccuracies[i] = float64(colorCorrect[i]) / float64(colorTotal[i])
+		}
+	}
+
+	return profile
+}
+
+// getQuadrant returns which quadrant (0-3) a pixel belongs to
+func getQuadrant(y, x, height, width int) int {
+	midY := height / 2
+	midX := width / 2
+
+	if y < midY {
+		if x < midX {
+			return 0 // Top-left
+		}
+		return 1 // Top-right
+	}
+	if x < midX {
+		return 2 // Bottom-left
+	}
+	return 3 // Bottom-right
+}
+
+// isCenterPixel checks if a pixel is in the center region (inner 50%)
+func isCenterPixel(y, x, height, width int) bool {
+	marginY := height / 4
+	marginX := width / 4
+	return y >= marginY && y < height-marginY && x >= marginX && x < width-marginX
+}
+
+// getProfileVector converts an OutputProfile to a numeric vector for clustering
+func getProfileVector(p OutputProfile) []float64 {
+	vec := make([]float64, 0, 17)
+	vec = append(vec, p.OverallAcc)
+	vec = append(vec, p.CenterAcc)
+	vec = append(vec, p.EdgeAcc)
+	vec = append(vec, p.TopLeftAcc, p.TopRightAcc, p.BottomLeftAcc, p.BottomRightAcc)
+
+	// Add color accuracies
+	for i := 0; i < 10; i++ {
+		vec = append(vec, p.ColorAccuracies[i])
+	}
+
+	return vec
+}
+
+// profileDistance calculates Euclidean distance between two profile vectors
+func profileDistance(v1, v2 []float64) float64 {
+	if len(v1) != len(v2) {
+		return math.MaxFloat64
+	}
+
+	var sum float64
+	for i := range v1 {
+		diff := v1[i] - v2[i]
+		sum += diff * diff
+	}
+	return math.Sqrt(sum)
+}
+
+// clusterNetworksByProfile groups networks into clusters based on their output profiles
+func clusterNetworksByProfile(specialists []*NetworkSpecialist, numClusters int) []*SpecialistCluster {
+	if len(specialists) == 0 || numClusters <= 0 {
+		return nil
+	}
+
+	// Ensure we don't have more clusters than specialists
+	if numClusters > len(specialists) {
+		numClusters = len(specialists)
+	}
+
+	// Initialize clusters with k-means++
+	clusters := make([]*SpecialistCluster, numClusters)
+	for i := 0; i < numClusters; i++ {
+		clusters[i] = &SpecialistCluster{
+			ID:              i,
+			Name:            fmt.Sprintf("Cluster-%d", i),
+			Members:         make([]*NetworkSpecialist, 0),
+			MemberIDs:       make([]int, 0),
+			SolvedTaskIDs:   make([]string, 0),
+			BestCombineMode: "avg",
+		}
+	}
+
+	// Get profile vectors for all specialists
+	vectors := make([][]float64, len(specialists))
+	for i, s := range specialists {
+		vectors[i] = getProfileVector(s.Profile)
+	}
+
+	// K-means++ initialization: pick first centroid randomly
+	centroids := make([][]float64, numClusters)
+	centroids[0] = vectors[rand.Intn(len(vectors))]
+
+	// Pick remaining centroids with probability proportional to D(x)^2
+	for k := 1; k < numClusters; k++ {
+		distances := make([]float64, len(vectors))
+		var totalDist float64
+
+		for i, v := range vectors {
+			minDist := math.MaxFloat64
+			for j := 0; j < k; j++ {
+				d := profileDistance(v, centroids[j])
+				if d < minDist {
+					minDist = d
+				}
+			}
+			distances[i] = minDist * minDist
+			totalDist += distances[i]
+		}
+
+		// Pick next centroid
+		r := rand.Float64() * totalDist
+		var cumSum float64
+		for i, d := range distances {
+			cumSum += d
+			if cumSum >= r {
+				centroids[k] = vectors[i]
+				break
+			}
+		}
+	}
+
+	// K-means iterations
+	maxIterations := 50
+	for iter := 0; iter < maxIterations; iter++ {
+		// Assign each specialist to nearest centroid
+		for i := 0; i < numClusters; i++ {
+			clusters[i].Members = clusters[i].Members[:0]
+		}
+
+		for i, s := range specialists {
+			minDist := math.MaxFloat64
+			minCluster := 0
+
+			for k := 0; k < numClusters; k++ {
+				d := profileDistance(vectors[i], centroids[k])
+				if d < minDist {
+					minDist = d
+					minCluster = k
+				}
+			}
+
+			s.ClusterID = minCluster
+			clusters[minCluster].Members = append(clusters[minCluster].Members, s)
+		}
+
+		// Update centroids
+		converged := true
+		for k := 0; k < numClusters; k++ {
+			if len(clusters[k].Members) == 0 {
+				continue
+			}
+
+			newCentroid := make([]float64, len(centroids[k]))
+			for _, s := range clusters[k].Members {
+				v := getProfileVector(s.Profile)
+				for j := range newCentroid {
+					newCentroid[j] += v[j]
+				}
+			}
+
+			for j := range newCentroid {
+				newCentroid[j] /= float64(len(clusters[k].Members))
+			}
+
+			// Check convergence
+			if profileDistance(centroids[k], newCentroid) > 0.001 {
+				converged = false
+			}
+			centroids[k] = newCentroid
+		}
+
+		if converged {
+			break
+		}
+	}
+
+	// Set centroid profiles and describe clusters
+	for k, cluster := range clusters {
+		if len(cluster.Members) == 0 {
+			continue
+		}
+
+		// Calculate average profile for centroid
+		for _, s := range cluster.Members {
+			cluster.CentroidProfile.OverallAcc += s.Profile.OverallAcc
+			cluster.CentroidProfile.CenterAcc += s.Profile.CenterAcc
+			cluster.CentroidProfile.EdgeAcc += s.Profile.EdgeAcc
+			cluster.CentroidProfile.TopLeftAcc += s.Profile.TopLeftAcc
+			cluster.CentroidProfile.TopRightAcc += s.Profile.TopRightAcc
+			cluster.CentroidProfile.BottomLeftAcc += s.Profile.BottomLeftAcc
+			cluster.CentroidProfile.BottomRightAcc += s.Profile.BottomRightAcc
+
+			for i := 0; i < 10; i++ {
+				cluster.CentroidProfile.ColorAccuracies[i] += s.Profile.ColorAccuracies[i]
+			}
+		}
+
+		n := float64(len(cluster.Members))
+		cluster.CentroidProfile.OverallAcc /= n
+		cluster.CentroidProfile.CenterAcc /= n
+		cluster.CentroidProfile.EdgeAcc /= n
+		cluster.CentroidProfile.TopLeftAcc /= n
+		cluster.CentroidProfile.TopRightAcc /= n
+		cluster.CentroidProfile.BottomLeftAcc /= n
+		cluster.CentroidProfile.BottomRightAcc /= n
+
+		for i := 0; i < 10; i++ {
+			cluster.CentroidProfile.ColorAccuracies[i] /= n
+		}
+
+		cluster.Specialty = describeClusterSpecialty(cluster.CentroidProfile, k)
+	}
+
+	return clusters
+}
+
+// describeClusterSpecialty generates a human-readable description of what a cluster specializes in
+func describeClusterSpecialty(profile OutputProfile, clusterID int) string {
+	var strengths []string
+
+	// Check spatial specialization
+	if profile.CenterAcc > profile.EdgeAcc+0.1 {
+		strengths = append(strengths, "center-focused")
+	} else if profile.EdgeAcc > profile.CenterAcc+0.1 {
+		strengths = append(strengths, "edge-focused")
+	}
+
+	// Check quadrant specialization
+	quadrantScores := []float64{profile.TopLeftAcc, profile.TopRightAcc, profile.BottomLeftAcc, profile.BottomRightAcc}
+	maxQ, maxQScore := 0, 0.0
+	for i, score := range quadrantScores {
+		if score > maxQScore {
+			maxQ = i
+			maxQScore = score
+		}
+	}
+	quadrantNames := []string{"top-left", "top-right", "bottom-left", "bottom-right"}
+	if maxQScore > 0.3 {
+		strengths = append(strengths, quadrantNames[maxQ]+"-specialist")
+	}
+
+	// Check color specialization
+	var bestColor int
+	var bestColorScore float64
+	for color := 0; color < 10; color++ {
+		if profile.ColorAccuracies[color] > bestColorScore {
+			bestColor = color
+			bestColorScore = profile.ColorAccuracies[color]
+		}
+	}
+	if bestColorScore > 0.5 {
+		strengths = append(strengths, fmt.Sprintf("color-%d-expert", bestColor))
+	}
+
+	// Overall accuracy description
+	if profile.OverallAcc > 0.8 {
+		strengths = append(strengths, "high-accuracy")
+	} else if profile.OverallAcc < 0.3 {
+		strengths = append(strengths, "pattern-seeker")
+	}
+
+	if len(strengths) == 0 {
+		return fmt.Sprintf("generalist-cluster-%d", clusterID)
+	}
+
+	return strings.Join(strengths, " | ")
+}
+
+// evaluateSpecialistCluster evaluates ensembles formed from a cluster using different combine modes
+func evaluateSpecialistCluster(cluster *SpecialistCluster, evalTasks []*ARCTask43) []ClusterEnsembleResult {
+	if len(cluster.Members) == 0 {
+		return nil
+	}
+
+	combineModes := []string{"avg", "grid_scatter", "concat"}
+	results := make([]ClusterEnsembleResult, 0, len(combineModes))
+
+	for _, mode := range combineModes {
+		result := ClusterEnsembleResult{
+			ClusterID:   cluster.ID,
+			CombineMode: mode,
+		}
+
+		// Collect networks from cluster members
+		networks := make([]*NetworkState, len(cluster.Members))
+		for i, member := range cluster.Members {
+			networks[i] = member.NetworkState
+		}
+
+		// Evaluate using voting fusion (simple but effective)
+		var solved, totalCorrect, totalPixels int
+		for _, task := range evalTasks {
+			samples := createEvalSamples43([]*ARCTask43{task})
+			if len(samples) == 0 {
+				continue
+			}
+
+			taskSolved := true
+			for _, sample := range samples {
+				// Get predictions from all networks
+				allOutputs := make([][]float32, len(networks))
+				for i, ns := range networks {
+					output, _ := ns.Network.ForwardCPU(sample.Input)
+					allOutputs[i] = output
+				}
+
+				// Fuse outputs using voting
+				fusedOutput := fuseOutputs43(allOutputs, nil, FusionVote, sample.Height, sample.Width)
+
+				// Calculate accuracy
+				numColors := 10
+				for y := 0; y < sample.Height; y++ {
+					for x := 0; x < sample.Width; x++ {
+						pixelIdx := y*sample.Width + x
+						base := pixelIdx * numColors
+
+						if base+numColors > len(fusedOutput) || base+numColors > len(sample.Target) {
+							continue
+						}
+
+						predColor := argmax43(fusedOutput[base : base+numColors])
+						targetColor := argmax43(sample.Target[base : base+numColors])
+
+						totalPixels++
+						if predColor == targetColor {
+							totalCorrect++
+						} else {
+							taskSolved = false
+						}
+					}
+				}
+			}
+
+			if taskSolved {
+				solved++
+				cluster.SolvedTaskIDs = append(cluster.SolvedTaskIDs, task.ID)
+			}
+		}
+
+		result.TasksSolved = solved
+		if totalPixels > 0 {
+			result.AvgAccuracy = float64(totalCorrect) / float64(totalPixels)
+		}
+
+		results = append(results, result)
+	}
+
+	return results
+}
+
+// createMonolithicEnsemble creates a large ensemble combining best networks from each cluster
+func createMonolithicEnsemble(clusters []*SpecialistCluster, evalTasks []*ARCTask43) *ClusterEnsembleResult {
+	// Collect top networks from each cluster (by overall accuracy)
+	var allNetworks []*NetworkState
+
+	for _, cluster := range clusters {
+		if len(cluster.Members) == 0 {
+			continue
+		}
+
+		// Sort members by overall accuracy
+		members := make([]*NetworkSpecialist, len(cluster.Members))
+		copy(members, cluster.Members)
+		sort.Slice(members, func(i, j int) bool {
+			return members[i].Profile.OverallAcc > members[j].Profile.OverallAcc
+		})
+
+		// Take top 3 from each cluster (or all if fewer)
+		take := 3
+		if len(members) < take {
+			take = len(members)
+		}
+
+		for i := 0; i < take; i++ {
+			allNetworks = append(allNetworks, members[i].NetworkState)
+		}
+	}
+
+	if len(allNetworks) == 0 {
+		return nil
+	}
+
+	// Evaluate monolithic ensemble
+	result := &ClusterEnsembleResult{
+		ClusterID:   -1, // Special ID for monolithic
+		CombineMode: "monolithic",
+	}
+
+	var solved, totalCorrect, totalPixels int
+	var solvedTasks []string
+
+	for _, task := range evalTasks {
+		samples := createEvalSamples43([]*ARCTask43{task})
+		if len(samples) == 0 {
+			continue
+		}
+
+		taskSolved := true
+		for _, sample := range samples {
+			allOutputs := make([][]float32, len(allNetworks))
+			allConfidences := make([]float64, len(allNetworks))
+
+			for i, ns := range allNetworks {
+				output, _ := ns.Network.ForwardCPU(sample.Input)
+				allOutputs[i] = output
+				allConfidences[i] = ns.OverallAccuracy
+			}
+
+			// Use weighted fusion for monolithic ensemble
+			fusedOutput := fuseOutputs43(allOutputs, allConfidences, FusionWeighted, sample.Height, sample.Width)
+
+			numColors := 10
+			for y := 0; y < sample.Height; y++ {
+				for x := 0; x < sample.Width; x++ {
+					pixelIdx := y*sample.Width + x
+					base := pixelIdx * numColors
+
+					if base+numColors > len(fusedOutput) || base+numColors > len(sample.Target) {
+						continue
+					}
+
+					predColor := argmax43(fusedOutput[base : base+numColors])
+					targetColor := argmax43(sample.Target[base : base+numColors])
+
+					totalPixels++
+					if predColor == targetColor {
+						totalCorrect++
+					} else {
+						taskSolved = false
+					}
+				}
+			}
+		}
+
+		if taskSolved {
+			solved++
+			solvedTasks = append(solvedTasks, task.ID)
+		}
+	}
+
+	result.TasksSolved = solved
+	if totalPixels > 0 {
+		result.AvgAccuracy = float64(totalCorrect) / float64(totalPixels)
+	}
+	result.SolvedTaskIDs = solvedTasks
+
+	return result
+}
+
+// printSpecialistResults prints the results of specialist cluster evaluation
+func printSpecialistResults(clusters []*SpecialistCluster, clusterResults [][]ClusterEnsembleResult, monolithic *ClusterEnsembleResult) {
+	fmt.Println("\n╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
+	fmt.Println("║                                    🧠 SPECIALIST CLUSTER ANALYSIS                                                            ║")
+	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
+
+	for i, cluster := range clusters {
+		if len(cluster.Members) == 0 {
+			continue
+		}
+
+		fmt.Printf("║ Cluster %d: %-50s | Members: %d                                     ║\n",
+			cluster.ID, cluster.Specialty, len(cluster.Members))
+
+		if i < len(clusterResults) {
+			for _, res := range clusterResults[i] {
+				fmt.Printf("║   Mode: %-15s | Solved: %3d | Accuracy: %.2f%%                                                       ║\n",
+					res.CombineMode, res.TasksSolved, res.AvgAccuracy*100)
+			}
+		}
+		fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
+	}
+
+	if monolithic != nil {
+		fmt.Println("║                                    🌟 MONOLITHIC META-ENSEMBLE                                                               ║")
+		fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
+		fmt.Printf("║ Networks: %d | Tasks Solved: %d | Accuracy: %.2f%%                                                                ║\n",
+			len(clusters)*3, monolithic.TasksSolved, monolithic.AvgAccuracy*100)
+	}
+
+	fmt.Println("╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝")
+}
+
 func printFusionResults43(output *FusionResults, allResults []EnsembleResult) {
 	fmt.Println("\n╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
 	fmt.Println("║                                    🔮 ENSEMBLE FUSION v2 - RESULTS                                                          ║")
@@ -1333,5 +2057,6 @@ func printFusionResults43(output *FusionResults, allResults []EnsembleResult) {
 		fmt.Printf("\n🎯 KEY FINDING: Best strategy was %s with %d tasks solved.\n", output.BestFusionStrategy, bestEnsemble.TasksSolved)
 	}
 
-	fmt.Printf("\n🧠 COLLECTIVE WISDOM: %d unique tasks solved across all ensembles\n", output.CollectiveCount)
+	fmt.Printf("\n🧠 COLLECTIVE WISDOM: %d/%d unique tasks solved across all ensembles (%.1f%%)\n",
+		output.CollectiveCount, 400, float64(output.CollectiveCount)*100/400)
 }
