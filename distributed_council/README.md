@@ -2,6 +2,20 @@
 
 Distribute the "Council of 1000" ARC-AGI benchmark across multiple computers. Now with browser-based workers!
 
+## How It Works
+
+This is a distributed version of `test38_council.go` and follows the same methodology as `arc_benchmark.go`:
+
+1. **Training Phase** (10 seconds): Network cycles through ARC-AGI **training** data samples, learning patterns via StepTweenChain
+2. **Evaluation Phase**: For each of the 400 **evaluation** tasks:
+   - 5-pass adaptation on the task's train pairs (learning the rule)
+   - Test prediction on the task's test pairs
+   - "Solved" = 100% pixel accuracy on test
+
+**Data Used:**
+- `ARC-AGI/data/training/` → Training samples (for the 10-second training loop)
+- `ARC-AGI/data/evaluation/` → Evaluation tasks (for few-shot testing)
+
 ## Quick Start
 
 ```bash
@@ -28,7 +42,6 @@ make all
 | `make wasm` | Build WASM client for browser |
 | `make run-server-unlimited` | Run server in unlimited mode |
 | `make clean` | Remove binaries |
-| `make help` | Show all targets |
 
 ## Usage
 
@@ -37,7 +50,7 @@ make all
 # Fixed mode (default: 1000 agents)
 ./council_server
 
-# Unlimited mode (runs forever)
+# Unlimited mode (runs forever, late-join supported)
 ./council_server --max-agents=0
 
 # Custom limit
@@ -60,7 +73,7 @@ chmod +x council_client
 
 **Option B: Browser Client (WebSocket)**
 1. Open `http://<server-ip>:8080/wasm/`
-2. Enter WebSocket URL: `ws://<server-ip>:8081/ws`
+2. WebSocket URL auto-detected from current host
 3. Click "Start Contributing"
 
 ### 3. Start Council
@@ -94,3 +107,10 @@ distributed_council/
 | 9000 | TCP | Native client communication |
 | 8080 | HTTP | Web UI + WASM client + downloads |
 | 8081 | WebSocket | Browser client communication |
+
+## Features
+
+- ✅ Configurable max agents (`--max-agents=0` for unlimited)
+- ✅ Late-join support (clients can connect after council starts)
+- ✅ Browser + native client support simultaneously
+- ✅ Real-time progress monitoring via web UI
