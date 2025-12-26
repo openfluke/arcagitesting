@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"html/template"
 	"io"
@@ -12,16 +13,22 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
 	. "distributed_council/shared"
+
+	"golang.org/x/net/websocket"
 )
+
+var maxAgents int
 
 type CouncilServer struct {
 	mu sync.RWMutex
 
 	clients     map[string]*ClientConnection
+	wsClients   map[string]*WSClientConnection
 	clientOrder []string
 
 	configs       []AgentConfig
@@ -49,9 +56,20 @@ type ClientConnection struct {
 	Done     int
 }
 
+type WSClientConnection struct {
+	ID       string
+	Hostname string
+	NumCPU   int
+	Conn     *websocket.Conn
+	Mu       sync.Mutex
+	Assigned int
+	Done     int
+}
+
 func NewCouncilServer() *CouncilServer {
 	return &CouncilServer{
 		clients:         make(map[string]*ClientConnection),
+		wsClients:       make(map[string]*WSClientConnection),
 		collectiveTasks: make(map[string]bool),
 	}
 }
@@ -59,9 +77,18 @@ func NewCouncilServer() *CouncilServer {
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
+	flag.IntVar(&maxAgents, "max-agents", CouncilSize, "Maximum agents (0=unlimited)")
+	flag.Parse()
+
 	fmt.Println("╔══════════════════════════════════════════════════════════════════════════════════════════╗")
 	fmt.Println("║   👑 DISTRIBUTED COUNCIL SERVER - Network Orchestrator                                   ║")
 	fmt.Println("╚══════════════════════════════════════════════════════════════════════════════════════════╝")
+
+	if maxAgents == 0 {
+		fmt.Println("   Mode: UNLIMITED (continuous operation)")
+	} else {
+		fmt.Printf("   Mode: %d agents max\n", maxAgents)
+	}
 
 	server := NewCouncilServer()
 
@@ -94,11 +121,16 @@ func main() {
 	server.evalTasks = evalTasks
 	fmt.Printf("✅ Loaded %d training samples, %d eval tasks\n", len(server.trainSamples), len(server.evalTasks))
 
-	fmt.Printf("👑 Generating %d agent configurations...\n", CouncilSize)
-	server.configs = generateAgentConfigs(CouncilSize)
-	server.results = make([]AgentResult, CouncilSize)
+	councilSize := maxAgents
+	if councilSize == 0 {
+		councilSize = 10000 // Pre-generate a large batch for unlimited mode
+	}
+	fmt.Printf("👑 Generating %d agent configurations...\n", councilSize)
+	server.configs = generateAgentConfigs(councilSize)
+	server.results = make([]AgentResult, councilSize)
 
 	go server.runTCPServer()
+	go server.runWSServer()
 
 	server.runHTTPServer()
 }
@@ -120,6 +152,182 @@ func (s *CouncilServer) runTCPServer() {
 		}
 		go s.handleClient(conn)
 	}
+}
+
+// WebSocket server for browser clients
+func (s *CouncilServer) runWSServer() {
+	http.Handle("/ws", websocket.Handler(s.handleWSClient))
+
+	fmt.Printf("🌐 WebSocket Server listening on %s\n", WSPort)
+
+	if err := http.ListenAndServe(WSPort, nil); err != nil {
+		fmt.Printf("❌ Failed to start WebSocket server: %v\n", err)
+	}
+}
+
+func (s *CouncilServer) handleWSClient(ws *websocket.Conn) {
+	clientID := ""
+
+	defer func() {
+		ws.Close()
+		if clientID != "" {
+			s.mu.Lock()
+			delete(s.wsClients, clientID)
+			s.mu.Unlock()
+			fmt.Printf("📤 Browser client disconnected: %s\n", clientID)
+		}
+	}()
+
+	for {
+		var data string
+		if err := websocket.Message.Receive(ws, &data); err != nil {
+			if err != io.EOF {
+				fmt.Printf("⚠️ WS read error from %s: %v\n", clientID, err)
+			}
+			return
+		}
+
+		var msg Message
+		if err := json.Unmarshal([]byte(data), &msg); err != nil {
+			fmt.Printf("⚠️ WS parse error: %v\n", err)
+			continue
+		}
+
+		switch msg.Type {
+		case MsgRegister:
+			payload, _ := ParsePayload[RegisterPayload](&msg)
+			clientID = payload.ClientID
+
+			s.mu.Lock()
+			s.wsClients[clientID] = &WSClientConnection{
+				ID:       clientID,
+				Hostname: payload.Hostname,
+				NumCPU:   payload.NumCPU,
+				Conn:     ws,
+			}
+			s.clientOrder = append(s.clientOrder, clientID)
+			alreadyStarted := s.started
+			s.mu.Unlock()
+
+			fmt.Printf("📥 Browser client registered: %s (%s)\n", clientID, payload.Hostname)
+
+			s.sendWSMessage(ws, Message{
+				Type:    MsgStatus,
+				Payload: MakePayload(StatusPayload{Message: "registered", Ready: !alreadyStarted}),
+			})
+
+			// If council already started, tell the new client to start working
+			if alreadyStarted {
+				s.sendWSMessage(ws, Message{Type: MsgStart})
+			}
+
+		case MsgRequestJob:
+			s.mu.Lock()
+			if !s.started {
+				s.mu.Unlock()
+				s.sendWSMessage(ws, Message{
+					Type:    MsgStatus,
+					Payload: MakePayload(StatusPayload{Message: "waiting_for_start"}),
+				})
+				continue
+			}
+
+			// Check if we need more configs (unlimited mode)
+			if s.nextConfigIdx >= len(s.configs) {
+				if maxAgents == 0 {
+					// Generate more configs for unlimited mode
+					newConfigs := generateAgentConfigs(1000)
+					for i := range newConfigs {
+						newConfigs[i].ID = len(s.configs) + i
+						newConfigs[i].Name = fmt.Sprintf("Agent-%d", newConfigs[i].ID)
+					}
+					s.configs = append(s.configs, newConfigs...)
+					s.results = append(s.results, make([]AgentResult, 1000)...)
+				} else {
+					s.mu.Unlock()
+					s.sendWSMessage(ws, Message{Type: MsgNoMoreWork})
+					continue
+				}
+			}
+
+			configIdx := s.nextConfigIdx
+			s.nextConfigIdx++
+
+			if client, ok := s.wsClients[clientID]; ok {
+				client.Assigned++
+			}
+			s.mu.Unlock()
+
+			evalTaskData := make([]TaskData, len(s.evalTasks))
+			for i, t := range s.evalTasks {
+				evalTaskData[i] = TaskData{
+					ID:    t.ID,
+					Train: t.Train,
+					Test:  t.Test,
+				}
+			}
+
+			s.sendWSMessage(ws, Message{
+				Type: MsgConfig,
+				Payload: MakePayload(ConfigPayload{
+					Config:      s.configs[configIdx],
+					TrainData:   s.trainSamples,
+					EvalTasks:   evalTaskData,
+					TotalAgents: len(s.configs),
+				}),
+			})
+
+			fmt.Printf("📋 Assigned Agent-%d to browser %s (%d/%d)\n", configIdx, clientID, s.nextConfigIdx, len(s.configs))
+
+		case MsgResult:
+			payload, _ := ParsePayload[ResultPayload](&msg)
+
+			s.mu.Lock()
+			idx := payload.Result.Config.ID
+			if idx >= 0 && idx < len(s.results) {
+				s.results[idx] = payload.Result
+				s.completedCount++
+
+				newTasks := 0
+				for _, taskID := range payload.Result.SolvedTaskIDs {
+					if !s.collectiveTasks[taskID] {
+						s.collectiveTasks[taskID] = true
+						newTasks++
+					}
+				}
+
+				if s.completedCount%10 == 0 {
+					s.discoveryTimeline = append(s.discoveryTimeline, DiscoveryPoint{
+						AgentNum:          s.completedCount,
+						CumulativeUnique:  len(s.collectiveTasks),
+						NewTasksThisAgent: newTasks,
+					})
+				}
+
+				if client, ok := s.wsClients[clientID]; ok {
+					client.Done++
+				}
+
+				fmt.Printf("✅ Result from browser %s: Agent-%d solved %d tasks (%d complete)\n",
+					clientID, idx, payload.Result.TasksSolved, s.completedCount)
+			}
+
+			allDone := maxAgents > 0 && s.completedCount >= maxAgents
+			s.mu.Unlock()
+
+			if allDone {
+				s.finalizeResults()
+			}
+		}
+	}
+}
+
+func (s *CouncilServer) sendWSMessage(ws *websocket.Conn, msg Message) error {
+	data, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+	return websocket.Message.Send(ws, string(data))
 }
 
 func (s *CouncilServer) handleClient(conn net.Conn) {
@@ -159,14 +367,20 @@ func (s *CouncilServer) handleClient(conn net.Conn) {
 				Reader:   reader,
 			}
 			s.clientOrder = append(s.clientOrder, clientID)
+			alreadyStarted := s.started
 			s.mu.Unlock()
 
 			fmt.Printf("📥 Client registered: %s (%s, %d CPUs)\n", clientID, payload.Hostname, payload.NumCPU)
 
 			SendMessage(conn, Message{
 				Type:    MsgStatus,
-				Payload: MakePayload(StatusPayload{Message: "registered", Ready: !s.started}),
+				Payload: MakePayload(StatusPayload{Message: "registered", Ready: !alreadyStarted}),
 			})
+
+			// If council already started, tell the new client to start working
+			if alreadyStarted {
+				SendMessage(conn, Message{Type: MsgStart})
+			}
 
 		case MsgRequestJob:
 			s.mu.Lock()
@@ -266,8 +480,13 @@ func (s *CouncilServer) startCouncil() {
 	s.started = true
 	s.startTime = time.Now()
 
+	// Notify TCP clients
 	for _, client := range s.clients {
 		SendMessage(client.Conn, Message{Type: MsgStart})
+	}
+	// Notify WebSocket clients
+	for _, client := range s.wsClients {
+		s.sendWSMessage(client.Conn, Message{Type: MsgStart})
 	}
 	s.mu.Unlock()
 
@@ -339,8 +558,23 @@ func (s *CouncilServer) runHTTPServer() {
 	http.HandleFunc("/api/start", s.handleAPIStart)
 	http.HandleFunc("/download/client", s.handleDownloadClient)
 
+	// Serve WASM client files
+	http.HandleFunc("/wasm/", func(w http.ResponseWriter, r *http.Request) {
+		path := strings.TrimPrefix(r.URL.Path, "/wasm/")
+		if path == "" {
+			path = "index.html"
+		}
+		filePath := filepath.Join("wasm/static", path)
+		if strings.HasSuffix(path, ".wasm") {
+			w.Header().Set("Content-Type", "application/wasm")
+		}
+		http.ServeFile(w, r, filePath)
+	})
+
 	fmt.Printf("🌐 Web UI available at http://localhost%s\n", HTTPPort)
 	fmt.Println("   → Download client binary: http://localhost" + HTTPPort + "/download/client")
+	fmt.Printf("   → Browser client: http://localhost%s/wasm/\n", HTTPPort)
+	fmt.Printf("   → WebSocket endpoint: ws://localhost%s\n", WSPort)
 	fmt.Println("\n⏳ Waiting for clients to connect. Press 'Start' in the web UI when ready.\n")
 
 	if err := http.ListenAndServe(HTTPPort, nil); err != nil {
@@ -385,6 +619,17 @@ func (s *CouncilServer) handleAPIStatus(w http.ResponseWriter, r *http.Request) 
 		})
 	}
 
+	// Include WebSocket clients
+	for _, c := range s.wsClients {
+		status.Clients = append(status.Clients, map[string]any{
+			"id":       c.ID,
+			"hostname": c.Hostname + " (browser)",
+			"numCpu":   c.NumCPU,
+			"assigned": c.Assigned,
+			"done":     c.Done,
+		})
+	}
+
 	sorted := make([]AgentResult, 0)
 	for _, r := range s.results {
 		if r.Config.ID > 0 || r.TasksSolved > 0 {
@@ -412,7 +657,7 @@ func (s *CouncilServer) handleAPIStart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s.mu.RLock()
-	numClients := len(s.clients)
+	numClients := len(s.clients) + len(s.wsClients)
 	s.mu.RUnlock()
 
 	if numClients == 0 {
@@ -616,7 +861,18 @@ const homeHTML = `<!DOCTYPE html>
             border-radius: 8px;
             text-decoration: none;
             margin-top: 10px;
+            margin-right: 10px;
         }
+        .browser-link {
+            display: inline-block;
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+        .browser-link:hover { opacity: 0.9; }
         .results-table { width: 100%; border-collapse: collapse; }
         .results-table th, .results-table td {
             padding: 10px;
@@ -647,7 +903,8 @@ const homeHTML = `<!DOCTYPE html>
             <div class="card">
                 <h2>🖥️ Connected Clients</h2>
                 <div class="client-list" id="clientList"><p style="color:#888">No clients connected yet</p></div>
-                <a href="/download/client" class="download-link">⬇️ Download Client Binary (Linux)</a>
+                <a href="/download/client" class="download-link">⬇️ Download Client (Linux)</a>
+                <a href="/wasm/" class="browser-link">🌐 Join via Browser</a>
             </div>
         </div>
         <div class="card">

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Council Worker - Browser Compute Node</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0f2847 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #f39c12, #e74c3c, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #f39c12;
+            box-shadow: 0 0 20px rgba(243, 156, 18, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .btn-connect {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+            box-shadow: 0 4px 20px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn-connect:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(46, 204, 113, 0.6);
+        }
+
+        .btn-disconnect {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            display: none;
+        }
+
+        .btn-disconnect:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .status-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-row:last-child {
+            border: none;
+        }
+
+        .status-label {
+            color: #888;
+        }
+
+        .status-value {
+            font-weight: 600;
+            color: #3498db;
+        }
+
+        .status-value.running {
+            color: #2ecc71;
+        }
+
+        .status-value.error {
+            color: #e74c3c;
+        }
+
+        #statusMessage {
+            text-align: center;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 10px;
+            font-size: 0.95em;
+        }
+
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .indicator.offline {
+            background: #666;
+            animation: none;
+        }
+
+        .indicator.connecting {
+            background: #f39c12;
+        }
+
+        .indicator.online {
+            background: #2ecc71;
+        }
+
+        .indicator.working {
+            background: #3498db;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #f39c12;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>👑 Council Worker</h1>
+        <p class="subtitle">Contribute compute power to ARC-AGI training</p>
+
+        <div class="input-group">
+            <label for="serverUrl">Server WebSocket URL</label>
+            <input type="text" id="serverUrl" placeholder="ws://server-ip:8081/ws">
+        </div>
+
+        <button class="btn btn-connect" id="connectBtn" onclick="connect()">🚀 Start Contributing</button>
+        <button class="btn btn-disconnect" id="disconnectBtn" onclick="disconnect()">⏹️ Stop</button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading WASM module...</p>
+        </div>
+
+        <div class="status-card" id="statusCard" style="display: none;">
+            <div class="status-row">
+                <span class="status-label">Status</span>
+                <span class="status-value" id="connectionStatus">
+                    <span class="indicator offline"></span>Offline
+                </span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">Jobs Completed</span>
+                <span class="status-value" id="jobsCompleted">0</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">Tasks Solved</span>
+                <span class="status-value" id="tasksSolved">0</span>
+            </div>
+        </div>
+
+        <div id="statusMessage"></div>
+    </div>
+
+    <script src="wasm_exec.js"></script>
+    <script>
+        const go = new Go();
+        let wasmReady = false;
+
+        async function loadWasm() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('connectBtn').disabled = true;
+
+            try {
+                const result = await WebAssembly.instantiateStreaming(
+                    fetch('client.wasm'),
+                    go.importObject
+                );
+                go.run(result.instance);
+                wasmReady = true;
+
+                // Set up status callback
+                councilSetStatusCallback(updateUI);
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('connectBtn').disabled = false;
+                document.getElementById('statusCard').style.display = 'block';
+                showMessage('Ready to connect!', 'info');
+            } catch (err) {
+                document.getElementById('loading').style.display = 'none';
+                showMessage('Failed to load WASM: ' + err.message, 'error');
+                console.error(err);
+            }
+        }
+
+        function connect() {
+            if (!wasmReady) {
+                showMessage('WASM not loaded yet', 'error');
+                return;
+            }
+            const url = document.getElementById('serverUrl').value;
+            councilConnect(url);
+
+            document.getElementById('connectBtn').style.display = 'none';
+            document.getElementById('disconnectBtn').style.display = 'block';
+        }
+
+        function disconnect() {
+            councilDisconnect();
+            document.getElementById('connectBtn').style.display = 'block';
+            document.getElementById('disconnectBtn').style.display = 'none';
+        }
+
+        function updateUI(state, message, jobs, tasks) {
+            const statusEl = document.getElementById('connectionStatus');
+            const indicator = statusEl.querySelector('.indicator');
+
+            indicator.className = 'indicator';
+            switch (state) {
+                case 'connecting':
+                    indicator.classList.add('connecting');
+                    statusEl.innerHTML = '<span class="indicator connecting"></span>Connecting...';
+                    break;
+                case 'connected':
+                case 'registered':
+                    indicator.classList.add('online');
+                    statusEl.innerHTML = '<span class="indicator online"></span>Connected';
+                    break;
+                case 'running':
+                case 'working':
+                    indicator.classList.add('working');
+                    statusEl.innerHTML = '<span class="indicator working"></span>Working';
+                    statusEl.className = 'status-value running';
+                    break;
+                case 'complete':
+                    statusEl.innerHTML = '<span class="indicator online"></span>Complete';
+                    break;
+                case 'error':
+                case 'disconnected':
+                    indicator.classList.add('offline');
+                    statusEl.innerHTML = '<span class="indicator offline"></span>Disconnected';
+                    document.getElementById('connectBtn').style.display = 'block';
+                    document.getElementById('disconnectBtn').style.display = 'none';
+                    break;
+            }
+
+            document.getElementById('jobsCompleted').textContent = jobs;
+            document.getElementById('tasksSolved').textContent = tasks;
+            showMessage(message, state === 'error' ? 'error' : 'info');
+        }
+
+        function showMessage(msg, type) {
+            const el = document.getElementById('statusMessage');
+            el.textContent = msg;
+            el.style.background = type === 'error'
+                ? 'rgba(231, 76, 60, 0.2)'
+                : 'rgba(52, 152, 219, 0.2)';
+            el.style.color = type === 'error' ? '#e74c3c' : '#3498db';
+        }
+
+        // Auto-detect server URL based on current page
+        function detectServerUrl() {
+            const host = window.location.hostname || 'localhost';
+            return 'ws://' + host + ':8081/ws';
+        }
+
+        // Set default URL on page load
+        document.getElementById('serverUrl').value = detectServerUrl();
+
+        // Load WASM on page load
+        loadWasm();
+    </script>
+</body>
+
+</html>
