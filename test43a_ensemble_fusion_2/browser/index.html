@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔮 ARC-AGI Browser Solver</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbow 3s linear infinite;
+            background-size: 400% 100%;
+        }
+
+        @keyframes rainbow {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .subtitle {
+            color: #8a8a8a;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 20px 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #aaa;
+        }
+
+        select,
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        select {
+            background: #1a1a2e;
+            color: #fff;
+            width: 200px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+
+        select option {
+            background: #1a1a2e;
+            color: #fff;
+            padding: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 15px 40px;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #48dbfb, #0abde3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .log-container {
+            height: 400px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+        }
+
+        .log-success {
+            color: #2ecc71;
+        }
+
+        .log-info {
+            color: #3498db;
+        }
+
+        .log-warning {
+            color: #f39c12;
+        }
+
+        .log-phase {
+            color: #9b59b6;
+            font-weight: bold;
+        }
+
+        .grid-display {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .task-info {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .grids-row {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .grid-wrapper {
+            text-align: center;
+        }
+
+        .grid-label {
+            margin-bottom: 10px;
+            color: #aaa;
+        }
+
+        .arc-grid {
+            display: inline-grid;
+            gap: 1px;
+            background: #333;
+            padding: 2px;
+            border-radius: 5px;
+        }
+
+        .arc-cell {
+            width: 20px;
+            height: 20px;
+            border-radius: 2px;
+        }
+
+        /* ARC color palette */
+        .color-0 {
+            background: #000000;
+        }
+
+        .color-1 {
+            background: #0074D9;
+        }
+
+        .color-2 {
+            background: #FF4136;
+        }
+
+        .color-3 {
+            background: #2ECC40;
+        }
+
+        .color-4 {
+            background: #FFDC00;
+        }
+
+        .color-5 {
+            background: #AAAAAA;
+        }
+
+        .color-6 {
+            background: #F012BE;
+        }
+
+        .color-7 {
+            background: #FF851B;
+        }
+
+        .color-8 {
+            background: #7FDBFF;
+        }
+
+        .color-9 {
+            background: #870C25;
+        }
+
+        /* Celebration overlay */
+        #celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .celebration-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4em;
+            font-weight: bold;
+            text-align: center;
+            z-index: 1001;
+            animation: celebratePop 1.5s ease-out forwards;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes celebratePop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confettiFall 3s linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .progress-ring {
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+        }
+
+        .progress-ring circle {
+            fill: none;
+            stroke-width: 8;
+        }
+
+        .progress-bg {
+            stroke: rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-fg {
+            stroke: url(#progressGradient);
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dashoffset 0.3s;
+        }
+
+        .progress-text {
+            font-size: 1.8em;
+            font-weight: bold;
+            fill: #fff;
+        }
+
+        .solved-tasks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .solved-task-badge {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            animation: badgePop 0.3s ease-out;
+        }
+
+        @keyframes badgePop {
+            0% {
+                transform: scale(0);
+            }
+
+            50% {
+                transform: scale(1.2);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🔮 ARC-AGI Browser Solver</h1>
+            <p class="subtitle">Neural Network Ensemble Fusion running entirely in your browser! 🧠✨</p>
+        </header>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>📦 Dataset</label>
+                <select id="datasetSelect">
+                    <option value="arc1">ARC-AGI v1 (400 tasks)</option>
+                    <option value="arc2">ARC-AGI v2 (120 tasks)</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>🧠 Networks</label>
+                <select id="networkCount">
+                    <option value="30">30 (Fast)</option>
+                    <option value="60">60 (Balanced)</option>
+                    <option value="120" selected>120 (Best)</option>
+                </select>
+            </div>
+            <div class="control-group" style="display: flex; align-items: flex-end;">
+                <button class="btn-primary" id="startBtn" onclick="startSolving()">
+                    🚀 Start Solving!
+                </button>
+            </div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value" id="solvedCount">0</div>
+                <div class="stat-label">Tasks Solved</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalTasks">400</div>
+                <div class="stat-label">Total Tasks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="accuracy">0%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="elapsed">0:00</div>
+                <div class="stat-label">Time</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="panel">
+                <div class="panel-title">📊 Progress</div>
+                <svg class="progress-ring" viewBox="0 0 150 150">
+                    <defs>
+                        <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#667eea" />
+                            <stop offset="100%" style="stop-color:#764ba2" />
+                        </linearGradient>
+                    </defs>
+                    <circle class="progress-bg" cx="75" cy="75" r="60" />
+                    <circle class="progress-fg" cx="75" cy="75" r="60" stroke-dasharray="377" stroke-dashoffset="377"
+                        id="progressCircle" />
+                    <text class="progress-text" x="75" y="80" text-anchor="middle" id="progressPercent">0%</text>
+                </svg>
+                <div class="loading-spinner" id="spinner"></div>
+
+                <!-- Training Progress -->
+                <div id="trainingProgress"
+                    style="display: none; margin: 15px 0; padding: 15px; background: rgba(102, 126, 234, 0.1); border-radius: 10px;">
+                    <div
+                        style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #aaa; font-size: 0.9em;">
+                        <span>🧠 Training Networks</span>
+                        <span id="trainingCount">0/0</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); border-radius: 5px; height: 8px; overflow: hidden;">
+                        <div id="trainingBar"
+                            style="width: 0%; height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); transition: width 0.3s ease;">
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 8px; font-size: 1.2em; color: #667eea;">
+                        <span id="trainingPercent">0%</span>
+                    </div>
+                </div>
+
+                <h4 style="text-align: center; margin-top: 20px; color: #2ecc71;">✅ Solved Tasks</h4>
+                <div class="solved-tasks" id="solvedTasks"></div>
+                <h4 style="text-align: center; margin-top: 15px; color: #888;">❌ Unsolved Tasks</h4>
+                <div class="solved-tasks" id="unsolvedTasks" style="opacity: 0.7;"></div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">🖼️ Current Task</div>
+                <div class="grid-display">
+                    <div class="task-info">
+                        <strong>Task ID:</strong> <span id="currentTaskId">-</span>
+                        <br>
+                        <strong>Phase:</strong> <span id="currentPhase">Waiting...</span>
+                    </div>
+                    <div class="grids-row">
+                        <div class="grid-wrapper">
+                            <div class="grid-label">Input</div>
+                            <div class="arc-grid" id="inputGrid"></div>
+                        </div>
+                        <div class="grid-wrapper">
+                            <div class="grid-label">Expected</div>
+                            <div class="arc-grid" id="expectedGrid"></div>
+                        </div>
+                        <div class="grid-wrapper">
+                            <div class="grid-label">Predicted</div>
+                            <div class="arc-grid" id="predictedGrid"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" style="margin-top: 30px;">
+            <div class="panel-title">📜 Live Log</div>
+            <div class="log-container" id="logContainer"></div>
+        </div>
+    </div>
+
+    <div id="celebration"></div>
+
+    <script src="/wasm_exec.js"></script>
+    <script>
+        // ARC-AGI Browser Solver - JavaScript Interface
+        let wasmReady = false;
+        let startTime = null;
+        let solvedTasks = [];
+        let timerInterval = null;
+        let taskResults = {}; // Store all task results: {taskId: {input, expected, predicted, solved, coverage}}
+
+        const DATA_URLS = {
+            arc1: '/data/ARC-AGI/data',
+            arc2: '/data/ARC-AGI2/data'
+        };
+
+        // Initialize WASM
+        const go = new Go();
+        WebAssembly.instantiateStreaming(fetch("/examples/test43a.wasm"), go.importObject).then((result) => {
+            go.run(result.instance);
+            wasmReady = true;
+            log("🎉 WASM loaded! Neural networks ready.", "success");
+        }).catch(err => {
+            log("❌ Failed to load WASM: " + err, "warning");
+        });
+
+        function log(message, type = "info") {
+            const container = document.getElementById('logContainer');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function updateStats(solved, total) {
+            document.getElementById('solvedCount').textContent = solved;
+            document.getElementById('totalTasks').textContent = total;
+            const pct = total > 0 ? ((solved / total) * 100).toFixed(1) : 0;
+            document.getElementById('accuracy').textContent = pct + '%';
+
+            // Update progress ring
+            const circle = document.getElementById('progressCircle');
+            const circumference = 2 * Math.PI * 60;
+            const offset = circumference * (1 - solved / total);
+            circle.style.strokeDashoffset = offset;
+            document.getElementById('progressPercent').textContent = pct + '%';
+        }
+
+        // Called when WASM finishes solving (or on stop)
+        function jsComplete() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('startBtn').textContent = '🚀 Start Solving!';
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('trainingProgress').style.display = 'none';
+        }
+
+        // Update training progress bar (called from WASM)
+        function jsUpdateTraining(current, total) {
+            const container = document.getElementById('trainingProgress');
+            container.style.display = 'block';
+
+            const pct = total > 0 ? Math.round((current / total) * 100) : 0;
+            document.getElementById('trainingCount').textContent = `${current}/${total}`;
+            document.getElementById('trainingBar').style.width = `${pct}%`;
+            document.getElementById('trainingPercent').textContent = `${pct}%`;
+        }
+
+        // Expose to global for WASM
+        window.jsComplete = jsComplete;
+        window.jsUpdateTraining = jsUpdateTraining;
+
+        function updateTimer() {
+            if (!startTime) return;
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const mins = Math.floor(elapsed / 60);
+            const secs = elapsed % 60;
+            document.getElementById('elapsed').textContent =
+                `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function renderGrid(containerId, grid) {
+            const container = document.getElementById(containerId);
+            if (!grid || grid.length === 0) {
+                container.innerHTML = '<div style="color:#666;padding:20px;">No data</div>';
+                return;
+            }
+
+            const height = grid.length;
+            const width = grid[0].length;
+            container.style.gridTemplateColumns = `repeat(${width}, 20px)`;
+            container.innerHTML = '';
+
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = `arc-cell color-${grid[y][x]}`;
+                    container.appendChild(cell);
+                }
+            }
+        }
+
+        function celebrate(taskId) {
+            // Add explosion effect
+            const celebration = document.getElementById('celebration');
+
+            // Add text
+            const text = document.createElement('div');
+            text.className = 'celebration-text';
+            text.innerHTML = `🎉 SOLVED!<br><span style="font-size:0.5em">${taskId}</span>`;
+            celebration.appendChild(text);
+
+            // Add confetti
+            const colors = ['#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#2ecc71', '#667eea'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                celebration.appendChild(confetti);
+            }
+
+            // Clean up after animation
+            setTimeout(() => {
+                celebration.innerHTML = '';
+            }, 3000);
+
+            solvedTasks.push(taskId);
+        }
+
+        // Store task result (called from WASM for all tasks)
+        function storeTaskResult(taskId, inputGrid, expectedGrid, predictedGrid, solved, coverage) {
+            taskResults[taskId] = {
+                input: inputGrid,
+                expected: expectedGrid,
+                predicted: predictedGrid,
+                solved: solved,
+                coverage: coverage
+            };
+
+            // Add badge to appropriate container
+            const container = solved ? document.getElementById('solvedTasks') : document.getElementById('unsolvedTasks');
+
+            // Check if badge already exists
+            if (document.getElementById('badge-' + taskId)) return;
+
+            const badge = document.createElement('span');
+            badge.id = 'badge-' + taskId;
+            badge.className = 'solved-task-badge';
+            badge.textContent = taskId.substring(0, 8);
+            badge.title = `${taskId}\nCoverage: ${(coverage * 100).toFixed(1)}%\nClick to view`;
+            badge.style.cursor = 'pointer';
+
+            if (!solved) {
+                badge.style.background = 'linear-gradient(135deg, #666 0%, #444 100%)';
+                badge.style.opacity = '0.8';
+            }
+
+            badge.onclick = () => showTaskResult(taskId);
+            container.appendChild(badge);
+        }
+
+        // Show task result when badge is clicked
+        function showTaskResult(taskId) {
+            const result = taskResults[taskId];
+            if (!result) return;
+
+            document.getElementById('currentTaskId').textContent = taskId;
+            document.getElementById('currentPhase').textContent = result.solved ? '✅ Solved' : `❌ ${(result.coverage * 100).toFixed(1)}% coverage`;
+
+            renderGrid('inputGrid', result.input);
+            renderGrid('expectedGrid', result.expected);
+            renderGrid('predictedGrid', result.predicted);
+        }
+
+        async function startSolving() {
+            if (!wasmReady) {
+                log("⏳ WASM still loading, please wait...", "warning");
+                return;
+            }
+
+            const btn = document.getElementById('startBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Loading Data...';
+            document.getElementById('spinner').style.display = 'block';
+
+            const dataset = document.getElementById('datasetSelect').value;
+            const networks = parseInt(document.getElementById('networkCount').value);
+            const baseUrl = DATA_URLS[dataset];
+
+            log(`🚀 Starting ARC-AGI solver with ${networks} networks on ${dataset}...`, "phase");
+
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+
+            try {
+                // Fetch ARC task data
+                log(`📡 Fetching tasks from ${baseUrl}...`, "info");
+
+                const trainTasks = await fetchARCTasks(baseUrl + '/training', 100);
+                log(`✅ Loaded ${trainTasks.length} training tasks`, "success");
+
+                const evalTasks = await fetchARCTasks(baseUrl + '/evaluation', 100);
+                log(`✅ Loaded ${evalTasks.length} eval tasks`, "success");
+
+                btn.textContent = '⏳ Solving...';
+
+                // Call WASM solver with the data
+                if (typeof window.solveWithData === 'function') {
+                    window.solveWithData(JSON.stringify(trainTasks), JSON.stringify(evalTasks), networks);
+                } else {
+                    log("⚠️ WASM solver not found, running demo mode...", "warning");
+                    await runDemoMode(dataset);
+                }
+            } catch (err) {
+                log("❌ Error: " + err, "warning");
+                log("🎮 Running demo mode instead...", "info");
+                await runDemoMode(dataset);
+            }
+
+            // Note: Don't reset button here - WASM runs async and will log when done
+        }
+
+        // Fetch ARC tasks from server using .txt manifest (one ID per line)
+        async function fetchARCTasks(baseUrl, maxTasks) {
+            const tasks = [];
+
+            // Determine which .txt file to use based on URL
+            let manifestUrl;
+            if (baseUrl.includes('training')) {
+                manifestUrl = baseUrl.replace('/training', '') + '/training.txt';
+            } else {
+                manifestUrl = baseUrl.replace('/evaluation', '') + '/evaluation.txt';
+            }
+
+            log(`📋 Fetching manifest: ${manifestUrl}`, "info");
+
+            // Fetch manifest containing task IDs (one per line)
+            const manifestResp = await fetch(manifestUrl);
+            if (!manifestResp.ok) {
+                throw new Error(`Failed to fetch manifest: ${manifestResp.status}`);
+            }
+            const manifestText = await manifestResp.text();
+            const taskIds = manifestText.trim().split('\n').filter(id => id.length > 0);
+
+            log(`📂 Found ${taskIds.length} task IDs in manifest`, "info");
+
+            for (let i = 0; i < Math.min(taskIds.length, maxTasks); i++) {
+                try {
+                    const taskId = taskIds[i];
+                    const taskUrl = baseUrl + '/' + taskId + '.json';
+                    const taskResp = await fetch(taskUrl);
+                    if (!taskResp.ok) continue;
+                    const taskData = await taskResp.json();
+
+                    tasks.push({
+                        id: taskId,
+                        train: taskData.train,
+                        test: taskData.test
+                    });
+
+                    if ((i + 1) % 20 === 0) {
+                        log(`📥 Loaded ${i + 1}/${Math.min(taskIds.length, maxTasks)} tasks...`, "info");
+                    }
+                } catch (e) {
+                    // Skip failed tasks
+                }
+            }
+
+            return tasks;
+        }
+
+        // Demo mode for testing UI
+        async function runDemoMode(dataset) {
+            const total = dataset === 'arc1' ? 400 : 120;
+            document.getElementById('totalTasks').textContent = total;
+
+            const phases = [
+                { name: "Phase 1: Training Networks", duration: 3000 },
+                { name: "Phase 1.5: Clustering", duration: 2000 },
+                { name: "Phase 2: Complementary Stitching", duration: 5000 }
+            ];
+
+            let solved = 0;
+
+            for (const phase of phases) {
+                log(`📊 ${phase.name}`, "phase");
+                document.getElementById('currentPhase').textContent = phase.name;
+
+                const steps = 10;
+                for (let i = 0; i < steps; i++) {
+                    await new Promise(r => setTimeout(r, phase.duration / steps));
+
+                    // Occasionally "solve" a task in phase 2
+                    if (phase.name.includes("Stitching") && Math.random() < 0.3) {
+                        solved++;
+                        const taskId = Math.random().toString(36).substr(2, 8);
+                        log(`✅ SOLVED: ${taskId}`, "success");
+                        celebrate(taskId);
+                        updateStats(solved, total);
+
+                        // Show demo grids
+                        renderGrid('inputGrid', generateDemoGrid());
+                        renderGrid('expectedGrid', generateDemoGrid());
+                        renderGrid('predictedGrid', generateDemoGrid());
+                        document.getElementById('currentTaskId').textContent = taskId;
+                    }
+                }
+            }
+
+            log(`🎉 Complete! Solved ${solved}/${total} tasks (${(solved / total * 100).toFixed(1)}%)`, "success");
+        }
+
+        function generateDemoGrid() {
+            const h = 3 + Math.floor(Math.random() * 5);
+            const w = 3 + Math.floor(Math.random() * 5);
+            const grid = [];
+            for (let y = 0; y < h; y++) {
+                grid[y] = [];
+                for (let x = 0; x < w; x++) {
+                    grid[y][x] = Math.floor(Math.random() * 10);
+                }
+            }
+            return grid;
+        }
+
+        // Global functions for WASM to call
+        window.jsLog = log;
+        window.jsUpdateStats = updateStats;
+        window.jsCelebrate = celebrate;
+        window.jsRenderGrid = renderGrid;
+        window.jsSetPhase = (phase) => {
+            document.getElementById('currentPhase').textContent = phase;
+        };
+        window.jsSetTaskId = (id) => {
+            document.getElementById('currentTaskId').textContent = id;
+        };
+
+        // Update total based on dataset selection
+        document.getElementById('datasetSelect').addEventListener('change', (e) => {
+            const total = e.target.value === 'arc1' ? 400 : 120;
+            document.getElementById('totalTasks').textContent = total;
+        });
+    </script>
+</body>
+
+</html>

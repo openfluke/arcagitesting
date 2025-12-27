@@ -1,0 +1,514 @@
+//go:build js && wasm
+// +build js,wasm
+
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"math"
+	"math/rand"
+	"syscall/js"
+	"time"
+
+	"github.com/openfluke/loom/nn"
+)
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ARC-AGI BROWSER SOLVER - WASM Entry Point
+// ═══════════════════════════════════════════════════════════════════════════════
+// This is the WASM version of the ensemble fusion solver.
+// It receives ARC task data from JavaScript and runs the same solver logic.
+
+const (
+	MaxGridSize43 = 30
+	InputSize43   = MaxGridSize43 * MaxGridSize43
+	InitScale43   = float32(0.5)
+
+	EnsembleSize     = 15
+	NumEnsembles     = 4               // Reduced for browser performance
+	TestDuration43   = 5 * time.Second // Shorter for browser
+	WindowDuration43 = 100 * time.Millisecond
+	AdaptationPasses = 2
+)
+
+// Data types
+type ARCTask43 struct {
+	ID          string
+	Train, Test []GridPair43
+}
+type GridPair43 struct{ Input, Output [][]int }
+type Sample43 struct {
+	Input, Target []float32
+	Height, Width int
+	TaskID        string
+	TaskIndex     int
+}
+
+func main() {
+	rand.Seed(time.Now().UnixNano())
+	fmt.Println("🧠 ARC-AGI WASM Solver v2 initialized!")
+	fmt.Println("🔮 Neural network ensemble ready for browser-based solving!")
+
+	// Export solver function to JavaScript
+	js.Global().Set("startARCSolver", js.FuncOf(startARCSolverJS))
+	js.Global().Set("solveWithData", js.FuncOf(solveWithDataJS))
+
+	// Keep runtime alive
+	select {}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// JavaScript Bridge Functions
+// ═══════════════════════════════════════════════════════════════════════════════
+
+func jsLog(msg string, logType string) {
+	js.Global().Call("jsLog", msg, logType)
+}
+
+func jsUpdateStats(solved, total int) {
+	js.Global().Call("jsUpdateStats", solved, total)
+}
+
+func jsCelebrate(taskId string) {
+	js.Global().Call("jsCelebrate", taskId)
+}
+
+func jsSetPhase(phase string) {
+	js.Global().Call("jsSetPhase", phase)
+}
+
+func jsSetTaskId(taskId string) {
+	js.Global().Call("jsSetTaskId", taskId)
+}
+
+func jsRenderGrid(containerId string, grid [][]int) {
+	jsGrid := make([]interface{}, len(grid))
+	for i, row := range grid {
+		jsRow := make([]interface{}, len(row))
+		for j, val := range row {
+			jsRow[j] = val
+		}
+		jsGrid[i] = jsRow
+	}
+	js.Global().Call("jsRenderGrid", containerId, jsGrid)
+}
+
+// startARCSolverJS - called from JavaScript with dataset name and URL
+func startARCSolverJS(this js.Value, args []js.Value) interface{} {
+	if len(args) < 3 {
+		jsLog("❌ Need: dataset, networkCount, dataUrl", "warning")
+		return nil
+	}
+
+	dataset := args[0].String()
+	networkCount := args[1].Int()
+	dataUrl := args[2].String()
+
+	go func() {
+		jsLog(fmt.Sprintf("🚀 Starting %s solver with %d networks...", dataset, networkCount), "phase")
+		jsLog(fmt.Sprintf("📡 Data URL: %s", dataUrl), "info")
+		jsLog("⏳ Waiting for data from JavaScript...", "info")
+		jsSetPhase("Waiting for data...")
+	}()
+
+	return nil
+}
+
+// solveWithDataJS - called from JavaScript with actual task data as JSON
+func solveWithDataJS(this js.Value, args []js.Value) interface{} {
+	if len(args) < 2 {
+		jsLog("❌ Need: trainTasksJSON, evalTasksJSON", "warning")
+		return nil
+	}
+
+	trainJSON := args[0].String()
+	evalJSON := args[1].String()
+
+	go func() {
+		runSolver(trainJSON, evalJSON)
+	}()
+
+	return nil
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Main Solver Logic (adapted from main.go)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+func runSolver(trainJSON, evalJSON string) {
+	jsSetPhase("Phase 0: Parsing Data")
+	jsLog("📦 Parsing task data...", "info")
+
+	// Parse task data
+	trainTasks, err := parseTasksJSON(trainJSON)
+	if err != nil {
+		jsLog(fmt.Sprintf("❌ Failed to parse training: %v", err), "warning")
+		return
+	}
+
+	evalTasks, err := parseTasksJSON(evalJSON)
+	if err != nil {
+		jsLog(fmt.Sprintf("❌ Failed to parse eval: %v", err), "warning")
+		return
+	}
+
+	trainSamples := createSequentialSamples43(trainTasks)
+
+	jsLog(fmt.Sprintf("✅ Loaded %d train tasks, %d eval tasks", len(trainTasks), len(evalTasks)), "success")
+	jsUpdateStats(0, len(evalTasks))
+
+	// Phase 1: Train networks
+	totalNetworks := NumEnsembles * EnsembleSize
+	jsSetPhase(fmt.Sprintf("Phase 1: Training %d Networks", totalNetworks))
+	jsLog(fmt.Sprintf("🧠 Training %d diverse networks...", totalNetworks), "phase")
+
+	configs := generateDiverseConfigs(totalNetworks)
+	networks := make([]*NetworkState, totalNetworks)
+
+	startTime := time.Now()
+	for idx, cfg := range configs {
+		networks[idx] = trainNetworkWASM(cfg, trainSamples, evalTasks)
+		if (idx+1)%10 == 0 {
+			jsLog(fmt.Sprintf("🔄 Trained %d/%d networks...", idx+1, totalNetworks), "info")
+		}
+	}
+
+	jsLog(fmt.Sprintf("✅ Phase 1 complete in %v", time.Since(startTime)), "success")
+
+	// Phase 1.5: Cluster specialization
+	jsSetPhase("Phase 1.5: Clustering")
+	specialists := clusterNetworksWASM(networks)
+	jsLog(fmt.Sprintf("📊 Created %d specialist clusters", len(specialists)), "info")
+
+	// Phase 2: Stitching
+	jsSetPhase("Phase 2: Stitching Solutions")
+	jsLog("🔮 Finding complementary pairs and stitching...", "phase")
+
+	collectiveTasks := make(map[string]bool)
+	var solvedList []string
+
+	for _, task := range evalTasks {
+		jsSetTaskId(task.ID)
+
+		if len(task.Test) == 0 {
+			continue
+		}
+
+		testPair := task.Test[0]
+		jsRenderGrid("inputGrid", testPair.Input)
+		jsRenderGrid("expectedGrid", testPair.Output)
+
+		// Try stitching
+		solved, predicted := tryStitchTask(specialists, task)
+
+		if solved {
+			collectiveTasks[task.ID] = true
+			solvedList = append(solvedList, task.ID)
+			jsRenderGrid("predictedGrid", predicted)
+			jsCelebrate(task.ID)
+			jsLog(fmt.Sprintf("✅ SOLVED: %s", task.ID), "success")
+		} else {
+			jsRenderGrid("predictedGrid", predicted)
+		}
+
+		jsUpdateStats(len(collectiveTasks), len(evalTasks))
+	}
+
+	// Final results
+	jsSetPhase("Complete!")
+	accuracy := float64(len(collectiveTasks)) / float64(len(evalTasks)) * 100
+	jsLog(fmt.Sprintf("🎉 FINISHED! Solved %d/%d tasks (%.1f%%)", len(collectiveTasks), len(evalTasks), accuracy), "success")
+}
+
+// parseTasksJSON parses JSON array of ARC tasks
+func parseTasksJSON(jsonStr string) ([]*ARCTask43, error) {
+	var rawTasks []struct {
+		ID    string `json:"id"`
+		Train []struct {
+			Input  [][]int `json:"input"`
+			Output [][]int `json:"output"`
+		} `json:"train"`
+		Test []struct {
+			Input  [][]int `json:"input"`
+			Output [][]int `json:"output"`
+		} `json:"test"`
+	}
+
+	if err := json.Unmarshal([]byte(jsonStr), &rawTasks); err != nil {
+		return nil, err
+	}
+
+	tasks := make([]*ARCTask43, len(rawTasks))
+	for i, rt := range rawTasks {
+		task := &ARCTask43{ID: rt.ID}
+		for _, t := range rt.Train {
+			task.Train = append(task.Train, GridPair43{Input: t.Input, Output: t.Output})
+		}
+		for _, t := range rt.Test {
+			task.Test = append(task.Test, GridPair43{Input: t.Input, Output: t.Output})
+		}
+		tasks[i] = task
+	}
+
+	return tasks, nil
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Network Types and Training (simplified for WASM)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+type NetworkState struct {
+	Hive        *nn.Hive
+	Config      *NetworkConfig
+	TasksSolved []string
+	Accuracy    float64
+	Predictions map[string][][]int
+}
+
+type NetworkConfig struct {
+	ID           int
+	DModel       int
+	NumHeads     int
+	LR           float64
+	GridRows     int
+	GridCols     int
+	Brains       []nn.Layer
+	BrainNames   []string
+	Species      string
+	CombineModeN string
+}
+
+type NetworkSpecialist struct {
+	Network   *NetworkState
+	ClusterID int
+	Specialty string
+}
+
+func createSequentialSamples43(tasks []*ARCTask43) []Sample43 {
+	var samples []Sample43
+	for taskIdx, task := range tasks {
+		for _, pair := range task.Train {
+			input := make([]float32, InputSize43)
+			target := make([]float32, InputSize43)
+
+			outH := len(pair.Output)
+			outW := 0
+			if outH > 0 {
+				outW = len(pair.Output[0])
+			}
+
+			for y := 0; y < len(pair.Input) && y < MaxGridSize43; y++ {
+				for x := 0; x < len(pair.Input[y]) && x < MaxGridSize43; x++ {
+					input[y*MaxGridSize43+x] = float32(pair.Input[y][x]) / 9.0
+				}
+			}
+			for y := 0; y < outH && y < MaxGridSize43; y++ {
+				for x := 0; x < len(pair.Output[y]) && x < MaxGridSize43; x++ {
+					target[y*MaxGridSize43+x] = float32(pair.Output[y][x]) / 9.0
+				}
+			}
+
+			samples = append(samples, Sample43{
+				Input: input, Target: target,
+				Height: outH, Width: outW,
+				TaskID: task.ID, TaskIndex: taskIdx,
+			})
+		}
+	}
+	return samples
+}
+
+func generateDiverseConfigs(count int) []*NetworkConfig {
+	configs := make([]*NetworkConfig, count)
+
+	gridShapes := []struct {
+		rows, cols int
+		name       string
+	}{
+		{1, 1, "1x1 Mono"}, {2, 2, "2x2 Standard"}, {3, 3, "3x3 Complex"},
+		{4, 1, "4x1 Tall"}, {1, 4, "1x4 Wide"},
+	}
+	combineModes := []string{"add", "avg", "concat"}
+
+	for i := 0; i < count; i++ {
+		shape := gridShapes[rand.Intn(len(gridShapes))]
+		combineMode := combineModes[rand.Intn(len(combineModes))]
+
+		dModel := 32
+		numHeads := 4
+		lr := 0.01 + rand.Float64()*0.09
+
+		numBrains := shape.rows * shape.cols
+		brains := make([]nn.Layer, numBrains)
+		brainNames := make([]string, numBrains)
+
+		for b := 0; b < numBrains; b++ {
+			brainType := rand.Intn(4)
+			switch brainType {
+			case 0:
+				brains[b] = nn.NewMHABlock(float64(dModel), numHeads)
+				brainNames[b] = "MHA"
+			case 1:
+				brains[b] = nn.NewLSTMBlock(float64(dModel), 0.1)
+				brainNames[b] = "LSTM"
+			case 2:
+				brains[b] = nn.NewRNNBlock(float64(dModel), 0.1)
+				brainNames[b] = "RNN"
+			default:
+				brains[b] = nn.NewDenseBlock(dModel, dModel, 0.1, "leaky_relu")
+				brainNames[b] = "Dense"
+			}
+		}
+
+		configs[i] = &NetworkConfig{
+			ID: i, DModel: dModel, NumHeads: numHeads, LR: lr,
+			GridRows: shape.rows, GridCols: shape.cols,
+			Brains: brains, BrainNames: brainNames,
+			Species: shape.name, CombineModeN: combineMode,
+		}
+	}
+
+	return configs
+}
+
+func trainNetworkWASM(cfg *NetworkConfig, samples []Sample43, evalTasks []*ARCTask43) *NetworkState {
+	brainGrid := make([][]nn.Layer, cfg.GridRows)
+	for r := 0; r < cfg.GridRows; r++ {
+		brainGrid[r] = make([]nn.Layer, cfg.GridCols)
+		for c := 0; c < cfg.GridCols; c++ {
+			idx := r*cfg.GridCols + c
+			brainGrid[r][c] = cfg.Brains[idx]
+		}
+	}
+
+	hive := nn.NewHive(
+		InputSize43, InputSize43,
+		cfg.GridRows, cfg.GridCols,
+		cfg.DModel, []int{cfg.DModel},
+		brainGrid, cfg.LR, float64(InitScale43),
+	)
+	hive.SetCombineMode(cfg.CombineModeN)
+
+	// Quick training
+	for epoch := 0; epoch < 2; epoch++ {
+		for _, sample := range samples {
+			ts := hive.Forward(sample.Input)
+			hive.TweenWeightsChainRule(ts, sample.Target)
+		}
+	}
+
+	state := &NetworkState{
+		Hive:        hive,
+		Config:      cfg,
+		Predictions: make(map[string][][]int),
+	}
+
+	// Get predictions for eval tasks
+	for _, task := range evalTasks {
+		if len(task.Test) == 0 {
+			continue
+		}
+		pred := predictTask(hive, task)
+		state.Predictions[task.ID] = pred
+	}
+
+	return state
+}
+
+func predictTask(hive *nn.Hive, task *ARCTask43) [][]int {
+	testPair := task.Test[0]
+	input := make([]float32, InputSize43)
+	for y := 0; y < len(testPair.Input) && y < MaxGridSize43; y++ {
+		for x := 0; x < len(testPair.Input[y]) && x < MaxGridSize43; x++ {
+			input[y*MaxGridSize43+x] = float32(testPair.Input[y][x]) / 9.0
+		}
+	}
+
+	output := hive.Infer(input)
+
+	height := len(testPair.Output)
+	width := len(testPair.Output[0])
+
+	grid := make([][]int, height)
+	for y := 0; y < height; y++ {
+		grid[y] = make([]int, width)
+		for x := 0; x < width; x++ {
+			val := int(math.Round(float64(output[y*MaxGridSize43+x]) * 9))
+			if val < 0 {
+				val = 0
+			}
+			if val > 9 {
+				val = 9
+			}
+			grid[y][x] = val
+		}
+	}
+	return grid
+}
+
+func clusterNetworksWASM(networks []*NetworkState) []*NetworkSpecialist {
+	specialists := make([]*NetworkSpecialist, len(networks))
+	for i, net := range networks {
+		specialists[i] = &NetworkSpecialist{
+			Network:   net,
+			ClusterID: i % 5,
+			Specialty: net.Config.Species,
+		}
+	}
+	return specialists
+}
+
+func tryStitchTask(specialists []*NetworkSpecialist, task *ARCTask43) (bool, [][]int) {
+	if len(task.Test) == 0 {
+		return false, nil
+	}
+
+	expected := task.Test[0].Output
+	height := len(expected)
+	width := len(expected[0])
+
+	// Collect all predictions
+	var predictions [][][]int
+	for _, spec := range specialists {
+		if pred, ok := spec.Network.Predictions[task.ID]; ok {
+			predictions = append(predictions, pred)
+		}
+	}
+
+	if len(predictions) == 0 {
+		return false, nil
+	}
+
+	// Stitch by voting per pixel
+	stitched := make([][]int, height)
+	correct := 0
+	total := height * width
+
+	for y := 0; y < height; y++ {
+		stitched[y] = make([]int, width)
+		for x := 0; x < width; x++ {
+			votes := make([]int, 10)
+			for _, pred := range predictions {
+				if y < len(pred) && x < len(pred[y]) {
+					votes[pred[y][x]]++
+				}
+			}
+
+			maxVote := 0
+			for color, count := range votes {
+				if count > maxVote {
+					maxVote = count
+					stitched[y][x] = color
+				}
+			}
+
+			if stitched[y][x] == expected[y][x] {
+				correct++
+			}
+		}
+	}
+
+	solved := correct == total
+	return solved, stitched
+}
