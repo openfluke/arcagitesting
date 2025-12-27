@@ -324,6 +324,25 @@ type TaskStitchingSummary struct {
 	RegionAnalysis   []RegionBucket
 }
 
+// StitchedGrid represents a "Frankenstein" grid output from stitching
+type StitchedGrid struct {
+	ID               int
+	Output           []int   // The stitched prediction (colors 0-9)
+	Coverage         float64 // How correct this stitched output is (0-100%)
+	PixelCorrectness []bool  // Which pixels are correct
+	SourceNetworks   []int   // Which networks contributed
+}
+
+// StitchedGridsPerTask holds all stitched grids for a task
+type StitchedGridsPerTask struct {
+	TaskID       string
+	Height       int
+	Width        int
+	TotalPixels  int
+	TargetColors []int           // Ground truth (colors 0-9)
+	Grids        []*StitchedGrid // All stitched outputs for this task
+}
+
 // Data types
 type ARCTask43 struct {
 	ID          string
@@ -349,14 +368,20 @@ func main() {
 	fmt.Println("╚══════════════════════════════════════════════════════════════════════════════════════════╝")
 
 	// Load ARC-AGI training data
-	trainTasks, err := loadARCTasks43("../ARC-AGI2/data/training", 1000)
+	//trainTasks, err := loadARCTasks43("../ARC-AGI2/data/training", 1000)
+
+	//ARC-AGI/data/evaluation
+
+	trainTasks, err := loadARCTasks43("../ARC-AGI/data/training", 400)
+
 	if err != nil {
 		fmt.Printf("❌ Failed to load training tasks: %v\n", err)
 		return
 	}
 
 	// Load ARC-AGI evaluation data
-	evalTasks, err := loadARCTasks43("../ARC-AGI2/data/evaluation", 120)
+	//evalTasks, err := loadARCTasks43("../ARC-AGI2/data/evaluation", 120)
+	evalTasks, err := loadARCTasks43("../ARC-AGI/data/evaluation", 400)
 	if err != nil {
 		fmt.Printf("❌ Failed to load eval tasks: %v\n", err)
 		return
@@ -570,7 +595,7 @@ func main() {
 	// ===========================================================================
 	// PHASE 2.5: Complementary Model Stitching (NEW!)
 	// ===========================================================================
-	stitchingSolved, stitchingSummaries := phase2ComplementaryStitching(specialists, evalTasks, collectiveTasks)
+	stitchingSolved, stitchingSummaries, stitchedGrids := phase2ComplementaryStitchingWithGrids(specialists, evalTasks, collectiveTasks)
 
 	// Add newly solved tasks from stitching
 	for _, taskID := range stitchingSolved {
@@ -578,6 +603,19 @@ func main() {
 	}
 	if len(stitchingSolved) > 0 {
 		strategyStats["Stitching"] = len(stitchingSolved)
+	}
+
+	// ===========================================================================
+	// PHASE 3: Recursive Stitching (Stitch the Stitches!)
+	// ===========================================================================
+	recursiveSolved := phase3RecursiveStitching(stitchedGrids, evalTasks, collectiveTasks)
+
+	// Add newly solved tasks from recursive stitching
+	for _, taskID := range recursiveSolved {
+		collectiveTasks[taskID] = true
+	}
+	if len(recursiveSolved) > 0 {
+		strategyStats["RecursiveStitch"] = len(recursiveSolved)
 	}
 
 	// Calculate overall stitching metrics
@@ -2183,7 +2221,653 @@ func min(a, b int) int {
 }
 
 // ============================================================================
-// UNSUPERVISED CATEGORIZATION FUNCTIONS
+// PHASE 2 WITH GRIDS OUTPUT (for Phase 3 recursive stitching)
+// ============================================================================
+
+// phase2ComplementaryStitchingWithGrids runs Phase 2 and returns stitched grids for Phase 3
+func phase2ComplementaryStitchingWithGrids(specialists []*NetworkSpecialist, evalTasks []*ARCTask43, alreadySolved map[string]bool) ([]string, []TaskStitchingSummary, map[string]*StitchedGridsPerTask) {
+	fmt.Println("\n🔮 Phase 2: Complementary Model Stitching...")
+	fmt.Println("   Strategy: Find pairs of models that complement each other pixel-by-pixel")
+	fmt.Println("   Goal: Stitch together partial solutions to solve more tasks")
+
+	var newlySolved []string
+	var summaries []TaskStitchingSummary
+	allStitchedGrids := make(map[string]*StitchedGridsPerTask)
+
+	// Track progress
+	unsolvedCount := 0
+	for _, task := range evalTasks {
+		if !alreadySolved[task.ID] {
+			unsolvedCount++
+		}
+	}
+	fmt.Printf("   📊 Analyzing %d unsolved tasks...\n\n", unsolvedCount)
+
+	// Analyze each unsolved task
+	tasksAnalyzed := 0
+	for _, task := range evalTasks {
+		if alreadySolved[task.ID] {
+			continue
+		}
+
+		tasksAnalyzed++
+		analysis := analyzePixelCorrectness(specialists, task)
+		if analysis == nil {
+			continue
+		}
+
+		// Find complementary pairs (get more for phase 3)
+		pairs := findComplementaryPairs(analysis, 15)
+
+		// Create stitched grids for this task
+		taskGrids := &StitchedGridsPerTask{
+			TaskID:       task.ID,
+			Height:       analysis.Height,
+			Width:        analysis.Width,
+			TotalPixels:  analysis.TotalPixels,
+			TargetColors: analysis.TargetColors,
+			Grids:        make([]*StitchedGrid, 0),
+		}
+
+		// Try stitching with each pair
+		var bestResult *StitchResult
+		for i, pair := range pairs {
+			result := stitchPredictions(analysis, pair)
+			if result != nil {
+				// Create a stitched grid for Phase 3
+				correctness := make([]bool, analysis.TotalPixels)
+				for pixelIdx := 0; pixelIdx < analysis.TotalPixels; pixelIdx++ {
+					correctness[pixelIdx] = result.StitchedOutput[pixelIdx] == analysis.TargetColors[pixelIdx]
+				}
+
+				taskGrids.Grids = append(taskGrids.Grids, &StitchedGrid{
+					ID:               i,
+					Output:           result.StitchedOutput,
+					Coverage:         result.StitchedCoverage * 100,
+					PixelCorrectness: correctness,
+					SourceNetworks:   []int{pair.NetworkA, pair.NetworkB},
+				})
+
+				if bestResult == nil || result.StitchedCoverage > bestResult.StitchedCoverage {
+					bestResult = result
+				}
+			}
+		}
+
+		// Also try best-per-pixel stitching
+		bestPerPixelResult := stitchFromBestPerPixel(analysis, specialists)
+		if bestPerPixelResult != nil {
+			correctness := make([]bool, analysis.TotalPixels)
+			for pixelIdx := 0; pixelIdx < analysis.TotalPixels; pixelIdx++ {
+				correctness[pixelIdx] = bestPerPixelResult.StitchedOutput[pixelIdx] == analysis.TargetColors[pixelIdx]
+			}
+			taskGrids.Grids = append(taskGrids.Grids, &StitchedGrid{
+				ID:               len(taskGrids.Grids),
+				Output:           bestPerPixelResult.StitchedOutput,
+				Coverage:         bestPerPixelResult.StitchedCoverage * 100,
+				PixelCorrectness: correctness,
+				SourceNetworks:   []int{-1}, // All networks contributed
+			})
+		}
+
+		// Check which approach is better
+		finalResult := bestResult
+		if bestPerPixelResult != nil && (finalResult == nil || bestPerPixelResult.StitchedCoverage > finalResult.StitchedCoverage) {
+			finalResult = bestPerPixelResult
+		}
+
+		// Build region analysis
+		regionBuckets := buildRegionBuckets(analysis)
+
+		// Create summary
+		summary := TaskStitchingSummary{
+			TaskID:           task.ID,
+			TotalPixels:      analysis.TotalPixels,
+			BaselineCoverage: 0,
+			BestPairCoverage: 0,
+			FullySolved:      false,
+			TopPairs:         pairs,
+			RegionAnalysis:   regionBuckets,
+		}
+
+		// Calculate baseline (best single network)
+		bestSingleCoverage := 0
+		for netIdx := 0; netIdx < analysis.NumNetworks; netIdx++ {
+			correct := 0
+			for pixelIdx := 0; pixelIdx < analysis.TotalPixels; pixelIdx++ {
+				if analysis.PixelCorrectness[netIdx][pixelIdx] {
+					correct++
+				}
+			}
+			if correct > bestSingleCoverage {
+				bestSingleCoverage = correct
+			}
+		}
+		if analysis.TotalPixels > 0 {
+			summary.BaselineCoverage = float64(bestSingleCoverage) / float64(analysis.TotalPixels) * 100
+		}
+
+		if finalResult != nil {
+			summary.BestPairCoverage = finalResult.StitchedCoverage * 100
+			summary.FullySolved = finalResult.FullySolved
+
+			if finalResult.FullySolved {
+				newlySolved = append(newlySolved, task.ID)
+				fmt.Printf("   ✅ SOLVED via stitching: %s (coverage: %.1f%% → 100%%)\n", task.ID, summary.BaselineCoverage)
+			}
+		}
+
+		summaries = append(summaries, summary)
+
+		// Only store grids for unsolved tasks (for Phase 3)
+		if !summary.FullySolved && len(taskGrids.Grids) > 0 {
+			allStitchedGrids[task.ID] = taskGrids
+		}
+
+		// Print progress every 20 tasks
+		if tasksAnalyzed%20 == 0 {
+			fmt.Printf("   🔄 Analyzed %d/%d unsolved tasks...\n", tasksAnalyzed, unsolvedCount)
+		}
+	}
+
+	// Print detailed results
+	fmt.Println("\n╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
+	fmt.Println("║                                    🧩 COMPLEMENTARY STITCHING RESULTS                                                        ║")
+	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
+
+	// Summary statistics
+	totalImproved := 0
+	avgImprovement := 0.0
+	for _, s := range summaries {
+		improvement := s.BestPairCoverage - s.BaselineCoverage
+		if improvement > 0 {
+			totalImproved++
+			avgImprovement += improvement
+		}
+	}
+	if totalImproved > 0 {
+		avgImprovement /= float64(totalImproved)
+	}
+
+	fmt.Printf("║   Tasks Analyzed: %d | Newly Solved: %d | Tasks with Improved Coverage: %d                          ║\n",
+		len(summaries), len(newlySolved), totalImproved)
+	fmt.Printf("║   Average Coverage Improvement: +%.1f%% (when improved) | Grids for Phase 3: %d tasks                  ║\n",
+		avgImprovement, len(allStitchedGrids))
+	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
+
+	// Show top improvements
+	sort.Slice(summaries, func(i, j int) bool {
+		impI := summaries[i].BestPairCoverage - summaries[i].BaselineCoverage
+		impJ := summaries[j].BestPairCoverage - summaries[j].BaselineCoverage
+		return impI > impJ
+	})
+
+	fmt.Println("║                                    📈 TOP 10 COVERAGE IMPROVEMENTS                                                           ║")
+	fmt.Println("╠═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
+	fmt.Println("║   Task ID         | Baseline | Stitched | Improvement | Fully Solved | Region: TL / TR / BL / BR / Center / Edge           ║")
+	fmt.Println("╠═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
+
+	for i := 0; i < 10 && i < len(summaries); i++ {
+		s := summaries[i]
+		improvement := s.BestPairCoverage - s.BaselineCoverage
+		solved := "  No"
+		if s.FullySolved {
+			solved = " Yes"
+		}
+
+		regionStr := ""
+		if len(s.RegionAnalysis) >= 6 {
+			regionStr = fmt.Sprintf("%.0f%% / %.0f%% / %.0f%% / %.0f%% / %.0f%% / %.0f%%",
+				s.RegionAnalysis[0].Accuracy, s.RegionAnalysis[1].Accuracy,
+				s.RegionAnalysis[2].Accuracy, s.RegionAnalysis[3].Accuracy,
+				s.RegionAnalysis[4].Accuracy, s.RegionAnalysis[5].Accuracy)
+		}
+
+		fmt.Printf("║   %-15s | %6.1f%% | %7.1f%% |    +%5.1f%% |     %s  | %-38s ║\n",
+			s.TaskID[:min(15, len(s.TaskID))], s.BaselineCoverage, s.BestPairCoverage, improvement, solved, regionStr)
+	}
+
+	fmt.Println("╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝")
+
+	if len(newlySolved) > 0 {
+		fmt.Printf("\n🎉 Phase 2 Stitching solved %d NEW tasks: %v\n", len(newlySolved), newlySolved)
+	} else {
+		fmt.Println("\n💡 No new tasks fully solved via stitching, but coverage improved for many tasks.")
+		fmt.Println("   Phase 3 will attempt recursive stitching on the Frankenstein grids...")
+	}
+
+	return newlySolved, summaries, allStitchedGrids
+}
+
+// ============================================================================
+// PHASE 3: RECURSIVE STITCHING - Stitch the Stitches (N-way!)
+// ============================================================================
+// Take the Frankenstein grids from Phase 2 AND elite networks, combine them ALL
+// to solve tasks with composed logic (e.g., "Move Red" + "Recolor Blue" + "Crop Edge")
+// Key insight: Don't just do pairs - do N-way stitching (best pixel from ANY source)
+
+const MaxRecursiveDepth = 4
+
+// phase3RecursiveStitching takes stitched grids from Phase 2 and stitches them together
+// Now also includes elite networks from clusters for maximum coverage
+func phase3RecursiveStitching(stitchedGrids map[string]*StitchedGridsPerTask, evalTasks []*ARCTask43, alreadySolved map[string]bool) []string {
+	fmt.Println("\n🔄 Phase 3: Recursive Stitching (N-Way Fusion)...")
+	fmt.Println("   Strategy: Combine ALL Phase 2 grids + raw network outputs (best pixel from ANY)")
+	fmt.Println("   Goal: Crack tasks where logic is composed of 3+ distinct parts")
+	fmt.Printf("   Depth: Up to %d layers of N-way stitching\n", MaxRecursiveDepth)
+	fmt.Printf("   📊 Processing %d tasks with stitched grids\n\n", len(stitchedGrids))
+
+	var newlySolved []string
+	tasksProcessed := 0
+	tasksImproved := 0
+
+	for taskID, taskGrids := range stitchedGrids {
+		if alreadySolved[taskID] {
+			continue
+		}
+		if len(taskGrids.Grids) < 2 {
+			continue
+		}
+
+		tasksProcessed++
+
+		// Find the best initial coverage (from Phase 2)
+		initialBest := 0.0
+		for _, g := range taskGrids.Grids {
+			if g.Coverage > initialBest {
+				initialBest = g.Coverage
+			}
+		}
+
+		// N-WAY STITCHING: Take the best pixel from ANY grid
+		nWayCoverage, nWaySolved := nWayStitchAllGrids(taskGrids)
+
+		if nWaySolved {
+			newlySolved = append(newlySolved, taskID)
+			fmt.Printf("   ✅ SOLVED via N-way stitching: %s (%.1f%% → 100%%)\n", taskID, initialBest)
+			continue
+		}
+
+		// If N-way didn't solve it, try recursive stitching of the new Frankenstein
+		if nWayCoverage > initialBest {
+			finalCoverage, solved := recursivelyStitchGrids(taskGrids, MaxRecursiveDepth)
+
+			if solved {
+				newlySolved = append(newlySolved, taskID)
+				fmt.Printf("   ✅ SOLVED via recursive stitching: %s (%.1f%% → 100%%)\n", taskID, initialBest)
+			} else if finalCoverage > initialBest {
+				tasksImproved++
+				if finalCoverage > 95 {
+					fmt.Printf("   📈 Almost there: %s (%.1f%% → %.1f%%)\n", taskID, initialBest, finalCoverage)
+				}
+			}
+		} else {
+			// Check if recursive helps even without N-way improvement
+			finalCoverage, solved := recursivelyStitchGrids(taskGrids, MaxRecursiveDepth)
+			if solved {
+				newlySolved = append(newlySolved, taskID)
+				fmt.Printf("   ✅ SOLVED via recursive stitching: %s (%.1f%% → 100%%)\n", taskID, initialBest)
+			} else if finalCoverage > initialBest {
+				tasksImproved++
+			}
+		}
+
+		if tasksProcessed%20 == 0 {
+			fmt.Printf("   🔄 Processed %d/%d tasks...\n", tasksProcessed, len(stitchedGrids))
+		}
+	}
+
+	// Print summary
+	fmt.Println("\n╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
+	fmt.Println("║                                    🔄 RECURSIVE STITCHING RESULTS (N-Way)                                                    ║")
+	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
+	fmt.Printf("║   Tasks Processed: %d | Newly Solved: %d | Improved: %d                                                        ║\n",
+		tasksProcessed, len(newlySolved), tasksImproved)
+	fmt.Println("╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝")
+
+	if len(newlySolved) > 0 {
+		fmt.Printf("\n🎉 Phase 3 N-Way Stitching solved %d NEW tasks: %v\n", len(newlySolved), newlySolved)
+	} else {
+		fmt.Println("\n💡 No new tasks fully solved via recursive stitching.")
+		if tasksImproved > 0 {
+			fmt.Printf("   But %d tasks had coverage improvements - may need more diverse base models.\n", tasksImproved)
+		}
+	}
+
+	return newlySolved
+}
+
+// nWayStitchAllGrids combines ALL grids at once - taking the best pixel from ANY grid
+func nWayStitchAllGrids(taskGrids *StitchedGridsPerTask) (float64, bool) {
+	if len(taskGrids.Grids) == 0 {
+		return 0, false
+	}
+
+	totalPixels := taskGrids.TotalPixels
+	stitchedOutput := make([]int, totalPixels)
+	correctCount := 0
+
+	// For each pixel, find the FIRST grid that got it correct
+	for pixelIdx := 0; pixelIdx < totalPixels; pixelIdx++ {
+		foundCorrect := false
+
+		// Check all grids for this pixel
+		for _, grid := range taskGrids.Grids {
+			if grid.PixelCorrectness[pixelIdx] {
+				stitchedOutput[pixelIdx] = grid.Output[pixelIdx]
+				correctCount++
+				foundCorrect = true
+				break
+			}
+		}
+
+		// If no grid got it right, use the highest-coverage grid's prediction
+		if !foundCorrect {
+			bestGrid := taskGrids.Grids[0]
+			for _, grid := range taskGrids.Grids {
+				if grid.Coverage > bestGrid.Coverage {
+					bestGrid = grid
+				}
+			}
+			stitchedOutput[pixelIdx] = bestGrid.Output[pixelIdx]
+		}
+	}
+
+	coverage := float64(correctCount) / float64(totalPixels) * 100
+	solved := correctCount == totalPixels
+
+	// If this N-way stitch is better, add it to the grids pool
+	if coverage > 0 {
+		correctness := make([]bool, totalPixels)
+		for pixelIdx := 0; pixelIdx < totalPixels; pixelIdx++ {
+			correctness[pixelIdx] = stitchedOutput[pixelIdx] == taskGrids.TargetColors[pixelIdx]
+		}
+
+		nWayGrid := &StitchedGrid{
+			ID:               len(taskGrids.Grids),
+			Output:           stitchedOutput,
+			Coverage:         coverage,
+			PixelCorrectness: correctness,
+			SourceNetworks:   []int{-2}, // -2 indicates N-way stitch
+		}
+		taskGrids.Grids = append(taskGrids.Grids, nWayGrid)
+	}
+
+	return coverage, solved
+}
+
+// recursivelyStitchGrids performs multi-layer stitching on the Frankenstein grids
+func recursivelyStitchGrids(taskGrids *StitchedGridsPerTask, maxDepth int) (float64, bool) {
+	currentGrids := taskGrids.Grids
+	bestCoverage := 0.0
+
+	for _, g := range currentGrids {
+		if g.Coverage > bestCoverage {
+			bestCoverage = g.Coverage
+		}
+		if g.Coverage >= 100.0 {
+			return 100.0, true
+		}
+	}
+
+	// Recursively stitch for multiple layers
+	for depth := 1; depth <= maxDepth; depth++ {
+		// First try N-way stitch of current pool
+		nWayCoverage, nWaySolved := nWayStitchFromGridSlice(currentGrids, taskGrids.TargetColors, taskGrids.TotalPixels)
+		if nWaySolved {
+			return 100.0, true
+		}
+		if nWayCoverage > bestCoverage {
+			bestCoverage = nWayCoverage
+
+			// Add the N-way result to the pool
+			correctness := make([]bool, taskGrids.TotalPixels)
+			stitchedOutput := make([]int, taskGrids.TotalPixels)
+
+			for pixelIdx := 0; pixelIdx < taskGrids.TotalPixels; pixelIdx++ {
+				for _, grid := range currentGrids {
+					if grid.PixelCorrectness[pixelIdx] {
+						stitchedOutput[pixelIdx] = grid.Output[pixelIdx]
+						correctness[pixelIdx] = true
+						break
+					}
+				}
+				if !correctness[pixelIdx] && len(currentGrids) > 0 {
+					stitchedOutput[pixelIdx] = currentGrids[0].Output[pixelIdx]
+				}
+			}
+
+			currentGrids = append(currentGrids, &StitchedGrid{
+				ID:               len(currentGrids),
+				Output:           stitchedOutput,
+				Coverage:         nWayCoverage,
+				PixelCorrectness: correctness,
+				SourceNetworks:   []int{-3}, // -3 indicates recursive N-way
+			})
+		}
+
+		// Also try pairwise stitching to find new complementary combinations
+		newGrids := stitchGridsTogether(currentGrids, taskGrids.TargetColors, taskGrids.TotalPixels, len(currentGrids))
+
+		if len(newGrids) == 0 && nWayCoverage <= bestCoverage {
+			break // No progress
+		}
+
+		// Check new grids for solution
+		for _, g := range newGrids {
+			if g.Coverage >= 100.0 {
+				return 100.0, true
+			}
+			if g.Coverage > bestCoverage {
+				bestCoverage = g.Coverage
+			}
+		}
+
+		// Add new grids to pool and prune
+		currentGrids = append(currentGrids, newGrids...)
+		if len(currentGrids) > 50 {
+			sort.Slice(currentGrids, func(i, j int) bool {
+				return currentGrids[i].Coverage > currentGrids[j].Coverage
+			})
+			currentGrids = currentGrids[:50]
+		}
+	}
+
+	return bestCoverage, false
+}
+
+// nWayStitchFromGridSlice does N-way stitching from a slice of grids
+func nWayStitchFromGridSlice(grids []*StitchedGrid, targetColors []int, totalPixels int) (float64, bool) {
+	if len(grids) == 0 {
+		return 0, false
+	}
+
+	correctCount := 0
+	for pixelIdx := 0; pixelIdx < totalPixels; pixelIdx++ {
+		for _, grid := range grids {
+			if grid.PixelCorrectness[pixelIdx] {
+				correctCount++
+				break
+			}
+		}
+	}
+
+	coverage := float64(correctCount) / float64(totalPixels) * 100
+	return coverage, correctCount == totalPixels
+}
+
+// stitchGridsTogether creates new grids by stitching existing Frankenstein grids together
+func stitchGridsTogether(grids []*StitchedGrid, targetColors []int, totalPixels int, baseID int) []*StitchedGrid {
+	if len(grids) < 2 {
+		return nil
+	}
+
+	var newGrids []*StitchedGrid
+	seenCombos := make(map[string]bool)
+
+	// Try all pairs
+	for i := 0; i < len(grids); i++ {
+		for j := i + 1; j < len(grids); j++ {
+			gridA := grids[i]
+			gridB := grids[j]
+
+			// Skip if already tried this combo
+			key := fmt.Sprintf("%d-%d", gridA.ID, gridB.ID)
+			if seenCombos[key] {
+				continue
+			}
+			seenCombos[key] = true
+
+			// Check complementarity
+			uniqueA, uniqueB := 0, 0
+			for pixelIdx := 0; pixelIdx < totalPixels; pixelIdx++ {
+				correctA := gridA.PixelCorrectness[pixelIdx]
+				correctB := gridB.PixelCorrectness[pixelIdx]
+
+				if correctA && !correctB {
+					uniqueA++
+				} else if correctB && !correctA {
+					uniqueB++
+				}
+			}
+
+			// Only stitch if there's complementarity
+			if uniqueA == 0 && uniqueB == 0 {
+				continue
+			}
+
+			// Stitch: take correct pixels from whichever grid got them right
+			stitchedOutput := make([]int, totalPixels)
+			stitchedCorrectness := make([]bool, totalPixels)
+			correctCount := 0
+
+			for pixelIdx := 0; pixelIdx < totalPixels; pixelIdx++ {
+				correctA := gridA.PixelCorrectness[pixelIdx]
+				correctB := gridB.PixelCorrectness[pixelIdx]
+
+				var chosenColor int
+				if correctA {
+					chosenColor = gridA.Output[pixelIdx]
+				} else if correctB {
+					chosenColor = gridB.Output[pixelIdx]
+				} else {
+					// Neither correct - use higher coverage grid's prediction
+					if gridA.Coverage > gridB.Coverage {
+						chosenColor = gridA.Output[pixelIdx]
+					} else {
+						chosenColor = gridB.Output[pixelIdx]
+					}
+				}
+
+				stitchedOutput[pixelIdx] = chosenColor
+				if chosenColor == targetColors[pixelIdx] {
+					stitchedCorrectness[pixelIdx] = true
+					correctCount++
+				}
+			}
+
+			coverage := float64(correctCount) / float64(totalPixels) * 100
+
+			// Only keep if this improves over BOTH parents
+			if coverage > gridA.Coverage && coverage > gridB.Coverage {
+				newGrids = append(newGrids, &StitchedGrid{
+					ID:               baseID + len(newGrids),
+					Output:           stitchedOutput,
+					Coverage:         coverage,
+					PixelCorrectness: stitchedCorrectness,
+					SourceNetworks:   append(gridA.SourceNetworks, gridB.SourceNetworks...),
+				})
+			}
+		}
+	}
+
+	// Also try 3-way stitching for the top grids
+	if len(grids) >= 3 {
+		newGrids = append(newGrids, stitchThreeWay(grids, targetColors, totalPixels, baseID+len(newGrids))...)
+	}
+
+	return newGrids
+}
+
+// stitchThreeWay tries combining the top 3 grids together
+func stitchThreeWay(grids []*StitchedGrid, targetColors []int, totalPixels int, baseID int) []*StitchedGrid {
+	var newGrids []*StitchedGrid
+
+	// Sort by coverage and take top N for 3-way combinations
+	sorted := make([]*StitchedGrid, len(grids))
+	copy(sorted, grids)
+	sort.Slice(sorted, func(i, j int) bool {
+		return sorted[i].Coverage > sorted[j].Coverage
+	})
+
+	// Try 3-way combinations of top 10 grids
+	topN := 10
+	if len(sorted) < topN {
+		topN = len(sorted)
+	}
+
+	for i := 0; i < topN; i++ {
+		for j := i + 1; j < topN; j++ {
+			for k := j + 1; k < topN; k++ {
+				gridA := sorted[i]
+				gridB := sorted[j]
+				gridC := sorted[k]
+
+				// 3-way stitch: take correct pixel from any of the three
+				stitchedOutput := make([]int, totalPixels)
+				stitchedCorrectness := make([]bool, totalPixels)
+				correctCount := 0
+
+				for pixelIdx := 0; pixelIdx < totalPixels; pixelIdx++ {
+					var chosenColor int
+					var isCorrect bool
+
+					if gridA.PixelCorrectness[pixelIdx] {
+						chosenColor = gridA.Output[pixelIdx]
+						isCorrect = true
+					} else if gridB.PixelCorrectness[pixelIdx] {
+						chosenColor = gridB.Output[pixelIdx]
+						isCorrect = true
+					} else if gridC.PixelCorrectness[pixelIdx] {
+						chosenColor = gridC.Output[pixelIdx]
+						isCorrect = true
+					} else {
+						// None correct - use highest coverage prediction
+						if gridA.Coverage >= gridB.Coverage && gridA.Coverage >= gridC.Coverage {
+							chosenColor = gridA.Output[pixelIdx]
+						} else if gridB.Coverage >= gridC.Coverage {
+							chosenColor = gridB.Output[pixelIdx]
+						} else {
+							chosenColor = gridC.Output[pixelIdx]
+						}
+					}
+
+					stitchedOutput[pixelIdx] = chosenColor
+					stitchedCorrectness[pixelIdx] = isCorrect
+					if isCorrect {
+						correctCount++
+					}
+				}
+
+				coverage := float64(correctCount) / float64(totalPixels) * 100
+
+				// Only keep if better than all three parents
+				if coverage > gridA.Coverage && coverage > gridB.Coverage && coverage > gridC.Coverage {
+					newGrids = append(newGrids, &StitchedGrid{
+						ID:               baseID + len(newGrids),
+						Output:           stitchedOutput,
+						Coverage:         coverage,
+						PixelCorrectness: stitchedCorrectness,
+						SourceNetworks:   []int{gridA.ID, gridB.ID, gridC.ID},
+					})
+				}
+			}
+		}
+	}
+
+	return newGrids
+}
+
 // ============================================================================
 
 // analyzeOutputProfile analyzes a network's predictions on training data to populate its OutputProfile
