@@ -1,0 +1,117 @@
+{
+  "numEnsembles": 8,
+  "ensembleSize": 15,
+  "topEnsembles": [
+    {
+      "config": {
+        "id": 0,
+        "name": "Elite-Vote",
+        "size": 13,
+        "strategy": "Elite-Vote",
+        "memberIds": null
+      },
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "avgAccuracy": 19.904383125421187,
+      "memberSolved": null,
+      "fusionBonus": 0,
+      "synergyScore": 0,
+      "coverageRate": 36.410841654778885,
+      "uniqueSpecies": 5,
+      "uniqueCombineModes": 5
+    },
+    {
+      "config": {
+        "id": 0,
+        "name": "Elite-Average",
+        "size": 13,
+        "strategy": "Elite-Average",
+        "memberIds": null
+      },
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "avgAccuracy": 9.432999712715409,
+      "memberSolved": null,
+      "fusionBonus": 0,
+      "synergyScore": 0,
+      "coverageRate": 36.410841654778885,
+      "uniqueSpecies": 5,
+      "uniqueCombineModes": 5
+    },
+    {
+      "config": {
+        "id": 0,
+        "name": "Elite-Weighted",
+        "size": 13,
+        "strategy": "Elite-Weighted",
+        "memberIds": null
+      },
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "avgAccuracy": 9.457715213987552,
+      "memberSolved": null,
+      "fusionBonus": 0,
+      "synergyScore": 0,
+      "coverageRate": 36.410841654778885,
+      "uniqueSpecies": 5,
+      "uniqueCombineModes": 5
+    },
+    {
+      "config": {
+        "id": 0,
+        "name": "Elite-Oracle",
+        "size": 13,
+        "strategy": "Elite-Oracle",
+        "memberIds": null
+      },
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "avgAccuracy": 19.856635795816583,
+      "memberSolved": null,
+      "fusionBonus": 0,
+      "synergyScore": 0,
+      "coverageRate": 36.410841654778885,
+      "uniqueSpecies": 5,
+      "uniqueCombineModes": 5
+    }
+  ],
+  "collectiveTasks": [
+    "20270e3b",
+    "332f06d7",
+    "4c7dc4dd",
+    "5961cc34",
+    "6e453dd6",
+    "7b5033c1",
+    "8b9c3697",
+    "a25697e4"
+  ],
+  "collectiveCount": 8,
+  "bestFusionStrategy": "Stitching",
+  "strategyComparison": {
+    "Elite-Average": 0,
+    "Elite-Oracle": 0,
+    "Elite-Vote": 0,
+    "Elite-Weighted": 0,
+    "MetaVote": 0,
+    "Stitching": 5
+  },
+  "combineModeStats": {
+    "add": 32,
+    "avg": 41,
+    "concat": 28,
+    "grid_scatter": 19
+  },
+  "speciesStats": {
+    "1x1 Mono": 16,
+    "1x4 Wide": 12,
+    "2x2 Standard": 9,
+    "2x3 Rect": 18,
+    "3x2 Rect": 13,
+    "3x3 Complex": 17,
+    "4x1 Tall": 8,
+    "6x4 Matrix": 19,
+    "8x1 Scanner": 8
+  },
+  "timestamp": "2025-12-27T18:53:06+11:00",
+  "duration": "4m10.040773024s"
+}
