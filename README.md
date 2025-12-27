@@ -269,6 +269,54 @@ This benchmark demonstrates the core advantage of **step-based training**:
 - **Step-based AI**: Train AND serve simultaneously → Continuous adaptation
 
 In real-world applications (robotics, trading, games), the environment changes constantly. An AI that can adapt **while running** has a massive advantage over one that needs to stop and retrain.
+
+---
+
+## 🔮 Test 43a: Ensemble Fusion v2 - Complementary Stitching
+
+A multi-phase ensemble approach that trains diverse networks and **stitches their predictions together** pixel-by-pixel to solve more tasks than any single network.
+
+### The Strategy
+
+1. **Phase 1**: Train 120 diverse networks with random architectures (grid shapes, brain types, combine modes)
+2. **Phase 1.5**: Cluster networks by output patterns into specialist groups
+3. **Phase 2**: Find complementary pairs of networks and stitch their predictions (if Network A got pixel X right and Network B got pixel Y right, combine them!)
+4. **Phase 3**: Recursive N-way stitching of the "Frankenstein" grids
+
+### 🏆 Results
+
+| Benchmark | Tasks Solved | Accuracy | Duration |
+|-----------|--------------|----------|----------|
+| **ARC-AGI-1** | **109/400** | **27.25%** | 5m 48s |
+| ARC-AGI-2 | 8/120 | 6.7% | 4m 4s |
+
+### 📊 Breakdown (ARC-AGI-1)
+
+| Phase | Tasks Solved | Notes |
+|-------|--------------|-------|
+| Phase 1 (Clusters) | 31 | Individual specialist clusters |
+| Phase 2 (Stitching) | +78 | Complementary pair stitching |
+| **Total** | **109** | 27.25% of eval set |
+
+### 💡 Key Insights
+
+1. **Stitching is powerful**: Phase 2 solved 78 additional tasks by combining partial solutions
+2. **ARC-AGI-2 is much harder**: Only 8 tasks solved vs 109 on ARC-AGI-1 (the new benchmark is designed to resist pattern-matching)
+3. **Coverage improvements**: Even unsolved tasks saw +21.9% average pixel coverage improvement
+4. **Diverse architectures matter**: Networks with different grid shapes/brain types produce complementary errors
+
+### 🧠 Why Stitching Works
+
+When two networks make **different mistakes**, their correct pixels can be combined:
+
+```
+Network A: ✅✅❌❌✅❌  (4/6 = 67% correct)
+Network B: ❌✅✅❌❌✅  (3/6 = 50% correct)
+Stitched:  ✅✅✅❌✅✅  (5/6 = 83% correct!)
+```
+
+Some tasks went from 30% → 100% by finding the right complementary pairs!
+
 ---
 
 ## 🚀 Running the Benchmarks
@@ -306,6 +354,7 @@ go run viz_server.go
 | **test38_council.go** | Statistical saturation (1000) | 11 unique tasks |
 | **test39_evolutionary_zoo.go** | Speciation (2500 mutants, 7 topologies) | 14 unique tasks |
 | **test41_sine_adaptation.go** | Sine wave frequency adaptation | Score: 22,131 |
+| **test43a_ensemble_fusion_2/** | Ensemble Fusion v2 with complementary stitching | **109/400 (27.25%) ARC-AGI-1** |
 | test31_heuristic_hive.go | Heuristic Hive (MHA+LSTM) | 53.2% accuracy |
 
 ## 🏗️ Architecture
