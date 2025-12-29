@@ -57,6 +57,17 @@ func main() {
 		http.ServeFile(w, r, resultsPath)
 	})
 
+	// Serve ensemble fusion results
+	http.HandleFunc("/ensemble_fusion_arc_agi1.json", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		http.ServeFile(w, r, filepath.Join(vizDir, "test43a_ensemble_fusion_2", "ensemble_fusion_results_arc_agi1.json"))
+	})
+
+	http.HandleFunc("/ensemble_fusion_arc_agi2.json", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		http.ServeFile(w, r, filepath.Join(vizDir, "test43a_ensemble_fusion_2", "ensemble_fusion_results_2.json"))
+	})
+
 	// Open browser
 	go func() {
 		time.Sleep(1 * time.Second)

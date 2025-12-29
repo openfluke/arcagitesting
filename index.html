@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,7 +23,11 @@
             --border-color: #27272a;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -48,7 +53,11 @@
             -webkit-text-fill-color: transparent;
         }
 
-        .container { max-width: 1800px; margin: 0 auto; padding: 1rem; }
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
 
         /* Tabs */
         .tabs {
@@ -73,15 +82,23 @@
             transition: all 0.2s;
         }
 
-        .tab-btn:hover { border-color: var(--accent-color); }
+        .tab-btn:hover {
+            border-color: var(--accent-color);
+        }
+
         .tab-btn.active {
             background: var(--accent-color);
             border-color: var(--accent-color);
             color: white;
         }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
 
         /* Mode toggles */
         .mode-toggles {
@@ -105,7 +122,10 @@
             transition: all 0.2s;
         }
 
-        .mode-btn:hover { border-color: var(--accent-color); }
+        .mode-btn:hover {
+            border-color: var(--accent-color);
+        }
+
         .mode-btn.active {
             background: var(--accent-color);
             border-color: var(--accent-color);
@@ -129,15 +149,41 @@
             margin-bottom: 1rem;
         }
 
-        .chart-title { font-size: 1.1rem; font-weight: 600; }
-        .chart-subtitle { font-size: 0.8rem; color: var(--secondary-text); }
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
 
-        canvas { height: 400px !important; }
+        .chart-subtitle {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+        }
+
+        canvas {
+            height: 400px !important;
+        }
 
         /* Legend */
-        .legend { display: flex; flex-wrap: wrap; gap: 0.75rem; font-size: 0.75rem; margin-top: 1rem; justify-content: center; }
-        .legend-item { display: flex; align-items: center; gap: 0.3rem; }
-        .legend-color { width: 12px; height: 12px; border-radius: 3px; }
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            font-size: 0.75rem;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
 
         /* Key insight banner */
         .insight-banner {
@@ -154,8 +200,15 @@
             border: 1px solid rgba(168, 85, 247, 0.3);
         }
 
-        .insight-banner .title { font-weight: 700; color: var(--accent-color); margin-bottom: 0.5rem; }
-        .insight-banner.genetic .title { color: var(--purple-color); }
+        .insight-banner .title {
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-banner.genetic .title {
+            color: var(--purple-color);
+        }
 
         /* Insights grid */
         .insights-grid {
@@ -166,7 +219,9 @@
         }
 
         @media (max-width: 1200px) {
-            .insights-grid { grid-template-columns: 1fr; }
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .insight-card {
@@ -196,32 +251,92 @@
             margin-top: 0.25rem;
         }
 
-        .insight-value.success { color: var(--success-color); }
-        .insight-value.danger { color: var(--danger-color); }
-        .insight-value.purple { color: var(--purple-color); }
+        .insight-value.success {
+            color: var(--success-color);
+        }
+
+        .insight-value.danger {
+            color: var(--danger-color);
+        }
+
+        .insight-value.purple {
+            color: var(--purple-color);
+        }
 
         /* Rankings table */
-        .rankings-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        .rankings-table th { text-align: left; padding: 0.5rem 0; color: var(--secondary-text); font-weight: 500; border-bottom: 1px solid var(--border-color); }
-        .rankings-table td { padding: 0.5rem 0; border-bottom: 1px solid var(--border-color); }
-        .rankings-table tr:last-child td { border-bottom: none; }
+        .rankings-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .rankings-table th {
+            text-align: left;
+            padding: 0.5rem 0;
+            color: var(--secondary-text);
+            font-weight: 500;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .rankings-table td {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .rankings-table tr:last-child td {
+            border-bottom: none;
+        }
 
         .rank-badge {
             display: inline-block;
-            width: 20px; height: 20px; line-height: 20px;
-            text-align: center; border-radius: 4px;
-            font-size: 0.7rem; font-weight: 600; margin-right: 0.5rem;
+            width: 20px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
         }
 
-        .rank-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; }
-        .rank-2 { background: linear-gradient(135deg, #9ca3af, #6b7280); color: #fff; }
-        .rank-3 { background: linear-gradient(135deg, #d97706, #b45309); color: #fff; }
+        .rank-1 {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #000;
+        }
+
+        .rank-2 {
+            background: linear-gradient(135deg, #9ca3af, #6b7280);
+            color: #fff;
+        }
+
+        .rank-3 {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            color: #fff;
+        }
 
         /* Swarm leaderboard */
-        .swarm-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        .swarm-table th { text-align: left; padding: 0.5rem 0.3rem; color: var(--secondary-text); font-weight: 500; border-bottom: 1px solid var(--border-color); }
-        .swarm-table td { padding: 0.5rem 0.3rem; border-bottom: 1px solid var(--border-color); }
-        .swarm-table tr:hover { background: var(--surface-hover); }
+        .swarm-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        .swarm-table th {
+            text-align: left;
+            padding: 0.5rem 0.3rem;
+            color: var(--secondary-text);
+            font-weight: 500;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .swarm-table td {
+            padding: 0.5rem 0.3rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .swarm-table tr:hover {
+            background: var(--surface-hover);
+        }
 
         .arch-badge {
             font-size: 0.65rem;
@@ -233,6 +348,7 @@
         }
     </style>
 </head>
+
 <body>
     <header>
         <div class="logo">ARC-AGI Task Switching Analytics</div>
@@ -247,6 +363,7 @@
             <button class="tab-btn" data-tab="council">👑 Council of 1000</button>
             <button class="tab-btn" data-tab="zoo">🦎 Evolutionary Zoo</button>
             <button class="tab-btn" data-tab="monster">🦖 Monster Zoo</button>
+            <button class="tab-btn" data-tab="ensemble">🔮 Ensemble Fusion</button>
         </div>
 
         <!-- Mode Comparison Tab -->
@@ -254,9 +371,12 @@
             <div class="insight-banner">
                 <div class="title">⚡ Real-Time Task Switching: Task1 → Task2 → Task3 → ... → Task400 → Task1 → ...</div>
                 <div>
-                    We track <strong>pixel accuracy %</strong> every <strong>100ms</strong> while switching between 400 ARC tasks. 
-                    <span style="color:var(--danger-color)">NormalBP PAUSES to batch train</span> (reduced throughput) while 
-                    <span style="color:var(--success-color)">StepTweenChain trains EVERY sample</span> (maintains accuracy while switching).
+                    We track <strong>pixel accuracy %</strong> every <strong>100ms</strong> while switching between 400
+                    ARC tasks.
+                    <span style="color:var(--danger-color)">NormalBP PAUSES to batch train</span> (reduced throughput)
+                    while
+                    <span style="color:var(--success-color)">StepTweenChain trains EVERY sample</span> (maintains
+                    accuracy while switching).
                 </div>
             </div>
 
@@ -290,14 +410,17 @@
 
                 <div class="insight-card">
                     <h4>⚙️ SCORING ALGORITHM</h4>
-                    <select id="algorithm-select" style="width:100%;background:var(--surface-color);color:var(--text-color);border:1px solid var(--border-color);padding:0.5rem;border-radius:6px;font-family:inherit;cursor:pointer;margin-bottom:0.5rem">
+                    <select id="algorithm-select"
+                        style="width:100%;background:var(--surface-color);color:var(--text-color);border:1px solid var(--border-color);padding:0.5rem;border-radius:6px;font-family:inherit;cursor:pointer;margin-bottom:0.5rem">
                         <option value="balanced">Balanced (T×S×C)</option>
                         <option value="throughput-stability">Throughput × Stability</option>
                         <option value="consistency-first">Consistency First</option>
                         <option value="throughput-first">Throughput First</option>
                     </select>
                     <div style="font-size:0.75rem;color:var(--secondary-text)">Formula:</div>
-                    <div id="formula-display" style="font-size:0.8rem;color:var(--accent-color);font-family:monospace;padding:0.4rem;background:var(--surface-hover);border-radius:4px;margin-top:0.25rem"></div>
+                    <div id="formula-display"
+                        style="font-size:0.8rem;color:var(--accent-color);font-family:monospace;padding:0.4rem;background:var(--surface-hover);border-radius:4px;margin-top:0.25rem">
+                    </div>
                 </div>
 
                 <div class="insight-card">
@@ -325,8 +448,8 @@
                 <div class="title">🧬 EVOLUTIONARY SWARM - Genetic Lottery with Nano-Hives</div>
                 <div>
                     <strong>100 randomized network architectures</strong> compete in 10-second runs. Each has different
-                    <span style="color:var(--purple-color)">grid sizes</span>, 
-                    <span style="color:var(--success-color)">brain types (MHA, LSTM, RNN, Dense)</span>, and 
+                    <span style="color:var(--purple-color)">grid sizes</span>,
+                    <span style="color:var(--success-color)">brain types (MHA, LSTM, RNN, Dense)</span>, and
                     <span style="color:var(--accent-color)">hyperparameters</span>.
                 </div>
             </div>
@@ -336,7 +459,8 @@
                     <h4>🏆 CHAMPION</h4>
                     <div class="insight-value purple" id="swarm-winner">—</div>
                     <div class="insight-detail" id="swarm-winner-detail"></div>
-                    <div style="margin-top:0.5rem;font-size:0.75rem;color:var(--secondary-text)" id="swarm-winner-arch"></div>
+                    <div style="margin-top:0.5rem;font-size:0.75rem;color:var(--secondary-text)" id="swarm-winner-arch">
+                    </div>
                 </div>
 
                 <div class="insight-card">
@@ -383,11 +507,14 @@
 
         <!-- Council of 1000 Tab -->
         <div class="tab-content" id="council-tab">
-            <div class="insight-banner" style="background: linear-gradient(90deg, rgba(251, 191, 36, 0.1), rgba(168, 85, 247, 0.1)); border-color: rgba(251, 191, 36, 0.3);">
-                <div class="title" style="color: #fbbf24;">👑 THE COUNCIL OF 1000 - Massive Scale Architecture Search</div>
+            <div class="insight-banner"
+                style="background: linear-gradient(90deg, rgba(251, 191, 36, 0.1), rgba(168, 85, 247, 0.1)); border-color: rgba(251, 191, 36, 0.3);">
+                <div class="title" style="color: #fbbf24;">👑 THE COUNCIL OF 1000 - Massive Scale Architecture Search
+                </div>
                 <div>
                     <strong>1000 randomized agents</strong> competing to find unique task solutions.
-                    Testing <span style="color:var(--accent-color)">statistical saturation</span>: Does the discovery curve flatten or keep rising?
+                    Testing <span style="color:var(--accent-color)">statistical saturation</span>: Does the discovery
+                    curve flatten or keep rising?
                 </div>
             </div>
 
@@ -419,7 +546,8 @@
                     </div>
                     <div style="margin-top:1rem">
                         <h4>🧠 COLLECTIVE WISDOM</h4>
-                        <div style="max-height:100px;overflow-y:auto;font-size:0.7rem;font-family:monospace;margin-top:0.5rem;color:var(--secondary-text)" id="council-tasks"></div>
+                        <div style="max-height:100px;overflow-y:auto;font-size:0.7rem;font-family:monospace;margin-top:0.5rem;color:var(--secondary-text)"
+                            id="council-tasks"></div>
                     </div>
                 </div>
 
@@ -444,7 +572,8 @@
                 <div class="chart-header">
                     <div>
                         <div class="chart-title">📈 Discovery Curve - Cumulative Unique Tasks</div>
-                        <div class="chart-subtitle">X = Agents processed, Y = Unique tasks discovered. Is the curve still rising?</div>
+                        <div class="chart-subtitle">X = Agents processed, Y = Unique tasks discovered. Is the curve
+                            still rising?</div>
                     </div>
                 </div>
                 <canvas id="council-canvas"></canvas>
@@ -453,11 +582,13 @@
 
         <!-- Evolutionary Zoo Tab -->
         <div class="tab-content" id="zoo-tab">
-            <div class="insight-banner" style="background: linear-gradient(90deg, rgba(34, 197, 94, 0.1), rgba(168, 85, 247, 0.1)); border-color: rgba(34, 197, 94, 0.3);">
+            <div class="insight-banner"
+                style="background: linear-gradient(90deg, rgba(34, 197, 94, 0.1), rgba(168, 85, 247, 0.1)); border-color: rgba(34, 197, 94, 0.3);">
                 <div class="title" style="color: #22c55e;">🦎 THE EVOLUTIONARY ZOO - Deep Architectural Mutations</div>
                 <div>
-                    <strong>2500 mutant architectures</strong> with different topologies (1x1, 2x2, 3x3, 4x1, 1x4, 2x3, 3x2),
-                    <span style="color:var(--purple-color)">brain types (MHA, LSTM, RNN, Dense)</span>, 
+                    <strong>2500 mutant architectures</strong> with different topologies (1x1, 2x2, 3x3, 4x1, 1x4, 2x3,
+                    3x2),
+                    <span style="color:var(--purple-color)">brain types (MHA, LSTM, RNN, Dense)</span>,
                     <span style="color:var(--accent-color)">activations (ReLU, LeakyReLU, SiLU, Tanh)</span>, and
                     <span style="color:var(--success-color)">log-uniform learning rates</span>.
                 </div>
@@ -500,7 +631,8 @@
 
                 <div class="insight-card">
                     <h4>🧠 COLLECTIVE WISDOM</h4>
-                    <div style="max-height:200px;overflow-y:auto;font-size:0.7rem;font-family:monospace;color:var(--secondary-text)" id="zoo-tasks"></div>
+                    <div style="max-height:200px;overflow-y:auto;font-size:0.7rem;font-family:monospace;color:var(--secondary-text)"
+                        id="zoo-tasks"></div>
                 </div>
             </div>
 
@@ -527,12 +659,15 @@
 
         <!-- Monster Zoo Tab (Architectural Diversity) -->
         <div class="tab-content" id="monster-tab">
-            <div class="insight-banner" style="background: linear-gradient(90deg, rgba(168, 85, 247, 0.1), rgba(34, 197, 94, 0.1)); border-color: rgba(168, 85, 247, 0.3);">
-                <div class="title" style="color: #a855f7;">🧬 ARCHITECTURAL DIVERSITY ZOO - Layer & CombineMode Variations</div>
+            <div class="insight-banner"
+                style="background: linear-gradient(90deg, rgba(168, 85, 247, 0.1), rgba(34, 197, 94, 0.1)); border-color: rgba(168, 85, 247, 0.3);">
+                <div class="title" style="color: #a855f7;">🧬 ARCHITECTURAL DIVERSITY ZOO - Layer & CombineMode
+                    Variations</div>
                 <div>
-                    <strong>500 mutant architectures</strong> exploring 
-                    <span style="color:var(--accent-color)">CombineModes</span> (concat/add/avg/grid_scatter), 
-                    <span style="color:var(--success-color)">OutputTypes</span> (Sigmoid/Softmax/Sparsemax/Gumbel/Entmax), 
+                    <strong>500 mutant architectures</strong> exploring
+                    <span style="color:var(--accent-color)">CombineModes</span> (concat/add/avg/grid_scatter),
+                    <span style="color:var(--success-color)">OutputTypes</span>
+                    (Sigmoid/Softmax/Sparsemax/Gumbel/Entmax),
                     and <span style="color:#ef4444">6 brain types</span> (MHA/LSTM/RNN/Dense/SwiGLU/NormDense).
                 </div>
             </div>
@@ -609,6 +744,140 @@
                 <canvas id="monster-discovery-canvas"></canvas>
             </div>
         </div>
+
+        <!-- Ensemble Fusion Tab -->
+        <div class="tab-content" id="ensemble-tab">
+            <div class="insight-banner"
+                style="background: linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(236, 72, 153, 0.1)); border-color: rgba(99, 102, 241, 0.3);">
+                <div class="title" style="color: #6366f1;">🔮 ENSEMBLE FUSION - Multi-Strategy Decision Aggregation
+                </div>
+                <div>
+                    Comparing <strong>fusion strategies</strong> (Oracle, Vote, Average, Weighted, Stitching, MetaVote)
+                    across
+                    <span style="color:#ec4899">diverse species architectures</span> and
+                    <span style="color:#22c55e">combine modes</span>.
+                    Testing which ensemble approaches maximize collective task discovery.
+                </div>
+            </div>
+
+            <!-- ARC-AGI 1 Section -->
+            <div style="margin-bottom:2rem">
+                <h3 style="color:#6366f1;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem">
+                    <span
+                        style="background:#6366f1;color:white;padding:0.25rem 0.5rem;border-radius:4px;font-size:0.75rem">ARC-AGI
+                        1</span>
+                    Ensemble Fusion Results
+                </h3>
+                <div class="insights-grid">
+                    <div class="insight-card">
+                        <h4>📊 FUSION METRICS</h4>
+                        <div style="display:grid;grid-template-columns:1fr;gap:0.75rem">
+                            <div>
+                                <div class="insight-value" style="color:#6366f1;font-size:2rem" id="e1-collective">—
+                                </div>
+                                <div class="insight-detail">Collective Tasks Covered</div>
+                            </div>
+                            <div>
+                                <div class="insight-value success" id="e1-best-strategy">—</div>
+                                <div class="insight-detail">Best Fusion Strategy</div>
+                            </div>
+                            <div style="font-size:0.75rem;color:var(--secondary-text)" id="e1-timestamp"></div>
+                        </div>
+                    </div>
+
+                    <div class="insight-card">
+                        <h4>🏆 TOP ENSEMBLES</h4>
+                        <div style="max-height:200px;overflow-y:auto">
+                            <table class="swarm-table">
+                                <thead>
+                                    <tr>
+                                        <th>Strategy</th>
+                                        <th style="text-align:right">Solved</th>
+                                        <th style="text-align:right">Accuracy</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="e1-ensembles-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="insight-card">
+                        <h4>📈 STRATEGY COMPARISON</h4>
+                        <canvas id="e1-strategy-canvas" style="max-height:200px"></canvas>
+                    </div>
+                </div>
+
+                <div class="insights-grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="insight-card">
+                        <h4>🔗 COMBINE MODE STATS</h4>
+                        <canvas id="e1-combine-canvas" style="max-height:200px"></canvas>
+                    </div>
+                    <div class="insight-card">
+                        <h4>🦎 SPECIES DISTRIBUTION</h4>
+                        <canvas id="e1-species-canvas" style="max-height:200px"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ARC-AGI 2 Section -->
+            <div>
+                <h3 style="color:#ec4899;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem">
+                    <span
+                        style="background:#ec4899;color:white;padding:0.25rem 0.5rem;border-radius:4px;font-size:0.75rem">ARC-AGI
+                        2</span>
+                    Ensemble Fusion Results
+                </h3>
+                <div class="insights-grid">
+                    <div class="insight-card">
+                        <h4>📊 FUSION METRICS</h4>
+                        <div style="display:grid;grid-template-columns:1fr;gap:0.75rem">
+                            <div>
+                                <div class="insight-value" style="color:#ec4899;font-size:2rem" id="e2-collective">—
+                                </div>
+                                <div class="insight-detail">Collective Tasks Covered</div>
+                            </div>
+                            <div>
+                                <div class="insight-value success" id="e2-best-strategy">—</div>
+                                <div class="insight-detail">Best Fusion Strategy</div>
+                            </div>
+                            <div style="font-size:0.75rem;color:var(--secondary-text)" id="e2-timestamp"></div>
+                        </div>
+                    </div>
+
+                    <div class="insight-card">
+                        <h4>🏆 TOP ENSEMBLES</h4>
+                        <div style="max-height:200px;overflow-y:auto">
+                            <table class="swarm-table">
+                                <thead>
+                                    <tr>
+                                        <th>Strategy</th>
+                                        <th style="text-align:right">Solved</th>
+                                        <th style="text-align:right">Accuracy</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="e2-ensembles-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="insight-card">
+                        <h4>📈 STRATEGY COMPARISON</h4>
+                        <canvas id="e2-strategy-canvas" style="max-height:200px"></canvas>
+                    </div>
+                </div>
+
+                <div class="insights-grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="insight-card">
+                        <h4>🔗 COMBINE MODE STATS</h4>
+                        <canvas id="e2-combine-canvas" style="max-height:200px"></canvas>
+                    </div>
+                    <div class="insight-card">
+                        <h4>🦎 SPECIES DISTRIBUTION</h4>
+                        <canvas id="e2-species-canvas" style="max-height:200px"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -617,6 +886,8 @@
         let councilData = null;
         let zooData = null;
         let monsterData = null;
+        let ensembleAGI1Data = null;
+        let ensembleAGI2Data = null;
         let accuracyChart = null;
         let swarmChart = null;
         let councilChart = null;
@@ -624,6 +895,12 @@
         let zooDiscoveryChart = null;
         let monsterScatterChart = null;
         let monsterDiscoveryChart = null;
+        let e1StrategyChart = null;
+        let e1CombineChart = null;
+        let e1SpeciesChart = null;
+        let e2StrategyChart = null;
+        let e2CombineChart = null;
+        let e2SpeciesChart = null;
         let selectedModes = new Set();
         let selectedAlgorithm = 'balanced';
 
@@ -661,12 +938,14 @@
 
         async function init() {
             try {
-                const [modesRes, swarmRes, councilRes, zooRes, monsterRes] = await Promise.allSettled([
+                const [modesRes, swarmRes, councilRes, zooRes, monsterRes, ensembleAGI1Res, ensembleAGI2Res] = await Promise.allSettled([
                     fetch('arc_benchmark_results.json'),
                     fetch('genetic_swarm_results.json'),
                     fetch('council_results.json'),
                     fetch('zoo_results.json'),
-                    fetch('monster_results.json')
+                    fetch('monster_results.json'),
+                    fetch('ensemble_fusion_arc_agi1.json'),
+                    fetch('ensemble_fusion_arc_agi2.json')
                 ]);
 
                 if (modesRes.status === 'fulfilled' && modesRes.value.ok) {
@@ -697,6 +976,16 @@
                 if (monsterRes.status === 'fulfilled' && monsterRes.value.ok) {
                     monsterData = await monsterRes.value.json();
                     updateMonsterDisplay();
+                }
+
+                if (ensembleAGI1Res.status === 'fulfilled' && ensembleAGI1Res.value.ok) {
+                    ensembleAGI1Data = await ensembleAGI1Res.value.json();
+                    updateEnsembleDisplay('e1', ensembleAGI1Data, '#6366f1');
+                }
+
+                if (ensembleAGI2Res.status === 'fulfilled' && ensembleAGI2Res.value.ok) {
+                    ensembleAGI2Data = await ensembleAGI2Res.value.json();
+                    updateEnsembleDisplay('e2', ensembleAGI2Data, '#ec4899');
                 }
             } catch (e) {
                 console.error("Failed to load data:", e);
@@ -843,9 +1132,9 @@
                 document.getElementById('worst-mode-detail').innerHTML = `Score: ${worst.score.toFixed(0)}`;
 
                 document.getElementById('comparison-tbody').innerHTML = modeMetrics.map((m, i) => {
-                    const rankClass = i < 3 ? `rank-${i+1}` : '';
+                    const rankClass = i < 3 ? `rank-${i + 1}` : '';
                     return `<tr>
-                        <td><span class="rank-badge ${rankClass}">${i+1}</span><span style="color:${modeColors[m.mode]}">${m.mode}</span></td>
+                        <td><span class="rank-badge ${rankClass}">${i + 1}</span><span style="color:${modeColors[m.mode]}">${m.mode}</span></td>
                         <td style="text-align:right">${m.stability.toFixed(0)}%</td>
                         <td style="text-align:right">${m.throughput.toLocaleString()}</td>
                         <td style="text-align:right">${m.consistency.toFixed(0)}%</td>
@@ -874,7 +1163,7 @@
             document.getElementById('swarm-tbody').innerHTML = swarmData.topN.map((r, i) => {
                 const brains = (r.config.brains || r.config.brainNames || []).join(', ');
                 return `<tr>
-                    <td><span class="rank-badge ${i < 3 ? 'rank-' + (i+1) : ''}">${i+1}</span></td>
+                    <td><span class="rank-badge ${i < 3 ? 'rank-' + (i + 1) : ''}">${i + 1}</span></td>
                     <td>${r.config.gridSize}×${r.config.gridSize}</td>
                     <td style="font-size:0.65rem">${brains.slice(0, 30)}${brains.length > 30 ? '...' : ''}</td>
                     <td style="text-align:right">${r.avgTrainAccuracy.toFixed(1)}%</td>
@@ -905,7 +1194,7 @@
                     tension: 0.3,
                     pointRadius: 1
                 });
-                legendItems.push({ label: `#${i+1} ${r.config.gridSize}×${r.config.gridSize}`, color });
+                legendItems.push({ label: `#${i + 1} ${r.config.gridSize}×${r.config.gridSize}`, color });
             });
 
             const numWindows = swarmData.topN[0]?.windows.length || 100;
@@ -946,7 +1235,7 @@
             document.getElementById('council-timestamp').innerText = new Date(councilData.timestamp).toLocaleString();
 
             // Collective tasks
-            document.getElementById('council-tasks').innerHTML = councilData.collectiveTasks.map(t => 
+            document.getElementById('council-tasks').innerHTML = councilData.collectiveTasks.map(t =>
                 `<span style="display:inline-block;background:var(--surface-hover);padding:0.2rem 0.4rem;border-radius:3px;margin:0.1rem">${t}</span>`
             ).join(' ');
 
@@ -954,9 +1243,9 @@
             document.getElementById('council-experts-tbody').innerHTML = councilData.topExperts.slice(0, 10).map((r, i) => {
                 const cfg = r.config;
                 const arch = `${cfg.gridSize}×${cfg.gridSize} | ${cfg.brains.join(', ')}`;
-                const rankClass = i < 3 ? `rank-${i+1}` : '';
+                const rankClass = i < 3 ? `rank-${i + 1}` : '';
                 return `<tr>
-                    <td><span class="rank-badge ${rankClass}">${i+1}</span>${cfg.name}</td>
+                    <td><span class="rank-badge ${rankClass}">${i + 1}</span>${cfg.name}</td>
                     <td style="font-size:0.7rem">${arch.slice(0, 40)}${arch.length > 40 ? '...' : ''}</td>
                     <td style="text-align:right;font-weight:700;color:var(--success-color)">${r.tasksSolved}</td>
                 </tr>`;
@@ -994,19 +1283,19 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { 
-                            beginAtZero: true, 
+                        y: {
+                            beginAtZero: true,
                             title: { display: true, text: 'Unique Tasks Solved', color: 'rgba(255,255,255,0.7)' },
-                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
-                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
                         },
-                        x: { 
+                        x: {
                             title: { display: true, text: 'Agents Processed', color: 'rgba(255,255,255,0.7)' },
-                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
-                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
                         }
                     },
-                    plugins: { 
+                    plugins: {
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
@@ -1027,16 +1316,16 @@
             document.getElementById('zoo-duration').innerText = zooData.duration;
 
             // Collective tasks
-            document.getElementById('zoo-tasks').innerHTML = zooData.collectiveTasks.map(t => 
+            document.getElementById('zoo-tasks').innerHTML = zooData.collectiveTasks.map(t =>
                 `<span style="display:inline-block;background:var(--surface-hover);padding:0.2rem 0.4rem;border-radius:3px;margin:0.1rem">${t}</span>`
             ).join(' ');
 
             // Hall of Fame table
             document.getElementById('zoo-hall-tbody').innerHTML = zooData.topMutants.slice(0, 10).map((r, i) => {
-                const rankClass = i < 3 ? `rank-${i+1}` : '';
+                const rankClass = i < 3 ? `rank-${i + 1}` : '';
                 const mutStr = r.config.mutationStr.length > 50 ? r.config.mutationStr.slice(0, 47) + '...' : r.config.mutationStr;
                 return `<tr>
-                    <td><span class="rank-badge ${rankClass}">${i+1}</span></td>
+                    <td><span class="rank-badge ${rankClass}">${i + 1}</span></td>
                     <td style="font-size:0.7rem;font-family:monospace">${mutStr}</td>
                     <td style="text-align:right;font-weight:700;color:var(--success-color)">${r.tasksSolved}</td>
                 </tr>`;
@@ -1083,18 +1372,18 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { 
-                            beginAtZero: true, 
+                        y: {
+                            beginAtZero: true,
                             title: { display: true, text: 'Unique Tasks', color: 'rgba(255,255,255,0.7)' },
-                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
-                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
                         },
-                        x: { 
-                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
-                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        x: {
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
                         }
                     },
-                    plugins: { 
+                    plugins: {
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
@@ -1137,19 +1426,19 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { 
-                            beginAtZero: true, 
+                        y: {
+                            beginAtZero: true,
                             title: { display: true, text: 'Unique Tasks Solved', color: 'rgba(255,255,255,0.7)' },
-                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
-                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
                         },
-                        x: { 
+                        x: {
                             title: { display: true, text: 'Mutants Processed', color: 'rgba(255,255,255,0.7)' },
-                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
-                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
                         }
                     },
-                    plugins: { 
+                    plugins: {
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
@@ -1181,12 +1470,12 @@
 
             // Hall of Fame table - now showing combineMode instead of params
             document.getElementById('monster-hall-tbody').innerHTML = monsterData.topMutants.slice(0, 10).map((r, i) => {
-                const rankClass = i < 3 ? `rank-${i+1}` : '';
+                const rankClass = i < 3 ? `rank-${i + 1}` : '';
                 const cfg = r.config.mutationStr;
                 const shortCfg = cfg.length > 30 ? cfg.slice(0, 27) + '...' : cfg;
                 const mode = r.config.combineMode || 'concat';
                 return `<tr>
-                    <td><span class="rank-badge ${rankClass}">${i+1}</span></td>
+                    <td><span class="rank-badge ${rankClass}">${i + 1}</span></td>
                     <td style="font-size:0.6rem;font-family:monospace" title="${cfg}">${shortCfg}</td>
                     <td style="font-size:0.7rem;color:var(--accent-color)">${mode}</td>
                     <td style="text-align:right;font-weight:700;color:var(--success-color)">${r.tasksSolved}</td>
@@ -1230,18 +1519,18 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { 
+                        y: {
                             beginAtZero: true,
                             title: { display: true, text: 'Unique Tasks Discovered', color: 'rgba(255,255,255,0.7)' },
-                            ticks: { color: 'rgba(255,255,255,0.5)', stepSize: 1 }, 
-                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                            ticks: { color: 'rgba(255,255,255,0.5)', stepSize: 1 },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
                         },
-                        x: { 
-                            ticks: { color: 'rgba(255,255,255,0.7)' }, 
-                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        x: {
+                            ticks: { color: 'rgba(255,255,255,0.7)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
                         }
                     },
-                    plugins: { 
+                    plugins: {
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
@@ -1288,18 +1577,18 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { 
+                        y: {
                             beginAtZero: true,
                             title: { display: true, text: 'Unique Tasks Discovered', color: 'rgba(255,255,255,0.7)' },
-                            ticks: { color: 'rgba(255,255,255,0.5)', stepSize: 1 }, 
-                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                            ticks: { color: 'rgba(255,255,255,0.5)', stepSize: 1 },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
                         },
-                        x: { 
-                            ticks: { color: 'rgba(255,255,255,0.7)' }, 
-                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                        x: {
+                            ticks: { color: 'rgba(255,255,255,0.7)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
                         }
                     },
-                    plugins: { 
+                    plugins: {
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
@@ -1318,7 +1607,7 @@
             const canvas = document.getElementById('monster-discovery-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            
+
             // Use a separate chart variable
             if (window.monsterDiscoveryChartReal) window.monsterDiscoveryChartReal.destroy();
 
@@ -1346,19 +1635,19 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { 
-                            beginAtZero: true, 
+                        y: {
+                            beginAtZero: true,
                             title: { display: true, text: 'Unique Tasks Solved', color: 'rgba(255,255,255,0.7)' },
-                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
-                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
                         },
-                        x: { 
+                        x: {
                             title: { display: true, text: 'Mutants Processed', color: 'rgba(255,255,255,0.7)' },
-                            ticks: { color: 'rgba(255,255,255,0.5)' }, 
-                            grid: { color: 'rgba(255,255,255,0.1)' } 
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
                         }
                     },
-                    plugins: { 
+                    plugins: {
                         legend: { display: false },
                         tooltip: {
                             callbacks: {
@@ -1375,7 +1664,190 @@
             updateMonsterDiscoveryChartReal();
         }
 
+        function updateEnsembleDisplay(prefix, data, primaryColor) {
+            if (!data) return;
+
+            // Main metrics
+            document.getElementById(`${prefix}-collective`).innerText = data.collectiveCount;
+            document.getElementById(`${prefix}-best-strategy`).innerText = data.bestFusionStrategy;
+            document.getElementById(`${prefix}-timestamp`).innerText = `Duration: ${data.duration} | ${new Date(data.timestamp).toLocaleString()}`;
+
+            // Top ensembles table
+            const tbody = document.getElementById(`${prefix}-ensembles-tbody`);
+            tbody.innerHTML = data.topEnsembles.map((e, i) => {
+                const rankClass = i < 3 ? `rank-${i + 1}` : '';
+                return `<tr>
+                    <td><span class="rank-badge ${rankClass}">${i + 1}</span>${e.config.strategy}</td>
+                    <td style="text-align:right;font-weight:700;color:var(--success-color)">${e.tasksSolved}</td>
+                    <td style="text-align:right">${e.avgAccuracy.toFixed(1)}%</td>
+                </tr>`;
+            }).join('');
+
+            // Strategy comparison chart
+            updateEnsembleStrategyChart(prefix, data, primaryColor);
+
+            // Combine mode chart
+            updateEnsembleCombineChart(prefix, data);
+
+            // Species chart
+            updateEnsembleSpeciesChart(prefix, data);
+        }
+
+        function updateEnsembleStrategyChart(prefix, data, primaryColor) {
+            const ctx = document.getElementById(`${prefix}-strategy-canvas`).getContext('2d');
+
+            // Destroy existing chart
+            if (prefix === 'e1' && e1StrategyChart) e1StrategyChart.destroy();
+            if (prefix === 'e2' && e2StrategyChart) e2StrategyChart.destroy();
+
+            const strategyData = data.strategyComparison || {};
+            const labels = Object.keys(strategyData);
+            const values = Object.values(strategyData);
+
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Tasks Solved',
+                        data: values,
+                        backgroundColor: labels.map((_, i) => {
+                            const hue = (i * 50) % 360;
+                            return `hsla(${hue}, 70%, 60%, 0.7)`;
+                        }),
+                        borderColor: labels.map((_, i) => {
+                            const hue = (i * 50) % 360;
+                            return `hsla(${hue}, 70%, 60%, 1)`;
+                        }),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: {
+                            ticks: { color: 'rgba(255,255,255,0.5)', font: { size: 10 } },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            if (prefix === 'e1') e1StrategyChart = chart;
+            else e2StrategyChart = chart;
+        }
+
+        function updateEnsembleCombineChart(prefix, data) {
+            const ctx = document.getElementById(`${prefix}-combine-canvas`).getContext('2d');
+
+            if (prefix === 'e1' && e1CombineChart) e1CombineChart.destroy();
+            if (prefix === 'e2' && e2CombineChart) e2CombineChart.destroy();
+
+            const combineData = data.combineModeStats || {};
+            const labels = Object.keys(combineData);
+            const values = Object.values(combineData);
+
+            const colorMap = {
+                'concat': 'rgba(168, 85, 247, 0.7)',
+                'add': 'rgba(59, 130, 246, 0.7)',
+                'avg': 'rgba(34, 197, 94, 0.7)',
+                'grid_scatter': 'rgba(245, 158, 11, 0.7)'
+            };
+
+            const chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: labels.map(l => colorMap[l] || 'rgba(255,255,255,0.5)'),
+                        borderColor: 'rgba(0,0,0,0.3)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'right',
+                            labels: { color: 'rgba(255,255,255,0.7)', font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+
+            if (prefix === 'e1') e1CombineChart = chart;
+            else e2CombineChart = chart;
+        }
+
+        function updateEnsembleSpeciesChart(prefix, data) {
+            const ctx = document.getElementById(`${prefix}-species-canvas`).getContext('2d');
+
+            if (prefix === 'e1' && e1SpeciesChart) e1SpeciesChart.destroy();
+            if (prefix === 'e2' && e2SpeciesChart) e2SpeciesChart.destroy();
+
+            const speciesData = data.speciesStats || {};
+            const labels = Object.keys(speciesData);
+            const values = Object.values(speciesData);
+
+            const colors = [
+                'rgba(34, 197, 94, 0.7)',
+                'rgba(168, 85, 247, 0.7)',
+                'rgba(245, 158, 11, 0.7)',
+                'rgba(239, 68, 68, 0.7)',
+                'rgba(59, 130, 246, 0.7)',
+                'rgba(236, 72, 153, 0.7)',
+                'rgba(20, 184, 166, 0.7)',
+                'rgba(251, 191, 36, 0.7)',
+                'rgba(139, 92, 246, 0.7)'
+            ];
+
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Count',
+                        data: values,
+                        backgroundColor: colors.slice(0, labels.length),
+                        borderColor: colors.slice(0, labels.length).map(c => c.replace('0.7', '1')),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: {
+                            ticks: { color: 'rgba(255,255,255,0.5)', font: { size: 9 } },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            if (prefix === 'e1') e1SpeciesChart = chart;
+            else e2SpeciesChart = chart;
+        }
+
         init();
     </script>
 </body>
+
 </html>
