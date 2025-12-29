@@ -922,6 +922,7 @@
                             <thead>
                                 <tr>
                                     <th>Mode</th>
+                                    <th style="text-align:right">Accuracy</th>
                                     <th style="text-align:right">Stability</th>
                                     <th style="text-align:right">Throughput</th>
                                     <th style="text-align:right">Consistency</th>
@@ -943,6 +944,75 @@
                 </div>
                 <canvas id="t41-accuracy-canvas"></canvas>
                 <div class="legend" id="t41-chart-legend"></div>
+            </div>
+
+            <!-- Additional time-series charts showing recovery and scoring -->
+            <div class="insights-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">📈 Cumulative Score Over Time</div>
+                            <div class="chart-subtitle">Score = Σ(outputs × accuracy) — Steeper = faster value
+                                accumulation</div>
+                        </div>
+                    </div>
+                    <canvas id="t41-cumulative-canvas" style="max-height:280px"></canvas>
+                </div>
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">⚡ Throughput Over Time</div>
+                            <div class="chart-subtitle">Outputs per 50ms window</div>
+                        </div>
+                    </div>
+                    <canvas id="t41-outputs-canvas" style="max-height:280px"></canvas>
+                </div>
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">🔄 Recovery Rate</div>
+                            <div class="chart-subtitle">Rolling accuracy delta (smoothed) — Positive = recovering</div>
+                        </div>
+                    </div>
+                    <canvas id="t41-recovery-canvas" style="max-height:280px"></canvas>
+                </div>
+            </div>
+
+            <!-- Pause visualization charts - shows when modes are NOT producing -->
+            <div class="insights-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">⏸️ Pause Indicator</div>
+                            <div class="chart-subtitle">Dots appear when throughput drops below 50% — More dots = more
+                                pauses (StepTweenChain has fewest)</div>
+                        </div>
+                    </div>
+                    <canvas id="t41-gap-canvas" style="max-height:280px"></canvas>
+                </div>
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">📉 Pause Magnitude</div>
+                            <div class="chart-subtitle">Inverse throughput over time — Higher = more paused, Lower =
+                                actively working</div>
+                        </div>
+                    </div>
+                    <canvas id="t41-pause-canvas" style="max-height:280px"></canvas>
+                </div>
+            </div>
+
+            <!-- Effective Value chart - THE KEY INSIGHT -->
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">💎 Effective Value Over Time (Throughput × Accuracy)</div>
+                        <div class="chart-subtitle">This is WHY balance matters — High throughput with low accuracy =
+                            worthless. StepTweenChain maintains BOTH, so its effective value stays HIGH.</div>
+                    </div>
+                </div>
+                <canvas id="t41-value-canvas"></canvas>
+                <div class="legend" id="t41-value-legend"></div>
             </div>
 
             <!-- Main 3-axis bubble chart - full width, prominent -->
@@ -1029,6 +1099,12 @@
         let t41TSChart = null;
         let t41TCChart = null;
         let t41BubbleChart = null;
+        let t41CumulativeChart = null;
+        let t41OutputsChart = null;
+        let t41RecoveryChart = null;
+        let t41GapChart = null;
+        let t41PauseChart = null;
+        let t41ValueChart = null;
         let selectedModes = new Set();
         let selectedAlgorithm = 'balanced';
 
@@ -2022,6 +2098,7 @@
                     const rankClass = i < 3 ? `rank-${i + 1}` : '';
                     return `<tr>
                         <td><span class="rank-badge ${rankClass}">${i + 1}</span><span style="color:${modeColors[m.mode]}">${m.mode}</span></td>
+                        <td style="text-align:right">${m.avgAccuracy.toFixed(1)}%</td>
                         <td style="text-align:right">${m.stability.toFixed(1)}%</td>
                         <td style="text-align:right">${m.throughput.toLocaleString()}</td>
                         <td style="text-align:right">${m.consistency.toFixed(1)}%</td>
@@ -2037,6 +2114,12 @@
             updateTest41TSChart(modeMetrics);
             updateTest41TCChart(modeMetrics);
             updateTest41BubbleChart(modeMetrics);
+            updateTest41CumulativeChart(modeMetrics);
+            updateTest41OutputsChart(modeMetrics);
+            updateTest41RecoveryChart(modeMetrics);
+            updateTest41GapChart(modeMetrics);
+            updateTest41PauseChart(modeMetrics);
+            updateTest41ValueChart(modeMetrics);
         }
 
         function updateTest41AccuracyChart(modeMetrics) {
@@ -2354,6 +2437,394 @@
                     }
                 }
             });
+        }
+
+        function updateTest41CumulativeChart(modeMetrics) {
+            const ctx = document.getElementById('t41-cumulative-canvas').getContext('2d');
+            if (t41CumulativeChart) t41CumulativeChart.destroy();
+
+            const datasets = [];
+            const legendItems = [];
+            let numWindows = 100;
+
+            for (const m of modeMetrics) {
+                const color = modeColors[m.mode];
+                numWindows = m.windows.length;
+
+                // Calculate cumulative score (outputs × accuracy / 100)
+                let cumulative = 0;
+                const cumulativeData = m.windows.map(w => {
+                    cumulative += (w.outputs * w.accuracy / 100);
+                    return cumulative;
+                });
+
+                datasets.push({
+                    label: m.mode,
+                    data: cumulativeData,
+                    borderColor: color,
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    tension: 0.2,
+                    pointRadius: 0
+                });
+                legendItems.push({ label: m.mode, color });
+            }
+
+            const labels = [];
+            const windowMs = test41Data.windowMs || 50;
+            for (let i = 0; i < numWindows; i++) {
+                const time = ((i + 1) * windowMs) / 1000;
+                labels.push(time % 1 === 0 ? time + 's' : '');
+            }
+
+            t41CumulativeChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Cumulative Score', color: 'rgba(255,255,255,0.7)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)', callback: v => (v / 1000000).toFixed(1) + 'M' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: { ticks: { color: 'rgba(255,255,255,0.5)', maxTicksLimit: 11 }, grid: { color: 'rgba(255,255,255,0.1)' } }
+                    },
+                    plugins: {
+                        legend: { display: true, position: 'top', labels: { color: 'rgba(255,255,255,0.7)', font: { size: 9 }, usePointStyle: true } }
+                    }
+                }
+            });
+        }
+
+        function updateTest41OutputsChart(modeMetrics) {
+            const ctx = document.getElementById('t41-outputs-canvas').getContext('2d');
+            if (t41OutputsChart) t41OutputsChart.destroy();
+
+            const datasets = [];
+            let numWindows = 100;
+
+            for (const m of modeMetrics) {
+                const color = modeColors[m.mode];
+                numWindows = m.windows.length;
+
+                datasets.push({
+                    label: m.mode,
+                    data: m.windows.map(w => w.outputs),
+                    borderColor: color,
+                    backgroundColor: 'transparent',
+                    borderWidth: 1.5,
+                    tension: 0.3,
+                    pointRadius: 0
+                });
+            }
+
+            const labels = [];
+            const windowMs = test41Data.windowMs || 50;
+            for (let i = 0; i < numWindows; i++) {
+                const time = ((i + 1) * windowMs) / 1000;
+                labels.push(time % 1 === 0 ? time + 's' : '');
+            }
+
+            t41OutputsChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Outputs per Window', color: 'rgba(255,255,255,0.7)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)', callback: v => v.toLocaleString() },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: { ticks: { color: 'rgba(255,255,255,0.5)', maxTicksLimit: 11 }, grid: { color: 'rgba(255,255,255,0.1)' } }
+                    },
+                    plugins: {
+                        legend: { display: true, position: 'top', labels: { color: 'rgba(255,255,255,0.7)', font: { size: 9 }, usePointStyle: true } }
+                    }
+                }
+            });
+        }
+
+        function updateTest41RecoveryChart(modeMetrics) {
+            const ctx = document.getElementById('t41-recovery-canvas').getContext('2d');
+            if (t41RecoveryChart) t41RecoveryChart.destroy();
+
+            const datasets = [];
+            let numWindows = 100;
+            const smoothingWindow = 5; // 5-window moving average
+
+            for (const m of modeMetrics) {
+                const color = modeColors[m.mode];
+                numWindows = m.windows.length;
+
+                // Calculate accuracy delta (recovery = positive, drop = negative)
+                const deltas = [];
+                for (let i = 1; i < m.windows.length; i++) {
+                    deltas.push(m.windows[i].accuracy - m.windows[i - 1].accuracy);
+                }
+                deltas.unshift(0); // First window has no delta
+
+                // Smooth with moving average
+                const smoothed = deltas.map((_, i) => {
+                    const start = Math.max(0, i - smoothingWindow + 1);
+                    const slice = deltas.slice(start, i + 1);
+                    return slice.reduce((a, b) => a + b, 0) / slice.length;
+                });
+
+                datasets.push({
+                    label: m.mode,
+                    data: smoothed,
+                    borderColor: color,
+                    backgroundColor: 'transparent',
+                    borderWidth: 1.5,
+                    tension: 0.3,
+                    pointRadius: 0
+                });
+            }
+
+            const labels = [];
+            const windowMs = test41Data.windowMs || 50;
+            for (let i = 0; i < numWindows; i++) {
+                const time = ((i + 1) * windowMs) / 1000;
+                labels.push(time % 1 === 0 ? time + 's' : '');
+            }
+
+            t41RecoveryChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            title: { display: true, text: 'Δ Accuracy', color: 'rgba(255,255,255,0.7)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)', callback: v => v.toFixed(1) },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: { ticks: { color: 'rgba(255,255,255,0.5)', maxTicksLimit: 11 }, grid: { color: 'rgba(255,255,255,0.1)' } }
+                    },
+                    plugins: {
+                        legend: { display: true, position: 'top', labels: { color: 'rgba(255,255,255,0.7)', font: { size: 9 }, usePointStyle: true } },
+                        annotation: {
+                            annotations: {
+                                zeroLine: {
+                                    type: 'line',
+                                    yMin: 0,
+                                    yMax: 0,
+                                    borderColor: 'rgba(255,255,255,0.3)',
+                                    borderWidth: 1,
+                                    borderDash: [5, 5]
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTest41GapChart(modeMetrics) {
+            const ctx = document.getElementById('t41-gap-canvas').getContext('2d');
+            if (t41GapChart) t41GapChart.destroy();
+
+            const datasets = [];
+            const windowMs = test41Data.windowMs || 50;
+
+            // Find max outputs for threshold calculation
+            let maxOutputs = 0;
+            for (const m of modeMetrics) {
+                for (const w of m.windows) {
+                    maxOutputs = Math.max(maxOutputs, w.outputs);
+                }
+            }
+            const pauseThreshold = maxOutputs * 0.5; // 50% threshold
+
+            for (const m of modeMetrics) {
+                const color = modeColors[m.mode];
+                const scatterData = [];
+
+                // Add a dot whenever outputs fall below threshold (mode is paused)
+                for (let i = 0; i < m.windows.length; i++) {
+                    const w = m.windows[i];
+                    const timeS = ((i + 1) * windowMs) / 1000;
+
+                    if (w.outputs < pauseThreshold) {
+                        // Dot Y position based on how paused (lower outputs = higher Y)
+                        const pauseLevel = 1 - (w.outputs / pauseThreshold); // 0-1, higher = more paused
+                        scatterData.push({
+                            x: timeS,
+                            y: pauseLevel * 100 // Scale to 0-100
+                        });
+                    }
+                }
+
+                datasets.push({
+                    label: m.mode,
+                    data: scatterData,
+                    backgroundColor: color,
+                    borderColor: 'transparent',
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    showLine: false
+                });
+            }
+
+            t41GapChart = new Chart(ctx, {
+                type: 'scatter',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: 'Time (seconds)', color: 'rgba(255,255,255,0.7)' },
+                            min: 0,
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Pause Level %', color: 'rgba(255,255,255,0.7)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: true, position: 'top', labels: { color: 'rgba(255,255,255,0.7)', font: { size: 9 }, usePointStyle: true } }
+                    }
+                }
+            });
+        }
+
+        function updateTest41PauseChart(modeMetrics) {
+            const ctx = document.getElementById('t41-pause-canvas').getContext('2d');
+            if (t41PauseChart) t41PauseChart.destroy();
+
+            const datasets = [];
+            const windowMs = test41Data.windowMs || 50;
+            let numWindows = 100;
+
+            // Find max outputs for normalization
+            let maxOutputs = 0;
+            for (const m of modeMetrics) {
+                for (const w of m.windows) {
+                    maxOutputs = Math.max(maxOutputs, w.outputs);
+                }
+            }
+
+            for (const m of modeMetrics) {
+                const color = modeColors[m.mode];
+                numWindows = m.windows.length;
+
+                // Inverse throughput: maxOutputs - actual outputs (higher = more paused)
+                const pauseMagnitude = m.windows.map(w => ((maxOutputs - w.outputs) / maxOutputs) * 100);
+
+                datasets.push({
+                    label: m.mode,
+                    data: pauseMagnitude,
+                    borderColor: color,
+                    backgroundColor: 'transparent',
+                    borderWidth: 1.5,
+                    tension: 0.2,
+                    pointRadius: 0
+                });
+            }
+
+            const labels = [];
+            for (let i = 0; i < numWindows; i++) {
+                const time = ((i + 1) * windowMs) / 1000;
+                labels.push(time % 1 === 0 ? time + 's' : '');
+            }
+
+            t41PauseChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Pause Magnitude %', color: 'rgba(255,255,255,0.7)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: { ticks: { color: 'rgba(255,255,255,0.5)', maxTicksLimit: 11 }, grid: { color: 'rgba(255,255,255,0.1)' } }
+                    },
+                    plugins: {
+                        legend: { display: true, position: 'top', labels: { color: 'rgba(255,255,255,0.7)', font: { size: 9 }, usePointStyle: true } }
+                    }
+                }
+            });
+        }
+
+        function updateTest41ValueChart(modeMetrics) {
+            const ctx = document.getElementById('t41-value-canvas').getContext('2d');
+            if (t41ValueChart) t41ValueChart.destroy();
+
+            const datasets = [];
+            const legendItems = [];
+            const windowMs = test41Data.windowMs || 50;
+            let numWindows = 100;
+
+            for (const m of modeMetrics) {
+                const color = modeColors[m.mode];
+                numWindows = m.windows.length;
+
+                // Effective value = outputs × (accuracy / 100)
+                // This is the "real" value generated - high throughput with low accuracy = low value
+                const effectiveValue = m.windows.map(w => w.outputs * (w.accuracy / 100));
+
+                datasets.push({
+                    label: m.mode,
+                    data: effectiveValue,
+                    borderColor: color,
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    tension: 0.2,
+                    pointRadius: 0
+                });
+                legendItems.push({ label: m.mode, color });
+            }
+
+            const labels = [];
+            for (let i = 0; i < numWindows; i++) {
+                const time = ((i + 1) * windowMs) / 1000;
+                labels.push(time % 1 === 0 ? time + 's' : '');
+            }
+
+            t41ValueChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Effective Value (outputs × accuracy%)', color: 'rgba(255,255,255,0.7)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)', callback: v => v.toLocaleString() },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: { ticks: { color: 'rgba(255,255,255,0.5)', maxTicksLimit: 11 }, grid: { color: 'rgba(255,255,255,0.1)' } }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // Custom legend
+            document.getElementById('t41-value-legend').innerHTML = legendItems.map(i =>
+                `<div class="legend-item"><div class="legend-color" style="background:${i.color}"></div>${i.label}</div>`
+            ).join('');
         }
 
         init();
