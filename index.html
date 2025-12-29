@@ -364,6 +364,7 @@
             <button class="tab-btn" data-tab="zoo">🦎 Evolutionary Zoo</button>
             <button class="tab-btn" data-tab="monster">🦖 Monster Zoo</button>
             <button class="tab-btn" data-tab="ensemble">🔮 Ensemble Fusion</button>
+            <button class="tab-btn" data-tab="test41">⚡ Test 41 Benchmark</button>
         </div>
 
         <!-- Mode Comparison Tab -->
@@ -878,6 +879,126 @@
                 </div>
             </div>
         </div>
+
+        <!-- Test 41 Benchmark Tab -->
+        <div class="tab-content" id="test41-tab">
+            <div class="insight-banner"
+                style="background: linear-gradient(90deg, rgba(34, 211, 238, 0.1), rgba(168, 85, 247, 0.1)); border-color: rgba(34, 211, 238, 0.3);">
+                <div class="title" style="color: #22d3ee;">⚡ TEST 41 - High-Frequency Benchmark (50ms Windows)</div>
+                <div>
+                    Comparing <strong>6 training modes</strong> with
+                    <span style="color:#a855f7">high-frequency 50ms accuracy sampling</span> over a
+                    <span style="color:#22c55e">10-second run</span>.
+                    Tracking throughput, stability, consistency, and frequency switches across all modes.
+                </div>
+            </div>
+
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <h4>🏆 WINNER</h4>
+                    <div class="insight-value success" id="t41-best-mode">—</div>
+                    <div class="insight-detail" id="t41-best-detail"></div>
+                    <div style="border-top:1px solid var(--border-color);margin:0.75rem 0;padding-top:0.75rem">
+                        <h4>⚠️ WORST</h4>
+                        <div class="insight-value danger" id="t41-worst-mode">—</div>
+                        <div class="insight-detail" id="t41-worst-detail"></div>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <h4>⏱️ RUN INFO</h4>
+                    <div style="font-size:0.85rem;line-height:1.8">
+                        <div>Duration: <strong id="t41-duration">—</strong></div>
+                        <div>Window Size: <strong id="t41-window">—</strong>ms</div>
+                        <div>Frequencies: <strong id="t41-frequencies">—</strong></div>
+                        <div>Timestamp: <strong id="t41-timestamp">—</strong></div>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <h4>📊 MODE COMPARISON</h4>
+                    <div style="max-height:250px;overflow-y:auto">
+                        <table class="rankings-table">
+                            <thead>
+                                <tr>
+                                    <th>Mode</th>
+                                    <th style="text-align:right">Stability</th>
+                                    <th style="text-align:right">Throughput</th>
+                                    <th style="text-align:right">Consistency</th>
+                                    <th style="text-align:right">Score</th>
+                                </tr>
+                            </thead>
+                            <tbody id="t41-comparison-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">Accuracy Over Time (50ms Windows)</div>
+                        <div class="chart-subtitle">High-frequency sampling comparison across training modes</div>
+                    </div>
+                </div>
+                <canvas id="t41-accuracy-canvas"></canvas>
+                <div class="legend" id="t41-chart-legend"></div>
+            </div>
+
+            <!-- Main 3-axis bubble chart - full width, prominent -->
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">🎯 Score Visualization: Throughput × Stability × Consistency</div>
+                        <div class="chart-subtitle">X = Throughput (normalized), Y = Stability %, Bubble Size =
+                            Consistency × Score — Bigger bubble in top-right = best performer</div>
+                    </div>
+                </div>
+                <canvas id="t41-bubble-canvas" style="height:450px !important"></canvas>
+            </div>
+
+            <div class="insights-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">Throughput Comparison</div>
+                            <div class="chart-subtitle">Outputs per second by mode</div>
+                        </div>
+                    </div>
+                    <canvas id="t41-throughput-canvas" style="max-height:250px"></canvas>
+                </div>
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">Stability vs Consistency</div>
+                            <div class="chart-subtitle">Trade-off visualization</div>
+                        </div>
+                    </div>
+                    <canvas id="t41-scatter-canvas" style="max-height:250px"></canvas>
+                </div>
+            </div>
+
+            <div class="insights-grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">📈 Throughput vs Stability</div>
+                            <div class="chart-subtitle">Higher is better on both axes</div>
+                        </div>
+                    </div>
+                    <canvas id="t41-ts-canvas" style="max-height:280px"></canvas>
+                </div>
+                <div class="chart-section">
+                    <div class="chart-header">
+                        <div>
+                            <div class="chart-title">📈 Throughput vs Consistency</div>
+                            <div class="chart-subtitle">Higher is better on both axes</div>
+                        </div>
+                    </div>
+                    <canvas id="t41-tc-canvas" style="max-height:280px"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -888,6 +1009,7 @@
         let monsterData = null;
         let ensembleAGI1Data = null;
         let ensembleAGI2Data = null;
+        let test41Data = null;
         let accuracyChart = null;
         let swarmChart = null;
         let councilChart = null;
@@ -901,6 +1023,12 @@
         let e2StrategyChart = null;
         let e2CombineChart = null;
         let e2SpeciesChart = null;
+        let t41AccuracyChart = null;
+        let t41ThroughputChart = null;
+        let t41ScatterChart = null;
+        let t41TSChart = null;
+        let t41TCChart = null;
+        let t41BubbleChart = null;
         let selectedModes = new Set();
         let selectedAlgorithm = 'balanced';
 
@@ -938,14 +1066,15 @@
 
         async function init() {
             try {
-                const [modesRes, swarmRes, councilRes, zooRes, monsterRes, ensembleAGI1Res, ensembleAGI2Res] = await Promise.allSettled([
+                const [modesRes, swarmRes, councilRes, zooRes, monsterRes, ensembleAGI1Res, ensembleAGI2Res, test41Res] = await Promise.allSettled([
                     fetch('arc_benchmark_results.json'),
                     fetch('genetic_swarm_results.json'),
                     fetch('council_results.json'),
                     fetch('zoo_results.json'),
                     fetch('monster_results.json'),
                     fetch('ensemble_fusion_arc_agi1.json'),
-                    fetch('ensemble_fusion_arc_agi2.json')
+                    fetch('ensemble_fusion_arc_agi2.json'),
+                    fetch('test41_results.json')
                 ]);
 
                 if (modesRes.status === 'fulfilled' && modesRes.value.ok) {
@@ -986,6 +1115,11 @@
                 if (ensembleAGI2Res.status === 'fulfilled' && ensembleAGI2Res.value.ok) {
                     ensembleAGI2Data = await ensembleAGI2Res.value.json();
                     updateEnsembleDisplay('e2', ensembleAGI2Data, '#ec4899');
+                }
+
+                if (test41Res.status === 'fulfilled' && test41Res.value.ok) {
+                    test41Data = await test41Res.value.json();
+                    updateTest41Display();
                 }
             } catch (e) {
                 console.error("Failed to load data:", e);
@@ -1844,6 +1978,382 @@
 
             if (prefix === 'e1') e1SpeciesChart = chart;
             else e2SpeciesChart = chart;
+        }
+
+        function updateTest41Display() {
+            if (!test41Data) return;
+
+            // Run info
+            document.getElementById('t41-duration').innerText = test41Data.duration;
+            document.getElementById('t41-window').innerText = test41Data.windowMs;
+            document.getElementById('t41-frequencies').innerText = test41Data.frequencies ? test41Data.frequencies.join(', ') : '—';
+            document.getElementById('t41-timestamp').innerText = new Date(test41Data.timestamp).toLocaleString();
+
+            // Calculate mode metrics
+            const modeMetrics = [];
+            for (const modeName of test41Data.modes) {
+                const r = test41Data.results[modeName];
+                modeMetrics.push({
+                    mode: modeName,
+                    stability: r.stability,
+                    throughput: r.throughputPerSec,
+                    consistency: r.consistency,
+                    score: r.score,
+                    avgAccuracy: r.avgTrainAccuracy,
+                    windows: r.windows
+                });
+            }
+
+            // Sort by score
+            modeMetrics.sort((a, b) => b.score - a.score);
+
+            // Best and worst
+            if (modeMetrics.length > 0) {
+                const best = modeMetrics[0];
+                document.getElementById('t41-best-mode').innerText = best.mode;
+                document.getElementById('t41-best-detail').innerHTML = `Score: ${best.score.toFixed(0)} | Stability: ${best.stability.toFixed(1)}%`;
+
+                const worst = modeMetrics[modeMetrics.length - 1];
+                document.getElementById('t41-worst-mode').innerText = worst.mode;
+                document.getElementById('t41-worst-detail').innerHTML = `Score: ${worst.score.toFixed(0)}`;
+
+                // Mode comparison table
+                document.getElementById('t41-comparison-tbody').innerHTML = modeMetrics.map((m, i) => {
+                    const rankClass = i < 3 ? `rank-${i + 1}` : '';
+                    return `<tr>
+                        <td><span class="rank-badge ${rankClass}">${i + 1}</span><span style="color:${modeColors[m.mode]}">${m.mode}</span></td>
+                        <td style="text-align:right">${m.stability.toFixed(1)}%</td>
+                        <td style="text-align:right">${m.throughput.toLocaleString()}</td>
+                        <td style="text-align:right">${m.consistency.toFixed(1)}%</td>
+                        <td style="text-align:right;font-weight:700;color:var(--accent-color)">${m.score.toFixed(0)}</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            // Charts
+            updateTest41AccuracyChart(modeMetrics);
+            updateTest41ThroughputChart(modeMetrics);
+            updateTest41ScatterChart(modeMetrics);
+            updateTest41TSChart(modeMetrics);
+            updateTest41TCChart(modeMetrics);
+            updateTest41BubbleChart(modeMetrics);
+        }
+
+        function updateTest41AccuracyChart(modeMetrics) {
+            const ctx = document.getElementById('t41-accuracy-canvas').getContext('2d');
+            if (t41AccuracyChart) t41AccuracyChart.destroy();
+
+            const datasets = [];
+            const legendItems = [];
+            let numWindows = 100;
+
+            for (const m of modeMetrics) {
+                const color = modeColors[m.mode];
+                numWindows = m.windows.length;
+
+                datasets.push({
+                    label: m.mode,
+                    data: m.windows.map(w => w.accuracy),
+                    borderColor: color,
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    pointRadius: 0
+                });
+                legendItems.push({ label: m.mode, color });
+            }
+
+            const labels = [];
+            const windowMs = test41Data.windowMs || 50;
+            for (let i = 0; i < numWindows; i++) {
+                const time = ((i + 1) * windowMs) / 1000;
+                labels.push(time % 1 === 0 ? time + 's' : '');
+            }
+
+            t41AccuracyChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100, ticks: { color: 'rgba(255,255,255,0.5)', callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                        x: { ticks: { color: 'rgba(255,255,255,0.5)', maxTicksLimit: 11 }, grid: { color: 'rgba(255,255,255,0.1)' } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            document.getElementById('t41-chart-legend').innerHTML = legendItems.map(i =>
+                `<div class="legend-item"><div class="legend-color" style="background:${i.color}"></div>${i.label}</div>`
+            ).join('');
+        }
+
+        function updateTest41ThroughputChart(modeMetrics) {
+            const ctx = document.getElementById('t41-throughput-canvas').getContext('2d');
+            if (t41ThroughputChart) t41ThroughputChart.destroy();
+
+            const labels = modeMetrics.map(m => m.mode);
+            const data = modeMetrics.map(m => m.throughput);
+            const colors = modeMetrics.map(m => modeColors[m.mode]);
+
+            t41ThroughputChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Throughput (outputs/sec)',
+                        data: data,
+                        backgroundColor: colors.map(c => c.replace(')', ', 0.7)').replace('hsl', 'hsla')),
+                        borderColor: colors,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: 'rgba(255,255,255,0.5)', callback: v => v.toLocaleString() },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: {
+                            ticks: { color: 'rgba(255,255,255,0.5)', font: { size: 10 } },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function updateTest41ScatterChart(modeMetrics) {
+            const ctx = document.getElementById('t41-scatter-canvas').getContext('2d');
+            if (t41ScatterChart) t41ScatterChart.destroy();
+
+            const datasets = modeMetrics.map(m => ({
+                label: m.mode,
+                data: [{ x: m.stability, y: m.consistency }],
+                backgroundColor: modeColors[m.mode],
+                borderColor: modeColors[m.mode],
+                pointRadius: 10,
+                pointHoverRadius: 12
+            }));
+
+            t41ScatterChart = new Chart(ctx, {
+                type: 'scatter',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Stability %', color: 'rgba(255,255,255,0.7)' },
+                            min: 0, max: 100,
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Consistency %', color: 'rgba(255,255,255,0.7)' },
+                            min: 0, max: 100,
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: { color: 'rgba(255,255,255,0.7)', usePointStyle: true }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `${ctx.dataset.label}: Stability ${ctx.parsed.x.toFixed(1)}%, Consistency ${ctx.parsed.y.toFixed(1)}%`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTest41TSChart(modeMetrics) {
+            const ctx = document.getElementById('t41-ts-canvas').getContext('2d');
+            if (t41TSChart) t41TSChart.destroy();
+
+            // Normalize throughput to 0-100 for X axis
+            const maxT = Math.max(...modeMetrics.map(m => m.throughput));
+
+            const datasets = modeMetrics.map(m => ({
+                label: m.mode,
+                data: [{ x: (m.throughput / maxT) * 100, y: m.stability }],
+                backgroundColor: modeColors[m.mode],
+                borderColor: modeColors[m.mode],
+                pointRadius: 12,
+                pointHoverRadius: 15
+            }));
+
+            t41TSChart = new Chart(ctx, {
+                type: 'scatter',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Throughput (normalized %)', color: 'rgba(255,255,255,0.7)' },
+                            min: 0, max: 105,
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Stability %', color: 'rgba(255,255,255,0.7)' },
+                            min: 0, max: 100,
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: true, position: 'bottom', labels: { color: 'rgba(255,255,255,0.7)', font: { size: 9 }, usePointStyle: true } },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => {
+                                    const m = modeMetrics.find(x => x.mode === ctx.dataset.label);
+                                    return `${m.mode}: T=${m.throughput.toLocaleString()}, S=${m.stability.toFixed(1)}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTest41TCChart(modeMetrics) {
+            const ctx = document.getElementById('t41-tc-canvas').getContext('2d');
+            if (t41TCChart) t41TCChart.destroy();
+
+            const maxT = Math.max(...modeMetrics.map(m => m.throughput));
+
+            const datasets = modeMetrics.map(m => ({
+                label: m.mode,
+                data: [{ x: (m.throughput / maxT) * 100, y: m.consistency }],
+                backgroundColor: modeColors[m.mode],
+                borderColor: modeColors[m.mode],
+                pointRadius: 12,
+                pointHoverRadius: 15
+            }));
+
+            t41TCChart = new Chart(ctx, {
+                type: 'scatter',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Throughput (normalized %)', color: 'rgba(255,255,255,0.7)' },
+                            min: 0, max: 105,
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Consistency %', color: 'rgba(255,255,255,0.7)' },
+                            min: 0, max: 100,
+                            ticks: { color: 'rgba(255,255,255,0.5)' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: true, position: 'bottom', labels: { color: 'rgba(255,255,255,0.7)', font: { size: 9 }, usePointStyle: true } },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => {
+                                    const m = modeMetrics.find(x => x.mode === ctx.dataset.label);
+                                    return `${m.mode}: T=${m.throughput.toLocaleString()}, C=${m.consistency.toFixed(1)}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTest41BubbleChart(modeMetrics) {
+            const ctx = document.getElementById('t41-bubble-canvas').getContext('2d');
+            if (t41BubbleChart) t41BubbleChart.destroy();
+
+            const maxT = Math.max(...modeMetrics.map(m => m.throughput));
+            const maxScore = Math.max(...modeMetrics.map(m => m.score));
+            const minScore = Math.min(...modeMetrics.map(m => m.score));
+
+            // Bubble: X=Throughput, Y=Stability, R=based on Consistency and Score
+            // Bigger radii for better visibility (15-45 range)
+            const datasets = modeMetrics.map(m => {
+                const scoreNorm = (m.score - minScore) / (maxScore - minScore); // 0-1
+                const consistencyNorm = m.consistency / 100; // 0-1
+                const radius = 8 + (consistencyNorm * 8) + (scoreNorm * 10); // 8-26 range
+
+                return {
+                    label: m.mode,
+                    data: [{
+                        x: (m.throughput / maxT) * 100,
+                        y: m.stability,
+                        r: radius
+                    }],
+                    backgroundColor: modeColors[m.mode].replace(')', ', 0.5)').replace('hsl', 'hsla'),
+                    borderColor: modeColors[m.mode],
+                    borderWidth: 3
+                };
+            });
+
+            t41BubbleChart = new Chart(ctx, {
+                type: 'bubble',
+                data: { datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Throughput (normalized to best = 100%)', color: 'rgba(255,255,255,0.8)', font: { size: 12 } },
+                            min: 0, max: 110,
+                            ticks: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } },
+                            grid: { color: 'rgba(255,255,255,0.15)' }
+                        },
+                        y: {
+                            title: { display: true, text: 'Stability %', color: 'rgba(255,255,255,0.8)', font: { size: 12 } },
+                            min: 78, max: 89,
+                            ticks: { color: 'rgba(255,255,255,0.6)', font: { size: 11 } },
+                            grid: { color: 'rgba(255,255,255,0.15)' }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'right',
+                            labels: {
+                                color: 'rgba(255,255,255,0.8)',
+                                font: { size: 11 },
+                                usePointStyle: true,
+                                padding: 15
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => {
+                                    const m = modeMetrics.find(x => x.mode === ctx.dataset.label);
+                                    return [
+                                        `${m.mode}`,
+                                        `T: ${m.throughput.toLocaleString()}`,
+                                        `S: ${m.stability.toFixed(1)}%`,
+                                        `C: ${m.consistency.toFixed(1)}%`,
+                                        `Score: ${m.score.toLocaleString(undefined, { maximumFractionDigits: 0 })}`
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         init();

@@ -68,6 +68,12 @@ func main() {
 		http.ServeFile(w, r, filepath.Join(vizDir, "test43a_ensemble_fusion_2", "ensemble_fusion_results_2.json"))
 	})
 
+	// Serve test41 results
+	http.HandleFunc("/test41_results.json", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		http.ServeFile(w, r, filepath.Join(vizDir, "test41_results.json"))
+	})
+
 	// Open browser
 	go func() {
 		time.Sleep(1 * time.Second)
