@@ -431,7 +431,7 @@ func main() {
 
 	// Define numeric types to test
 	numericTypes := []NumericType{
-		TypeFloat32, TypeFloat64,
+		//TypeFloat32, TypeFloat64,
 		TypeInt8, TypeInt16, TypeInt32, TypeInt64,
 		TypeUint8, TypeUint16, TypeUint32, TypeUint64,
 	}

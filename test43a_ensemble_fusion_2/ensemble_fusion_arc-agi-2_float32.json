@@ -1,0 +1,120 @@
+{
+  "numEnsembles": 8,
+  "ensembleSize": 15,
+  "topEnsembles": [
+    {
+      "config": {
+        "id": 0,
+        "name": "Elite-Vote",
+        "size": 14,
+        "strategy": "Elite-Vote",
+        "memberIds": null
+      },
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "avgAccuracy": 19.887907207034033,
+      "memberSolved": null,
+      "fusionBonus": 0,
+      "synergyScore": 0,
+      "coverageRate": 33.718972895863054,
+      "uniqueSpecies": 5,
+      "uniqueCombineModes": 5
+    },
+    {
+      "config": {
+        "id": 0,
+        "name": "Elite-Average",
+        "size": 14,
+        "strategy": "Elite-Average",
+        "memberIds": null
+      },
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "avgAccuracy": 17.657554425534048,
+      "memberSolved": null,
+      "fusionBonus": 0,
+      "synergyScore": 0,
+      "coverageRate": 33.718972895863054,
+      "uniqueSpecies": 5,
+      "uniqueCombineModes": 5
+    },
+    {
+      "config": {
+        "id": 0,
+        "name": "Elite-Weighted",
+        "size": 14,
+        "strategy": "Elite-Weighted",
+        "memberIds": null
+      },
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "avgAccuracy": 19.76743723395253,
+      "memberSolved": null,
+      "fusionBonus": 0,
+      "synergyScore": 0,
+      "coverageRate": 33.718972895863054,
+      "uniqueSpecies": 5,
+      "uniqueCombineModes": 5
+    },
+    {
+      "config": {
+        "id": 0,
+        "name": "Elite-Oracle",
+        "size": 14,
+        "strategy": "Elite-Oracle",
+        "memberIds": null
+      },
+      "tasksSolved": 0,
+      "solvedTaskIds": null,
+      "avgAccuracy": 19.887907207034033,
+      "memberSolved": null,
+      "fusionBonus": 0,
+      "synergyScore": 0,
+      "coverageRate": 33.718972895863054,
+      "uniqueSpecies": 5,
+      "uniqueCombineModes": 5
+    }
+  ],
+  "collectiveTasks": [
+    "20270e3b",
+    "332f06d7",
+    "4c7dc4dd",
+    "5961cc34",
+    "6e453dd6",
+    "7b5033c1",
+    "8b9c3697",
+    "a25697e4"
+  ],
+  "collectiveCount": 8,
+  "totalEvalTasks": 120,
+  "bestFusionStrategy": "Stitching",
+  "strategyComparison": {
+    "Elite-Average": 0,
+    "Elite-Oracle": 0,
+    "Elite-Vote": 0,
+    "Elite-Weighted": 0,
+    "MetaVote": 0,
+    "Stitching": 5
+  },
+  "combineModeStats": {
+    "add": 40,
+    "avg": 37,
+    "concat": 24,
+    "grid_scatter": 19
+  },
+  "speciesStats": {
+    "1x1 Mono": 18,
+    "1x4 Wide": 12,
+    "2x2 Standard": 17,
+    "2x3 Rect": 13,
+    "3x2 Rect": 7,
+    "3x3 Complex": 9,
+    "4x1 Tall": 17,
+    "6x4 Matrix": 14,
+    "8x1 Scanner": 13
+  },
+  "numericType": "",
+  "datasetName": "ARC-AGI-2",
+  "timestamp": "2025-12-30T15:36:50+11:00",
+  "duration": "7m4.794601572s"
+}
