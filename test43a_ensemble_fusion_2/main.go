@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -395,59 +396,151 @@ func main() {
 
 	// ===========================================================================
 	// PHASE 1: Train All Individual Networks with DIVERSE architectures
+	// OR Load from cache if available
 	// ===========================================================================
 	totalNetworks := NumEnsembles * EnsembleSize
-	fmt.Printf("\n🧠 Phase 1: Training %d DIVERSE networks...\n", totalNetworks)
+	const modelCacheFile = "trained_networks.json"
+	const configCacheFile = "trained_configs.json"
 
-	configs := generateDiverseConfigs(totalNetworks)
-	networks := make([]*NetworkState, totalNetworks)
-
-	// Print diversity stats
+	// Track overall timing and stats
+	startTime := time.Now()
 	speciesCount := make(map[string]int)
 	combineModeCount := make(map[string]int)
-	for _, c := range configs {
-		speciesCount[c.Species]++
-		combineModeCount[c.CombineModeN]++
-	}
-	fmt.Printf("   📊 Species distribution: %v\n", speciesCount)
-	fmt.Printf("   📊 CombineMode distribution: %v\n", combineModeCount)
 
-	startTime := time.Now()
+	// Check if cached models exist
+	networks := make([]*NetworkState, totalNetworks)
+	var configs []AgentConfig43
+	cacheLoaded := false
 
-	// Train networks in parallel
-	var wg sync.WaitGroup
-	jobs := make(chan int, totalNetworks)
-	var progressMu sync.Mutex
-	completed := 0
-	lastPercent := 0
+	if _, err := os.Stat(modelCacheFile); err == nil {
+		fmt.Printf("\n📂 Found cached models at %s, attempting to load...\n", modelCacheFile)
 
-	for w := 0; w < numWorkers; w++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			for idx := range jobs {
-				networks[idx] = trainNetwork43(configs[idx], trainSamples, evalSamples, evalTasks)
+		// Load the model bundle
+		bundle, loadErr := nn.LoadBundle(modelCacheFile)
+		if loadErr == nil && len(bundle.Models) == totalNetworks {
+			// Load configs from config cache
+			configData, cfgErr := os.ReadFile(configCacheFile)
+			if cfgErr == nil {
+				var loadedConfigs []AgentConfig43
+				if json.Unmarshal(configData, &loadedConfigs) == nil && len(loadedConfigs) == totalNetworks {
+					configs = loadedConfigs
+					fmt.Printf("   ✅ Loaded %d configs from cache\n", len(configs))
 
-				progressMu.Lock()
-				completed++
-				percent := completed * 100 / totalNetworks
-				if percent >= lastPercent+10 {
-					lastPercent = percent
-					fmt.Printf("   🔄 Network training: %d/%d (%.0f%%)\n", completed, totalNetworks, float64(percent))
+					// Reconstruct NetworkState from SavedModels
+					for i, savedModel := range bundle.Models {
+						net, netErr := nn.DeserializeModel(savedModel)
+						if netErr != nil {
+							fmt.Printf("   ⚠️  Failed to deserialize network %d: %v\n", i, netErr)
+							cacheLoaded = false
+							break
+						}
+
+						state := net.InitStepState(InputSize43)
+						ts := nn.NewTweenState(net, nil)
+						ts.Config.LinkBudgetScale = configs[i].BudgetScale
+						ts.Config.UseChainRule = true
+
+						networks[i] = &NetworkState{
+							Config:          configs[i],
+							Network:         net,
+							State:           state,
+							Tween:           ts,
+							PerTaskAccuracy: make(map[string]float64),
+							OverallAccuracy: 0, // Will be recalculated if needed
+						}
+						cacheLoaded = true
+					}
+
+					if cacheLoaded {
+						fmt.Printf("   ✅ Successfully loaded %d trained networks from cache!\n", totalNetworks)
+						// Compute stats from loaded configs
+						for _, c := range configs {
+							speciesCount[c.Species]++
+							combineModeCount[c.CombineModeN]++
+						}
+					}
 				}
-				progressMu.Unlock()
 			}
-		}()
+		}
+
+		if !cacheLoaded {
+			fmt.Println("   ⚠️  Cache load failed, will train fresh networks")
+		}
 	}
 
-	for i := 0; i < totalNetworks; i++ {
-		jobs <- i
-	}
-	close(jobs)
-	wg.Wait()
+	if !cacheLoaded {
+		// Generate fresh configs and train
+		fmt.Printf("\n🧠 Phase 1: Training %d DIVERSE networks...\n", totalNetworks)
 
-	trainingTime := time.Since(startTime)
-	fmt.Printf("✅ Phase 1 complete: Trained %d diverse networks in %s\n\n", totalNetworks, trainingTime)
+		configs = generateDiverseConfigs(totalNetworks)
+
+		// Print diversity stats
+		for _, c := range configs {
+			speciesCount[c.Species]++
+			combineModeCount[c.CombineModeN]++
+		}
+		fmt.Printf("   📊 Species distribution: %v\n", speciesCount)
+		fmt.Printf("   📊 CombineMode distribution: %v\n", combineModeCount)
+
+		startTime = time.Now()
+
+		// Train networks in parallel
+		var wg sync.WaitGroup
+		jobs := make(chan int, totalNetworks)
+		var progressMu sync.Mutex
+		completed := 0
+		lastPercent := 0
+
+		for w := 0; w < numWorkers; w++ {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				for idx := range jobs {
+					networks[idx] = trainNetwork43(configs[idx], trainSamples, evalSamples, evalTasks)
+
+					progressMu.Lock()
+					completed++
+					percent := completed * 100 / totalNetworks
+					if percent >= lastPercent+10 {
+						lastPercent = percent
+						fmt.Printf("   🔄 Network training: %d/%d (%.0f%%)\n", completed, totalNetworks, float64(percent))
+					}
+					progressMu.Unlock()
+				}
+			}()
+		}
+
+		for i := 0; i < totalNetworks; i++ {
+			jobs <- i
+		}
+		close(jobs)
+		wg.Wait()
+
+		trainingTime := time.Since(startTime)
+		fmt.Printf("✅ Phase 1 complete: Trained %d diverse networks in %s\n", totalNetworks, trainingTime)
+
+		// Save trained networks to cache
+		fmt.Printf("\n💾 Saving trained networks to %s...\n", modelCacheFile)
+		modelMap := make(map[string]*nn.Network)
+		for i, ns := range networks {
+			modelMap[fmt.Sprintf("net_%d", i)] = ns.Network
+		}
+		if saveErr := nn.SaveBundle(modelCacheFile, modelMap); saveErr != nil {
+			fmt.Printf("   ⚠️  Failed to save model bundle: %v\n", saveErr)
+		} else {
+			fmt.Printf("   ✅ Saved %d networks to cache\n", totalNetworks)
+		}
+
+		// Save configs separately
+		configData, _ := json.MarshalIndent(configs, "", "  ")
+		if cfgErr := os.WriteFile(configCacheFile, configData, 0644); cfgErr != nil {
+			fmt.Printf("   ⚠️  Failed to save configs: %v\n", cfgErr)
+		} else {
+			fmt.Printf("   ✅ Saved configs to %s\n", configCacheFile)
+		}
+	}
+
+	fmt.Println()
 
 	// ===========================================================================
 	// PHASE 1.5: Unsupervised Network Profiling and Clustering
@@ -485,11 +578,23 @@ func main() {
 	fmt.Println("\n🎯 Phase 1.6: Evaluating specialist cluster ensembles...")
 
 	clusterResults := make([][]ClusterEnsembleResult, len(clusters))
+	var wg sync.WaitGroup
+	// Limit concurrency to avoid resource exhaustion
+	evalConcurrency := runtime.NumCPU()
+	sem := make(chan struct{}, evalConcurrency)
+
 	for i, cluster := range clusters {
 		if len(cluster.Members) > 0 {
-			clusterResults[i] = evaluateSpecialistCluster(cluster, evalTasks)
+			wg.Add(1)
+			go func(i int, cluster *SpecialistCluster) {
+				defer wg.Done()
+				sem <- struct{}{} // Acquire semaphore
+				clusterResults[i] = evaluateSpecialistCluster(cluster, evalTasks)
+				<-sem // Release semaphore
+			}(i, cluster)
 		}
 	}
+	wg.Wait()
 
 	// Create and evaluate monolithic ensemble
 	monolithicResult := createMonolithicEnsemble(clusters, evalTasks)
@@ -525,11 +630,8 @@ func main() {
 	}
 
 	// ===========================================================================
-	// PHASE 2: Cross-Cluster Smart Fusion (READ-ONLY, No Mutation)
+	// PHASE 2: Complementary Model Stitching (Skip to the good stuff!)
 	// ===========================================================================
-	fmt.Println("\n🔮 Phase 2: Cross-Cluster Smart Fusion...")
-	fmt.Println("   Strategy: Combine top performers from each specialist cluster")
-
 	collectiveTasks := make(map[string]bool)
 	// Pre-populate with specialist-solved tasks
 	for taskID := range specialistCollective {
@@ -538,64 +640,10 @@ func main() {
 
 	strategyStats := make(map[string]int)
 
-	// Build cross-cluster elite ensemble: top 3 from each cluster sorted by OverallAccuracy
-	var eliteNetworks []*NetworkSpecialist
-	for _, cluster := range clusters {
-		if len(cluster.Members) == 0 {
-			continue
-		}
-		// Sort cluster members by overall accuracy (descending)
-		members := make([]*NetworkSpecialist, len(cluster.Members))
-		copy(members, cluster.Members)
-		sort.Slice(members, func(i, j int) bool {
-			return members[i].OverallAccuracy > members[j].OverallAccuracy
-		})
-		// Take top 3 from each cluster
-		take := 3
-		if len(members) < take {
-			take = len(members)
-		}
-		eliteNetworks = append(eliteNetworks, members[:take]...)
-	}
-
-	fmt.Printf("   📊 Elite ensemble: %d networks from %d clusters\n", len(eliteNetworks), len(clusters))
-
-	// Evaluate elite cross-cluster ensemble with multiple fusion strategies
-	crossClusterResults := evaluateCrossClusterEnsemble(eliteNetworks, evalTasks, clusters)
-
-	// Update collective tasks
-	for _, result := range crossClusterResults {
-		for _, taskID := range result.SolvedTaskIDs {
-			collectiveTasks[taskID] = true
-		}
-		strategyStats[result.Config.StrategyName] += result.TasksSolved
-	}
-
-	// Print cross-cluster results
-	fmt.Println("\n╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║                                    🔮 CROSS-CLUSTER FUSION RESULTS                                                          ║")
-	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
-	for _, result := range crossClusterResults {
-		fmt.Printf("║   %-25s | Solved: %3d | Accuracy: %.2f%% | Fusion Bonus: %+d                                     ║\n",
-			result.Config.StrategyName, result.TasksSolved, result.AvgAccuracy, result.FusionBonus)
-	}
-	fmt.Println("╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝")
-
-	// Also test per-cluster voting then meta-vote across clusters
-	metaVoteResult := evaluateMetaClusterVoting(clusters, evalTasks)
-	if metaVoteResult != nil {
-		for _, taskID := range metaVoteResult.SolvedTaskIDs {
-			collectiveTasks[taskID] = true
-		}
-		strategyStats["MetaVote"] += metaVoteResult.TasksSolved
-		fmt.Printf("\n🗳️  Meta-Cluster Voting: Solved %d tasks (%.2f%% accuracy)\n",
-			metaVoteResult.TasksSolved, metaVoteResult.AvgAccuracy)
-	}
-
 	// ===========================================================================
 	// PHASE 2.5: Complementary Model Stitching (NEW!)
 	// ===========================================================================
-	stitchingSolved, stitchingSummaries, stitchedGrids := phase2ComplementaryStitchingWithGrids(specialists, evalTasks, collectiveTasks)
+	stitchingSolved, stitchingSummaries, _ := phase2ComplementaryStitchingWithGrids(specialists, evalTasks, collectiveTasks)
 
 	// Add newly solved tasks from stitching
 	for _, taskID := range stitchingSolved {
@@ -605,19 +653,6 @@ func main() {
 		strategyStats["Stitching"] = len(stitchingSolved)
 	}
 
-	// ===========================================================================
-	// PHASE 3: Recursive Stitching (Stitch the Stitches!)
-	// ===========================================================================
-	recursiveSolved := phase3RecursiveStitching(stitchedGrids, evalTasks, collectiveTasks)
-
-	// Add newly solved tasks from recursive stitching
-	for _, taskID := range recursiveSolved {
-		collectiveTasks[taskID] = true
-	}
-	if len(recursiveSolved) > 0 {
-		strategyStats["RecursiveStitch"] = len(recursiveSolved)
-	}
-
 	// Calculate overall stitching metrics
 	stitchingImproved := 0
 	for _, s := range stitchingSummaries {
@@ -625,19 +660,12 @@ func main() {
 			stitchingImproved++
 		}
 	}
+	_ = stitchingImproved // Used in output
 
-	// Use crossClusterResults for display
-	results := crossClusterResults
+	// Results (no cross-cluster fusion, just stitching stats)
+	var results []EnsembleResult
 
 	totalTime := time.Since(startTime)
-
-	// Sort results by tasks solved
-	sort.Slice(results, func(i, j int) bool {
-		if results[i].TasksSolved != results[j].TasksSolved {
-			return results[i].TasksSolved > results[j].TasksSolved
-		}
-		return results[i].SynergyScore > results[j].SynergyScore
-	})
 
 	// Find best strategy
 	bestStrategy := ""
@@ -656,17 +684,11 @@ func main() {
 	}
 	sort.Strings(collectiveTasksList)
 
-	// Top ensembles
-	topN := 20
-	if len(results) < topN {
-		topN = len(results)
-	}
-
 	// Build output
 	output := &FusionResults{
 		NumEnsembles:       NumEnsembles,
 		EnsembleSize:       EnsembleSize,
-		TopEnsembles:       results[:topN],
+		TopEnsembles:       results,
 		CollectiveTasks:    collectiveTasksList,
 		CollectiveCount:    len(collectiveTasksList),
 		BestFusionStrategy: bestStrategy,
@@ -687,101 +709,56 @@ func main() {
 }
 
 // generateDiverseConfigs creates architecturally diverse network configurations
-// Borrows from test40_monster_zoo patterns
+// Now delegates to nn.GenerateDiverseConfigs and converts back to local types
 func generateDiverseConfigs(count int) []AgentConfig43 {
+	// Use the new nn.GenerateDiverseConfigs API with default options
+	nnConfigs := nn.GenerateDiverseConfigs(count, nil)
+
+	// Convert nn.ArchConfig to local AgentConfig43 for backward compatibility
 	configs := make([]AgentConfig43, count)
-
-	// Prefer D64 (proven effective in test40)
-	dModels := []int{64, 64, 64, 32} // 75% D64, 25% D32
-	numHeads := []int{4, 8}
-
-	for i := 0; i < count; i++ {
-		// Random grid shape
-		shape := gridShapes43[rand.Intn(len(gridShapes43))]
-		numBrains := shape.Rows * shape.Cols
-
-		// Diverse brain types (from test40)
-		brains := make([]BrainType43, numBrains)
-		brainNames := make([]string, numBrains)
-		for b := 0; b < numBrains; b++ {
-			r := rand.Float64()
-			var brainType BrainType43
-			switch {
-			case r < 0.30:
-				brainType = BrainMHA43
-			case r < 0.55:
-				brainType = BrainLSTM43
-			case r < 0.70:
-				brainType = BrainRNN43
-			case r < 0.85:
-				brainType = BrainDense43
-			case r < 0.93:
-				brainType = BrainSwiGLU43
-			default:
-				brainType = BrainNormDense43
-			}
-			brains[b] = brainType
-			brainNames[b] = brainTypeNames43[brainType]
+	for i, nc := range nnConfigs {
+		// Convert nn.BrainType to local BrainType43
+		brains := make([]BrainType43, len(nc.Brains))
+		for j, bt := range nc.Brains {
+			brains[j] = BrainType43(bt)
 		}
 
-		// Random DModel and heads
-		dModel := dModels[rand.Intn(len(dModels))]
-		heads := numHeads[rand.Intn(len(numHeads))]
-		for dModel%heads != 0 {
-			heads = numHeads[rand.Intn(len(numHeads))]
-		}
+		// Convert nn.ActivationType to local ActivationType43
+		activation := ActivationType43(nc.Activation)
 
-		// Log-uniform learning rate (test40 style: narrow range for stability)
-		logMin := math.Log(0.0001)
-		logMax := math.Log(0.01)
-		lr := float32(math.Exp(logMin + rand.Float64()*(logMax-logMin)))
-
-		// Random activation
-		activation := ActivationType43(rand.Intn(5))
-
-		// CombineMode distribution (test40 style: prefer avg/add)
+		// Convert combine mode string to local CombineModeType43
 		var combineMode CombineModeType43
-		r := rand.Float64()
-		switch {
-		case r < 0.35:
-			combineMode = CombineAvg43
-		case r < 0.65:
-			combineMode = CombineAdd43
-		case r < 0.85:
+		switch nc.CombineMode {
+		case "concat":
 			combineMode = CombineConcat43
-		default:
+		case "add":
+			combineMode = CombineAdd43
+		case "avg":
+			combineMode = CombineAvg43
+		case "grid_scatter":
 			combineMode = CombineGridScatter43
+		default:
+			combineMode = CombineAvg43
 		}
-
-		// Build mutation string for tracking
-		brainStr := strings.Join(brainNames, "-")
-		if len(brainStr) > 30 {
-			brainStr = brainStr[:27] + "..."
-		}
-		mutationStr := fmt.Sprintf("%dx%d_%s_%s_D%d_LR%.4f",
-			shape.Rows, shape.Cols,
-			combineModeNames43[combineMode],
-			activationNames43[activation],
-			dModel, lr)
 
 		configs[i] = AgentConfig43{
-			ID:           i,
-			Name:         fmt.Sprintf("Net-%d", i),
-			Species:      shape.Name,
-			MutationStr:  mutationStr,
-			GridRows:     shape.Rows,
-			GridCols:     shape.Cols,
-			NumBrains:    numBrains,
-			DModel:       dModel,
-			NumHeads:     heads,
-			LearningRate: lr,
-			BudgetScale:  float32(0.5 + rand.Float64()*0.5),
+			ID:           nc.ID,
+			Name:         nc.Name,
+			Species:      nc.Species,
+			MutationStr:  nc.MutationStr,
+			GridRows:     nc.GridRows,
+			GridCols:     nc.GridCols,
+			NumBrains:    nc.NumBrains,
+			DModel:       nc.DModel,
+			NumHeads:     nc.NumHeads,
+			LearningRate: nc.LearningRate,
+			BudgetScale:  nc.BudgetScale,
 			Activation:   activation,
 			ActivationN:  activationNames43[activation],
 			CombineMode:  combineMode,
-			CombineModeN: combineModeNames43[combineMode],
+			CombineModeN: nc.CombineMode,
 			Brains:       brains,
-			BrainNames:   brainNames,
+			BrainNames:   nc.BrainNames,
 		}
 	}
 
@@ -880,140 +857,6 @@ func trainNetwork43(config AgentConfig43, trainSamples, evalSamples []Sample43, 
 	}
 }
 
-// evaluateEnsemble43 tests an ensemble with a specific fusion strategy
-func evaluateEnsemble43(config EnsembleConfig, networks []*NetworkState, evalTasks []*ARCTask43) EnsembleResult {
-	var solvedIDs []string
-	memberSolved := make([]int, len(networks))
-	totalAccuracy := 0.0
-	taskCount := 0
-	pixelsCoveredTotal := 0
-	pixelsTotalTotal := 0
-
-	// Track diversity
-	speciesSet := make(map[string]bool)
-	combineModeSet := make(map[string]bool)
-	for _, ns := range networks {
-		speciesSet[ns.Config.Species] = true
-		combineModeSet[ns.Config.CombineModeN] = true
-	}
-
-	for _, task := range evalTasks {
-		// Get outputs from all networks for this task
-		allOutputs := make([][]float32, len(networks))
-		allConfidences := make([]float64, len(networks))
-
-		for i, ns := range networks {
-			// Few-shot adaptation for this network
-			for k := 0; k < AdaptationPasses; k++ {
-				for _, pair := range task.Train {
-					if len(pair.Input) == 0 || len(pair.Output) == 0 {
-						continue
-					}
-					input := encodeGrid43(pair.Input)
-					target := encodeGrid43(pair.Output)
-					ns.Tween.TweenStep(ns.Network, input, argmax43(target), len(target), ns.Config.LearningRate)
-				}
-			}
-
-			// Get prediction for test pairs
-			for _, pair := range task.Test {
-				if len(pair.Input) == 0 || len(pair.Output) == 0 {
-					continue
-				}
-
-				input := encodeGrid43(pair.Input)
-				ns.State.SetInput(input)
-				numLayers := ns.Network.TotalLayers()
-				for s := 0; s < numLayers; s++ {
-					ns.Network.StepForward(ns.State)
-				}
-				allOutputs[i] = append([]float32(nil), ns.State.GetOutput()...)
-				allConfidences[i] = ns.PerTaskAccuracy[task.ID]
-			}
-		}
-
-		// Apply fusion strategy
-		for _, pair := range task.Test {
-			if len(pair.Input) == 0 || len(pair.Output) == 0 {
-				continue
-			}
-
-			target := encodeGrid43(pair.Output)
-			height := len(pair.Output)
-			width := len(pair.Output[0])
-
-			fusedOutput := fuseOutputs43(allOutputs, allConfidences, config.Strategy, height, width)
-
-			acc := calculatePixelAccuracy43(fusedOutput, Sample43{
-				Target: target,
-				Height: height,
-				Width:  width,
-			})
-
-			totalAccuracy += acc
-			taskCount++
-
-			// Check coverage (at least one network correct per pixel)
-			covered, total := calculateCoverage43(allOutputs, target, height, width)
-			pixelsCoveredTotal += covered
-			pixelsTotalTotal += total
-
-			// Check if 100% accurate (solved)
-			if acc >= 100 {
-				solvedIDs = append(solvedIDs, task.ID)
-			}
-		}
-
-		// Track individual member performance
-		for i, ns := range networks {
-			if ns.PerTaskAccuracy[task.ID] >= 100 {
-				memberSolved[i]++
-			}
-		}
-	}
-
-	avgAcc := 0.0
-	if taskCount > 0 {
-		avgAcc = totalAccuracy / float64(taskCount)
-	}
-
-	// Calculate synergy score
-	maxIndividual := 0
-	for _, solved := range memberSolved {
-		if solved > maxIndividual {
-			maxIndividual = solved
-		}
-	}
-
-	synergyScore := 1.0
-	if maxIndividual > 0 {
-		synergyScore = float64(len(solvedIDs)) / float64(maxIndividual)
-	}
-
-	// Calculate fusion bonus (tasks solved by ensemble but not any individual)
-	fusionBonus := len(solvedIDs) - maxIndividual
-	if fusionBonus < 0 {
-		fusionBonus = 0
-	}
-
-	coverageRate := 0.0
-	if pixelsTotalTotal > 0 {
-		coverageRate = float64(pixelsCoveredTotal) / float64(pixelsTotalTotal) * 100
-	}
-
-	return EnsembleResult{
-		Config:             config,
-		TasksSolved:        len(solvedIDs),
-		SolvedTaskIDs:      solvedIDs,
-		AvgAccuracy:        avgAcc,
-		MemberSolved:       memberSolved,
-		FusionBonus:        fusionBonus,
-		SynergyScore:       synergyScore,
-		CoverageRate:       coverageRate,
-		UniqueSpecies:      len(speciesSet),
-		UniqueCombineModes: len(combineModeSet),
-	}
-}
 
 // fuseOutputs43 combines outputs from multiple networks using the specified strategy
 func fuseOutputs43(outputs [][]float32, confidences []float64, strategy FusionStrategy, height, width int) []float32 {
@@ -1145,415 +988,36 @@ func calculateCoverage43(outputs [][]float32, target []float32, height, width in
 	return covered, total
 }
 
-// evaluateCrossClusterEnsemble evaluates an elite ensemble combining top networks from each cluster
-// Uses READ-ONLY inference - no weight mutation during evaluation
-func evaluateCrossClusterEnsemble(eliteNetworks []*NetworkSpecialist, evalTasks []*ARCTask43, clusters []*SpecialistCluster) []EnsembleResult {
-	if len(eliteNetworks) == 0 {
-		return nil
-	}
-
-	strategies := []struct {
-		Name     string
-		Strategy FusionStrategy
-	}{
-		{"Elite-Vote", FusionVote},
-		{"Elite-Average", FusionAverage},
-		{"Elite-Weighted", FusionWeighted},
-		{"Elite-Oracle", FusionOracle},
-	}
-
-	var results []EnsembleResult
-
-	for _, strat := range strategies {
-		var solvedIDs []string
-		totalAccuracy := 0.0
-		taskCount := 0
-		pixelsCoveredTotal := 0
-		pixelsTotalTotal := 0
-
-		for _, task := range evalTasks {
-			// Get outputs from all elite networks using READ-ONLY inference
-			allOutputs := make([][]float32, len(eliteNetworks))
-			allConfidences := make([]float64, len(eliteNetworks))
-
-			for i, specialist := range eliteNetworks {
-				// Use ForwardCPU for read-only inference (no state mutation)
-				output, _ := specialist.Network.ForwardCPU(encodeGrid43(task.Test[0].Input))
-				allOutputs[i] = output
-				allConfidences[i] = specialist.OverallAccuracy
-			}
-
-			// Apply fusion strategy
-			for _, pair := range task.Test {
-				if len(pair.Input) == 0 || len(pair.Output) == 0 {
-					continue
-				}
-
-				target := encodeGrid43(pair.Output)
-				height := len(pair.Output)
-				width := len(pair.Output[0])
-
-				fusedOutput := fuseOutputs43(allOutputs, allConfidences, strat.Strategy, height, width)
-
-				acc := calculatePixelAccuracy43(fusedOutput, Sample43{
-					Target: target,
-					Height: height,
-					Width:  width,
-				})
-
-				totalAccuracy += acc
-				taskCount++
-
-				// Check coverage
-				covered, total := calculateCoverage43(allOutputs, target, height, width)
-				pixelsCoveredTotal += covered
-				pixelsTotalTotal += total
-
-				// Check if 100% accurate (solved)
-				if acc >= 100 {
-					solvedIDs = append(solvedIDs, task.ID)
-				}
-			}
-		}
-
-		avgAcc := 0.0
-		if taskCount > 0 {
-			avgAcc = totalAccuracy / float64(taskCount)
-		}
-
-		coverageRate := 0.0
-		if pixelsTotalTotal > 0 {
-			coverageRate = float64(pixelsCoveredTotal) / float64(pixelsTotalTotal) * 100
-		}
-
-		// Track cluster diversity
-		clusterSet := make(map[int]bool)
-		for _, specialist := range eliteNetworks {
-			clusterSet[specialist.ClusterID] = true
-		}
-
-		// Estimate fusion bonus (compared to best individual network in elite)
-		bestIndividual := 0
-		for _, specialist := range eliteNetworks {
-			solved := 0
-			for _, task := range evalTasks {
-				if specialist.PerTaskAccuracy[task.ID] >= 100 {
-					solved++
-				}
-			}
-			if solved > bestIndividual {
-				bestIndividual = solved
-			}
-		}
-		fusionBonus := len(solvedIDs) - bestIndividual
-		if fusionBonus < 0 {
-			fusionBonus = 0
-		}
-
-		results = append(results, EnsembleResult{
-			Config: EnsembleConfig{
-				Name:         strat.Name,
-				StrategyName: strat.Name,
-				Size:         len(eliteNetworks),
-			},
-			TasksSolved:        len(solvedIDs),
-			SolvedTaskIDs:      solvedIDs,
-			AvgAccuracy:        avgAcc,
-			FusionBonus:        fusionBonus,
-			SynergyScore:       float64(len(solvedIDs)) / math.Max(float64(bestIndividual), 1),
-			CoverageRate:       coverageRate,
-			UniqueSpecies:      len(clusterSet),
-			UniqueCombineModes: len(clusters),
-		})
-	}
-
-	return results
-}
-
-// evaluateMetaClusterVoting evaluates a meta-voting strategy:
-// 1. Each cluster votes internally using majority vote
-// 2. Final prediction is the majority vote across cluster predictions
-func evaluateMetaClusterVoting(clusters []*SpecialistCluster, evalTasks []*ARCTask43) *EnsembleResult {
-	// Filter to non-empty clusters
-	var activeClusters []*SpecialistCluster
-	for _, c := range clusters {
-		if len(c.Members) > 0 {
-			activeClusters = append(activeClusters, c)
-		}
-	}
-
-	if len(activeClusters) == 0 {
-		return nil
-	}
-
-	var solvedIDs []string
-	totalAccuracy := 0.0
-	taskCount := 0
-
-	for _, task := range evalTasks {
-		for _, pair := range task.Test {
-			if len(pair.Input) == 0 || len(pair.Output) == 0 {
-				continue
-			}
-
-			input := encodeGrid43(pair.Input)
-			target := encodeGrid43(pair.Output)
-			height := len(pair.Output)
-			width := len(pair.Output[0])
-
-			// Get per-cluster voting result
-			clusterPredictions := make([][]float32, len(activeClusters))
-
-			for ci, cluster := range activeClusters {
-				// Get all outputs from this cluster
-				clusterOutputs := make([][]float32, len(cluster.Members))
-				for mi, member := range cluster.Members {
-					output, _ := member.Network.ForwardCPU(input)
-					clusterOutputs[mi] = output
-				}
-				// Vote within cluster
-				clusterPredictions[ci] = fuseOutputs43(clusterOutputs, nil, FusionVote, height, width)
-			}
-
-			// Meta-vote across clusters
-			finalOutput := fuseOutputs43(clusterPredictions, nil, FusionVote, height, width)
-
-			acc := calculatePixelAccuracy43(finalOutput, Sample43{
-				Target: target,
-				Height: height,
-				Width:  width,
-			})
-
-			totalAccuracy += acc
-			taskCount++
-
-			if acc >= 100 {
-				solvedIDs = append(solvedIDs, task.ID)
-			}
-		}
-	}
-
-	avgAcc := 0.0
-	if taskCount > 0 {
-		avgAcc = totalAccuracy / float64(taskCount)
-	}
-
-	return &EnsembleResult{
-		Config: EnsembleConfig{
-			Name:         "Meta-Cluster-Vote",
-			StrategyName: "MetaVote",
-			Size:         len(activeClusters),
-		},
-		TasksSolved:   len(solvedIDs),
-		SolvedTaskIDs: solvedIDs,
-		AvgAccuracy:   avgAcc,
-	}
-}
 
 // createDiverseNetwork creates a network with configurable CombineMode
+// Now delegates to nn.BuildDiverseNetwork after converting local config to nn.ArchConfig
 func createDiverseNetwork(config AgentConfig43) *nn.Network {
-	totalLayers := 4
-	net := nn.NewNetwork(InputSize43, 1, 1, totalLayers)
-	net.BatchSize = 1
-
-	activation := getActivation43(config.Activation)
-	layerIdx := 0
-
-	// Input layer
-	inputLayer := nn.InitDenseLayer(InputSize43, config.DModel, activation)
-	scaleWeights43(inputLayer.Kernel, InitScale43)
-	net.SetLayer(0, 0, layerIdx, inputLayer)
-	layerIdx++
-
-	// Parallel hive layer with configurable combine mode
-	parallelLayer := createDiverseHive(config)
-	net.SetLayer(0, 0, layerIdx, parallelLayer)
-	layerIdx++
-
-	// Merger layer - size depends on combine mode
-	var mergerInputSize int
-	switch config.CombineMode {
-	case CombineConcat43, CombineGridScatter43:
-		mergerInputSize = config.DModel * config.GridRows * config.GridCols
-	case CombineAdd43, CombineAvg43:
-		mergerInputSize = config.DModel
-	}
-	mergerLayer := nn.InitDenseLayer(mergerInputSize, config.DModel, activation)
-	scaleWeights43(mergerLayer.Kernel, InitScale43)
-	net.SetLayer(0, 0, layerIdx, mergerLayer)
-	layerIdx++
-
-	// Output layer
-	outputLayer := nn.InitDenseLayer(config.DModel, InputSize43, nn.ActivationSigmoid)
-	scaleWeights43(outputLayer.Kernel, InitScale43)
-	net.SetLayer(0, 0, layerIdx, outputLayer)
-
-	return net
-}
-
-// createDiverseHive creates a parallel layer with diverse brain types
-func createDiverseHive(config AgentConfig43) nn.LayerConfig {
-	numBrains := config.GridRows * config.GridCols
-	branches := make([]nn.LayerConfig, numBrains)
-	positions := make([]nn.GridPosition, numBrains)
-
-	for i := 0; i < numBrains; i++ {
-		brainType := config.Brains[i]
-		switch brainType {
-		case BrainMHA43:
-			branches[i] = createMHABrain43(config.DModel, config.NumHeads)
-		case BrainLSTM43:
-			branches[i] = createLSTMBrain43(config.DModel)
-		case BrainRNN43:
-			branches[i] = createRNNBrain43(config.DModel)
-		case BrainDense43:
-			branches[i] = createDenseBrain43(config.DModel, config.Activation)
-		case BrainSwiGLU43:
-			branches[i] = createSwiGLUBrain43(config.DModel)
-		case BrainNormDense43:
-			branches[i] = createNormDenseBrain43(config.DModel, config.Activation)
-		default:
-			branches[i] = createDenseBrain43(config.DModel, config.Activation)
-		}
-
-		row := i / config.GridCols
-		col := i % config.GridCols
-		positions[i] = nn.GridPosition{
-			BranchIndex: i,
-			TargetRow:   row,
-			TargetCol:   col,
-			TargetLayer: 0,
-		}
+	// Convert local AgentConfig43 to nn.ArchConfig
+	nnBrains := make([]nn.BrainType, len(config.Brains))
+	for i, b := range config.Brains {
+		nnBrains[i] = nn.BrainType(b)
 	}
 
-	layer := nn.LayerConfig{
-		Type:             nn.LayerParallel,
-		CombineMode:      combineModeNames43[config.CombineMode],
-		ParallelBranches: branches,
+	archConfig := nn.ArchConfig{
+		ID:           config.ID,
+		Name:         config.Name,
+		Species:      config.Species,
+		MutationStr:  config.MutationStr,
+		GridRows:     config.GridRows,
+		GridCols:     config.GridCols,
+		NumBrains:    config.NumBrains,
+		DModel:       config.DModel,
+		NumHeads:     config.NumHeads,
+		LearningRate: config.LearningRate,
+		BudgetScale:  config.BudgetScale,
+		Activation:   nn.ActivationType(config.Activation),
+		CombineMode:  config.CombineModeN,
+		Brains:       nnBrains,
+		BrainNames:   config.BrainNames,
+		InitScale:    InitScale43,
 	}
 
-	// Only set grid positions for grid_scatter mode
-	if config.CombineMode == CombineGridScatter43 {
-		layer.GridOutputRows = config.GridRows
-		layer.GridOutputCols = config.GridCols
-		layer.GridOutputLayers = 1
-		layer.GridPositions = positions
-	}
-
-	return layer
-}
-
-// Brain creation functions
-func createMHABrain43(dModel, numHeads int) nn.LayerConfig {
-	headDim := dModel / numHeads
-	mha := nn.LayerConfig{
-		Type:      nn.LayerMultiHeadAttention,
-		DModel:    dModel,
-		NumHeads:  numHeads,
-		SeqLength: 1,
-	}
-	mha.QWeights = make([]float32, dModel*dModel)
-	mha.KWeights = make([]float32, dModel*dModel)
-	mha.VWeights = make([]float32, dModel*dModel)
-	mha.OutputWeight = make([]float32, dModel*dModel)
-	mha.QBias = make([]float32, dModel)
-	mha.KBias = make([]float32, dModel)
-	mha.VBias = make([]float32, dModel)
-	mha.OutputBias = make([]float32, dModel)
-
-	qkScale := InitScale43 / float32(math.Sqrt(float64(headDim)))
-	outScale := InitScale43 / float32(math.Sqrt(float64(dModel)))
-	initRandom43(mha.QWeights, qkScale)
-	initRandom43(mha.KWeights, qkScale)
-	initRandom43(mha.VWeights, qkScale)
-	initRandom43(mha.OutputWeight, outScale)
-	return mha
-}
-
-func createLSTMBrain43(dModel int) nn.LayerConfig {
-	lstm := nn.LayerConfig{
-		Type:         nn.LayerLSTM,
-		RNNInputSize: dModel,
-		HiddenSize:   dModel,
-		SeqLength:    1,
-		OutputHeight: dModel,
-	}
-	initLSTMWeights43(&lstm)
-	return lstm
-}
-
-func createRNNBrain43(dModel int) nn.LayerConfig {
-	rnn := nn.LayerConfig{
-		Type:         nn.LayerRNN,
-		RNNInputSize: dModel,
-		HiddenSize:   dModel,
-		SeqLength:    1,
-		OutputHeight: dModel,
-	}
-	initRNNWeights43(&rnn)
-	return rnn
-}
-
-func createDenseBrain43(dModel int, activation ActivationType43) nn.LayerConfig {
-	dense := nn.InitDenseLayer(dModel, dModel, getActivation43(activation))
-	scaleWeights43(dense.Kernel, InitScale43)
-	return dense
-}
-
-func createSwiGLUBrain43(dModel int) nn.LayerConfig {
-	dense := nn.InitDenseLayer(dModel, dModel, nn.ActivationLeakyReLU)
-	scaleWeights43(dense.Kernel, InitScale43*0.7)
-	return dense
-}
-
-func createNormDenseBrain43(dModel int, activation ActivationType43) nn.LayerConfig {
-	dense := nn.InitDenseLayer(dModel, dModel, getActivation43(activation))
-	scaleWeights43(dense.Kernel, InitScale43*0.8)
-	return dense
-}
-
-func initRNNWeights43(cfg *nn.LayerConfig) {
-	inputSize := cfg.RNNInputSize
-	hiddenSize := cfg.HiddenSize
-
-	cfg.WeightIH = make([]float32, hiddenSize*inputSize)
-	cfg.WeightHH = make([]float32, hiddenSize*hiddenSize)
-	cfg.BiasH = make([]float32, hiddenSize)
-
-	scale := InitScale43 / float32(math.Sqrt(float64(hiddenSize)))
-	initRandom43(cfg.WeightIH, scale)
-	initRandom43(cfg.WeightHH, scale)
-}
-
-func initLSTMWeights43(cfg *nn.LayerConfig) {
-	inputSize := cfg.RNNInputSize
-	hiddenSize := cfg.HiddenSize
-
-	cfg.WeightIH_i = make([]float32, hiddenSize*inputSize)
-	cfg.WeightIH_f = make([]float32, hiddenSize*inputSize)
-	cfg.WeightIH_g = make([]float32, hiddenSize*inputSize)
-	cfg.WeightIH_o = make([]float32, hiddenSize*inputSize)
-	cfg.WeightHH_i = make([]float32, hiddenSize*hiddenSize)
-	cfg.WeightHH_f = make([]float32, hiddenSize*hiddenSize)
-	cfg.WeightHH_g = make([]float32, hiddenSize*hiddenSize)
-	cfg.WeightHH_o = make([]float32, hiddenSize*hiddenSize)
-	cfg.BiasH_i = make([]float32, hiddenSize)
-	cfg.BiasH_f = make([]float32, hiddenSize)
-	cfg.BiasH_g = make([]float32, hiddenSize)
-	cfg.BiasH_o = make([]float32, hiddenSize)
-
-	scale := InitScale43 / float32(math.Sqrt(float64(hiddenSize)))
-	initRandom43(cfg.WeightIH_i, scale)
-	initRandom43(cfg.WeightIH_f, scale)
-	initRandom43(cfg.WeightIH_g, scale)
-	initRandom43(cfg.WeightIH_o, scale)
-	initRandom43(cfg.WeightHH_i, scale)
-	initRandom43(cfg.WeightHH_f, scale)
-	initRandom43(cfg.WeightHH_g, scale)
-	initRandom43(cfg.WeightHH_o, scale)
-	for i := range cfg.BiasH_f {
-		cfg.BiasH_f[i] = 1.0
-	}
+	return nn.BuildDiverseNetwork(archConfig, InputSize43)
 }
 
 func calculatePixelAccuracy43(output []float32, sample Sample43) float64 {
@@ -1575,19 +1039,6 @@ func calculatePixelAccuracy43(output []float32, sample Sample43) float64 {
 		return 0
 	}
 	return float64(correct) / float64(total) * 100
-}
-
-// Utilities
-func scaleWeights43(weights []float32, scale float32) {
-	for i := range weights {
-		weights[i] *= scale
-	}
-}
-
-func initRandom43(slice []float32, scale float32) {
-	for i := range slice {
-		slice[i] = (rand.Float32()*2 - 1) * scale
-	}
 }
 
 func clampInt43(v, min, max int) int {
@@ -1797,58 +1248,57 @@ func findComplementaryPairs(analysis *PixelAnalysis, topN int) []ComplementaryPa
 		return nil
 	}
 
-	var pairs []ComplementaryPair
-
-	// Compare all network pairs
+	// Convert to nn.ModelPerformance
+	performances := make([]nn.ModelPerformance, analysis.NumNetworks)
 	for i := 0; i < analysis.NumNetworks; i++ {
-		for j := i + 1; j < analysis.NumNetworks; j++ {
-			var overlap, uniqueA, uniqueB int
-
-			for pixelIdx := 0; pixelIdx < analysis.TotalPixels; pixelIdx++ {
-				correctA := analysis.PixelCorrectness[i][pixelIdx]
-				correctB := analysis.PixelCorrectness[j][pixelIdx]
-
-				if correctA && correctB {
-					overlap++
-				} else if correctA {
-					uniqueA++
-				} else if correctB {
-					uniqueB++
-				}
-			}
-
-			combinedCoverage := overlap + uniqueA + uniqueB
-			combinedRate := 0.0
-			if analysis.TotalPixels > 0 {
-				combinedRate = float64(combinedCoverage) / float64(analysis.TotalPixels)
-			}
-
-			// Complement score: higher when pairs have more unique contributions
-			complementScore := 0.0
-			if combinedCoverage > 0 {
-				complementScore = float64(uniqueA+uniqueB) / float64(combinedCoverage)
-			}
-
-			pairs = append(pairs, ComplementaryPair{
-				NetworkA:         i,
-				NetworkB:         j,
-				OverlapPixels:    overlap,
-				UniqueA:          uniqueA,
-				UniqueB:          uniqueB,
-				CombinedCoverage: combinedCoverage,
-				CombinedRate:     combinedRate,
-				ComplementScore:  complementScore,
-			})
+		performances[i] = nn.ModelPerformance{
+			ModelID: fmt.Sprintf("%d", i),
+			Mask:    analysis.PixelCorrectness[i],
 		}
 	}
 
-	// Sort by combined coverage (descending), then by complement score
-	sort.Slice(pairs, func(i, j int) bool {
-		if pairs[i].CombinedCoverage != pairs[j].CombinedCoverage {
-			return pairs[i].CombinedCoverage > pairs[j].CombinedCoverage
+	// Use nn library to find matches
+	matches := nn.FindComplementaryMatches(performances, 0.0)
+
+	// Convert back to local ComplementaryPair
+	var pairs []ComplementaryPair
+	for _, m := range matches {
+		idxA, _ := strconv.Atoi(m.ModelA)
+		idxB, _ := strconv.Atoi(m.ModelB)
+		
+		// Recalculate discrete counts since nn only gives rates
+		// (or we could trust rates * total, but let's be precise for consistency)
+		var overlap, uniqueA, uniqueB int
+		for pixelIdx := 0; pixelIdx < analysis.TotalPixels; pixelIdx++ {
+			correctA := analysis.PixelCorrectness[idxA][pixelIdx]
+			correctB := analysis.PixelCorrectness[idxB][pixelIdx]
+
+			if correctA && correctB {
+				overlap++
+			} else if correctA {
+				uniqueA++
+			} else if correctB {
+				uniqueB++
+			}
 		}
-		return pairs[i].ComplementScore > pairs[j].ComplementScore
-	})
+		
+		combinedCoverage := overlap + uniqueA + uniqueB
+		complementScore := 0.0
+		if combinedCoverage > 0 {
+			complementScore = float64(uniqueA+uniqueB) / float64(combinedCoverage)
+		}
+
+		pairs = append(pairs, ComplementaryPair{
+			NetworkA:         idxA,
+			NetworkB:         idxB,
+			OverlapPixels:    overlap,
+			UniqueA:          uniqueA,
+			UniqueB:          uniqueB,
+			CombinedCoverage: combinedCoverage,
+			CombinedRate:     m.Coverage,
+			ComplementScore:  complementScore, // nn.EnsembleMatch doesn't compute this exactly the same way
+		})
+	}
 
 	// Return top N pairs
 	if topN > len(pairs) {
@@ -3046,7 +2496,20 @@ func clusterNetworksByProfile(specialists []*NetworkSpecialist, numClusters int)
 		numClusters = len(specialists)
 	}
 
-	// Initialize clusters with k-means++
+	// Convert profile vectors to float32 for nn.KMeansCluster
+	vectors := make([][]float32, len(specialists))
+	for i, s := range specialists {
+		v := getProfileVector(s.Profile)
+		vectors[i] = make([]float32, len(v))
+		for j, val := range v {
+			vectors[i][j] = float32(val)
+		}
+	}
+
+	// Use nn.KMeansCluster for clustering
+	_, assignments := nn.KMeansCluster(vectors, numClusters, 50, true)
+
+	// Initialize clusters
 	clusters := make([]*SpecialistCluster, numClusters)
 	for i := 0; i < numClusters; i++ {
 		clusters[i] = &SpecialistCluster{
@@ -3059,98 +2522,10 @@ func clusterNetworksByProfile(specialists []*NetworkSpecialist, numClusters int)
 		}
 	}
 
-	// Get profile vectors for all specialists
-	vectors := make([][]float64, len(specialists))
-	for i, s := range specialists {
-		vectors[i] = getProfileVector(s.Profile)
-	}
-
-	// K-means++ initialization: pick first centroid randomly
-	centroids := make([][]float64, numClusters)
-	centroids[0] = vectors[rand.Intn(len(vectors))]
-
-	// Pick remaining centroids with probability proportional to D(x)^2
-	for k := 1; k < numClusters; k++ {
-		distances := make([]float64, len(vectors))
-		var totalDist float64
-
-		for i, v := range vectors {
-			minDist := math.MaxFloat64
-			for j := 0; j < k; j++ {
-				d := profileDistance(v, centroids[j])
-				if d < minDist {
-					minDist = d
-				}
-			}
-			distances[i] = minDist * minDist
-			totalDist += distances[i]
-		}
-
-		// Pick next centroid
-		r := rand.Float64() * totalDist
-		var cumSum float64
-		for i, d := range distances {
-			cumSum += d
-			if cumSum >= r {
-				centroids[k] = vectors[i]
-				break
-			}
-		}
-	}
-
-	// K-means iterations
-	maxIterations := 50
-	for iter := 0; iter < maxIterations; iter++ {
-		// Assign each specialist to nearest centroid
-		for i := 0; i < numClusters; i++ {
-			clusters[i].Members = clusters[i].Members[:0]
-		}
-
-		for i, s := range specialists {
-			minDist := math.MaxFloat64
-			minCluster := 0
-
-			for k := 0; k < numClusters; k++ {
-				d := profileDistance(vectors[i], centroids[k])
-				if d < minDist {
-					minDist = d
-					minCluster = k
-				}
-			}
-
-			s.ClusterID = minCluster
-			clusters[minCluster].Members = append(clusters[minCluster].Members, s)
-		}
-
-		// Update centroids
-		converged := true
-		for k := 0; k < numClusters; k++ {
-			if len(clusters[k].Members) == 0 {
-				continue
-			}
-
-			newCentroid := make([]float64, len(centroids[k]))
-			for _, s := range clusters[k].Members {
-				v := getProfileVector(s.Profile)
-				for j := range newCentroid {
-					newCentroid[j] += v[j]
-				}
-			}
-
-			for j := range newCentroid {
-				newCentroid[j] /= float64(len(clusters[k].Members))
-			}
-
-			// Check convergence
-			if profileDistance(centroids[k], newCentroid) > 0.001 {
-				converged = false
-			}
-			centroids[k] = newCentroid
-		}
-
-		if converged {
-			break
-		}
+	// Assign specialists to clusters based on assignments
+	for i, clusterIdx := range assignments {
+		specialists[i].ClusterID = clusterIdx
+		clusters[clusterIdx].Members = append(clusters[clusterIdx].Members, specialists[i])
 	}
 
 	// Set centroid profiles and describe clusters
@@ -3468,56 +2843,27 @@ func printFusionResults43(output *FusionResults, allResults []EnsembleResult) {
 	fmt.Printf("║   Duration: %s                                                                                                       ║\n",
 		output.Duration)
 	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
-
-	fmt.Println("║                                         📊 STRATEGY COMPARISON                                                               ║")
-	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
-	for _, strategy := range fusionNames {
-		totalSolved := output.StrategyComparison[strategy]
-		bar := ""
-		for i := 0; i < totalSolved; i++ {
-			bar += "█"
-		}
-		fmt.Printf("║   %-10s: %-50s (%d total)                             ║\n",
-			strategy, bar, totalSolved)
-	}
-
-	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
+	
 	fmt.Println("║                                         📊 ARCHITECTURE DIVERSITY                                                            ║")
 	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
 	fmt.Printf("║   CombineModes: %v                                                                                  ║\n", output.CombineModeStats)
 	fmt.Printf("║   Grid Species: %v                   ║\n", output.SpeciesStats)
-
-	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
-	fmt.Println("║                                              🏆 TOP 10 ENSEMBLES                                                             ║")
-	fmt.Println("╠═════════════════════════════════╦══════════════╦══════════╦══════════╦════════════╦══════════╦═══════════════════════════════╣")
-	fmt.Println("║     Ensemble                    ║   Strategy   ║  Solved  ║  Bonus   ║  Synergy   ║ Coverage ║ Diversity (Species/Modes)     ║")
-	fmt.Println("╠═════════════════════════════════╬══════════════╬══════════╬══════════╬════════════╬══════════╬═══════════════════════════════╣")
-
-	for i := 0; i < 10 && i < len(output.TopEnsembles); i++ {
-		r := output.TopEnsembles[i]
-		diversity := fmt.Sprintf("%d/%d", r.UniqueSpecies, r.UniqueCombineModes)
-		fmt.Printf("║ %-31s ║ %-12s ║ %8d ║ %+7d  ║ %9.2fx ║ %6.1f%% ║ %-29s ║\n",
-			r.Config.Name, r.Config.StrategyName, r.TasksSolved, r.FusionBonus, r.SynergyScore, r.CoverageRate, diversity)
-	}
-
-	fmt.Println("╚═════════════════════════════════╩══════════════╩══════════╩══════════╩════════════╩══════════╩═══════════════════════════════╝")
-
-	// Synergy insight
-	fmt.Println("\n💡 SYNERGY INSIGHT:")
-	fmt.Println("   Fusion Bonus = Extra tasks solved by ensemble that NO individual network could solve")
-	fmt.Println("   Synergy Score = (Ensemble solved) / (Best individual solved) - higher means better teamwork")
-	fmt.Println("   Coverage Rate = % of pixels where at least one network in the ensemble got it right")
-	fmt.Println("   Diversity = How many different species/combine modes in the ensemble")
+	
+	fmt.Println("╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝")
 
 	// Key finding
-	bestEnsemble := output.TopEnsembles[0]
-	if bestEnsemble.FusionBonus > 0 {
-		fmt.Printf("\n🎯 KEY FINDING: The best ensemble solved %d MORE tasks than any individual!\n", bestEnsemble.FusionBonus)
-		fmt.Printf("   This proves that diverse architectures capture different partial solutions.\n")
+	if len(output.TopEnsembles) > 0 {
+		bestEnsemble := output.TopEnsembles[0]
+		if bestEnsemble.FusionBonus > 0 {
+			fmt.Printf("\n🎯 KEY FINDING: The best ensemble solved %d MORE tasks than any individual!\n", bestEnsemble.FusionBonus)
+			fmt.Printf("   This proves that diverse architectures capture different partial solutions.\n")
+		} else {
+			fmt.Printf("\n🎯 KEY FINDING: Best strategy was %s with %d tasks solved.\n", output.BestFusionStrategy, bestEnsemble.TasksSolved)
+		}
 	} else {
-		fmt.Printf("\n🎯 KEY FINDING: Best strategy was %s with %d tasks solved.\n", output.BestFusionStrategy, bestEnsemble.TasksSolved)
+		fmt.Printf("\n🎯 KEY FINDING: Best strategy was %s - stitching approach worked best!\n", output.BestFusionStrategy)
 	}
 
-	fmt.Printf("\n🧠 COLLECTIVE WISDOM: %d/%d unique tasks solved across all ensembles (%.1f%%)\n",
-		output.CollectiveCount, 120, float64(output.CollectiveCount)*100/120)
+	fmt.Printf("\n🧠 COLLECTIVE WISDOM: %d/%d unique tasks solved across all approaches (%.1f%%)\n",
+		output.CollectiveCount, 400, float64(output.CollectiveCount)*100/400)
 }
