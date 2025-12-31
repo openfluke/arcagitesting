@@ -708,6 +708,146 @@ func main() {
 	printFusionResults43(output, results)
 }
 
+// attemptNeuralStitching trains a Gate network to learn the stitching mask
+// Replicates the "Odds" experiment logic where we learn to gate experts
+func attemptNeuralStitching(specialists []*NetworkSpecialist, task *ARCTask43, pair ComplementaryPair) float64 {
+	// 1. Prepare Training Data
+	gateInputSize := InputSize43
+	gateOutputSize := InputSize43
+	gateNet := nn.NewNetwork(gateInputSize, 1, 1, 1)
+	gateNet.SetLayer(0, 0, 0, nn.InitDenseLayer(gateInputSize, gateOutputSize, nn.ActivationSigmoid))
+	
+	learningRate := float32(0.05)
+
+	// Pre-compute Expert Outputs & Targets
+	type TrainTuple struct {
+		Input      []float32
+		GateTarget []float32
+	}
+	var trainData []TrainTuple
+
+	for _, sample := range task.Train {
+		input := encodeGrid43(sample.Input)
+		target := encodeGrid43(sample.Output) // flatten target
+
+		outA, _ := specialists[pair.NetworkA].Network.ForwardCPU(input)
+		outB, _ := specialists[pair.NetworkB].Network.ForwardCPU(input)
+
+		gateTarget := make([]float32, gateOutputSize)
+		for i := 0; i < gateOutputSize && i < len(target); i++ {
+			errA := math.Abs(float64(outA[i] - target[i]))
+			errB := math.Abs(float64(outB[i] - target[i]))
+			if errA < errB {
+				gateTarget[i] = 1.0 // Prefer A
+			} else if errB < errA {
+				gateTarget[i] = 0.0 // Prefer B
+			} else {
+				gateTarget[i] = 0.5 // Neutral
+			}
+		}
+		trainData = append(trainData, TrainTuple{Input: input, GateTarget: gateTarget})
+	}
+
+	// 2. Train Until 100% Accuracy (or max epochs)
+	maxEpochs := 1000
+	for epoch := 0; epoch < maxEpochs; epoch++ {
+		correctPixels := 0
+		totalPixels := 0
+		
+		for _, td := range trainData {
+			// Forward
+			gateOut, _ := gateNet.ForwardCPU(td.Input)
+			
+			// Backward & Stats
+			grad := make([]float32, len(gateOut))
+			for i := range gateOut {
+				errorVal := gateOut[i] - td.GateTarget[i]
+				grad[i] = errorVal
+				
+				// Training Accuracy Check:
+				// If target is 1.0, prediction > 0.5 is correct.
+				// If target is 0.0, prediction < 0.5 is correct.
+				isCorrect := false
+				if td.GateTarget[i] > 0.9 && gateOut[i] > 0.5 { 
+					isCorrect = true 
+				} else if td.GateTarget[i] < 0.1 && gateOut[i] < 0.5 { 
+					isCorrect = true 
+				} else if td.GateTarget[i] >= 0.1 && td.GateTarget[i] <= 0.9 { 
+					isCorrect = true 
+				} 
+				
+				if isCorrect { correctPixels++ }
+				totalPixels++
+			}
+			
+			// Update Weights
+			layer := gateNet.GetLayer(0,0,0)
+			for o := 0; o < gateOutputSize; o++ {
+				g := grad[o]
+				actDeriv := gateOut[o] * (1.0 - gateOut[o])
+				delta := g * actDeriv
+				layer.Bias[o] -= learningRate * delta
+				startIdx := o * gateInputSize
+				for i := 0; i < gateInputSize; i++ {
+					if td.Input[i] != 0 {
+						layer.Kernel[startIdx + i] -= learningRate * delta * td.Input[i]
+					}
+				}
+			}
+		}
+		
+		if totalPixels > 0 {
+			trainAcc := float64(correctPixels) / float64(totalPixels) * 100.0
+			if trainAcc > 99.9 {
+				break
+			}
+		}
+	}
+
+	// 3. Test on Test Set
+	if len(task.Test) == 0 { return 0.0 }
+	testPair := task.Test[0]
+	input := encodeGrid43(testPair.Input)
+	target := encodeGrid43(testPair.Output) 
+	
+	gateOut, _ := gateNet.ForwardCPU(input)
+	outA, _ := specialists[pair.NetworkA].Network.ForwardCPU(input)
+	outB, _ := specialists[pair.NetworkB].Network.ForwardCPU(input)
+	
+	pixelsCorrect := 0
+	totalPixelsTest := len(target)
+	
+	for i := 0; i < totalPixelsTest; i++ {
+		valA := outA[i]
+		valB := outB[i]
+		
+		var finalVal float32
+		if gateOut[i] > 0.5 {
+			finalVal = valA
+		} else {
+			finalVal = valB
+		}
+		
+		predColor := clampInt43(int(math.Round(float64(finalVal)*9.0)), 0, 9)
+		targetC := int(math.Round(float64(target[i]) * 9.0))
+		
+		if predColor == targetC {
+			pixelsCorrect++
+		}
+	}
+	
+	return float64(pixelsCorrect) / float64(totalPixelsTest) * 100.0
+}
+
+func (p GridPair43) Width() []int {
+	if len(p.Output) > 0 {
+		w := make([]int, len(p.Output))
+		for i := range w { w[i] = len(p.Output[i]) }
+		return w
+	}
+	return []int{0}
+}
+
 // generateDiverseConfigs creates architecturally diverse network configurations
 // Now delegates to nn.GenerateDiverseConfigs and converts back to local types
 func generateDiverseConfigs(count int) []AgentConfig43 {
@@ -1491,14 +1631,23 @@ func buildRegionBuckets(analysis *PixelAnalysis) []RegionBucket {
 	return buckets
 }
 
-// phase2ComplementaryStitching runs the enhanced Phase 2
-func phase2ComplementaryStitching(specialists []*NetworkSpecialist, evalTasks []*ARCTask43, alreadySolved map[string]bool) ([]string, []TaskStitchingSummary) {
+// phase2ComplementaryStitchingWithGrids runs Phase 2 and returns stitched grids for Phase 3
+func phase2ComplementaryStitchingWithGrids(specialists []*NetworkSpecialist, evalTasks []*ARCTask43, alreadySolved map[string]bool) ([]string, []TaskStitchingSummary, map[string]*StitchedGridsPerTask) {
 	fmt.Println("\n🔮 Phase 2: Complementary Model Stitching...")
 	fmt.Println("   Strategy: Find pairs of models that complement each other pixel-by-pixel")
 	fmt.Println("   Goal: Stitch together partial solutions to solve more tasks")
 
 	var newlySolved []string
 	var summaries []TaskStitchingSummary
+	allStitchedGrids := make(map[string]*StitchedGridsPerTask)
+	
+	// Track Neural Results
+	type NeuralResult struct {
+		Coverage    float64
+		Solved      bool
+		BaseManual  float64
+	}
+	neuralResults := make(map[string]NeuralResult)
 
 	// Track progress
 	unsolvedCount := 0
@@ -1584,6 +1733,32 @@ func phase2ComplementaryStitching(specialists []*NetworkSpecialist, evalTasks []
 				newlySolved = append(newlySolved, task.ID)
 				fmt.Printf("   ✅ SOLVED via stitching: %s (coverage: %.1f%% → 100%%)\n", task.ID, summary.BaselineCoverage)
 			}
+			
+			// NEURAL STITCHING EXPERIMENT (Comparison)
+			// Only run if we have a valid pair (NetworkA != NetworkB, to avoid BestPerPixel "0+0" results)
+			// BestPerPixel returns Pair{0,0} or {-1,-1} effectively.
+			pair := finalResult.PairUsed
+			if pair.NetworkA != pair.NetworkB && pair.NetworkA >= 0 && pair.NetworkB >= 0 {
+				neuralCoverage := attemptNeuralStitching(specialists, task, pair)
+				diff := neuralCoverage - summary.BestPairCoverage
+				
+				icon := "🟦"
+				if diff > 1.0 { icon = "✅" } 
+				if diff < -1.0 { icon = "🔻" }
+				
+				fmt.Printf("      🧠 Neural vs Manual: %.1f%% vs %.1f%% (%s %+.1f%%) [Pair %d+%d]\n", 
+					neuralCoverage, summary.BestPairCoverage, icon, diff, pair.NetworkA, pair.NetworkB)
+				
+				if neuralCoverage > 99.9 && !summary.FullySolved {
+					fmt.Printf("      🎉 NEURAL STITCHING SOLVED IT (where manual failed)!\n")
+				}
+				
+				neuralResults[task.ID] = NeuralResult{
+					Coverage:   neuralCoverage,
+					Solved:     neuralCoverage > 99.9,
+					BaseManual: summary.BestPairCoverage,
+				}
+			}
 		}
 
 		summaries = append(summaries, summary)
@@ -1599,231 +1774,30 @@ func phase2ComplementaryStitching(specialists []*NetworkSpecialist, evalTasks []
 	fmt.Println("║                                    🧩 COMPLEMENTARY STITCHING RESULTS                                                        ║")
 	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
 
-	// Summary statistics
-	totalImproved := 0
-	avgImprovement := 0.0
-	for _, s := range summaries {
-		improvement := s.BestPairCoverage - s.BaselineCoverage
-		if improvement > 0 {
-			totalImproved++
-			avgImprovement += improvement
+	// Summary statistics for Neural
+	fmt.Println("\n╔══════════════════════════════════════════════════════════╗")
+	fmt.Println("║ 🧠 NEURAL STITCHING SUMMARY                              ║")
+	fmt.Println("╠══════════╦══════════╦════════════════╦═══════════════════╣")
+	fmt.Println("║ Task ID  | Manual   | Neural         | Status            ║")
+	fmt.Println("╠══════════╬══════════╬════════════════╬═══════════════════╣")
+	
+	neuralSolvedCount := 0
+	for taskID, res := range neuralResults {
+		status := " "
+		if res.Solved { 
+			status = "SOLVED!"
+			neuralSolvedCount++
+		} else if res.Coverage > res.BaseManual {
+			status = "Better"
+		} else if res.Coverage < res.BaseManual {
+			status = "Worse"
 		}
+		
+		fmt.Printf("║ %-8s | %6.1f%%  | %6.1f%%        | %-17s ║\n", 
+			taskID[:min(8, len(taskID))], res.BaseManual, res.Coverage, status)
 	}
-	if totalImproved > 0 {
-		avgImprovement /= float64(totalImproved)
-	}
-
-	fmt.Printf("║   Tasks Analyzed: %d | Newly Solved: %d | Tasks with Improved Coverage: %d                          ║\n",
-		len(summaries), len(newlySolved), totalImproved)
-	fmt.Printf("║   Average Coverage Improvement: +%.1f%% (when improved)                                                           ║\n",
-		avgImprovement)
-	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
-
-	// Show top improvements
-	sort.Slice(summaries, func(i, j int) bool {
-		impI := summaries[i].BestPairCoverage - summaries[i].BaselineCoverage
-		impJ := summaries[j].BestPairCoverage - summaries[j].BaselineCoverage
-		return impI > impJ
-	})
-
-	fmt.Println("║                                    📈 TOP 10 COVERAGE IMPROVEMENTS                                                           ║")
-	fmt.Println("╠═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
-	fmt.Println("║   Task ID         | Baseline | Stitched | Improvement | Fully Solved | Region: TL / TR / BL / BR / Center / Edge           ║")
-	fmt.Println("╠═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
-
-	for i := 0; i < 10 && i < len(summaries); i++ {
-		s := summaries[i]
-		improvement := s.BestPairCoverage - s.BaselineCoverage
-		solved := "  No"
-		if s.FullySolved {
-			solved = " Yes"
-		}
-
-		regionStr := ""
-		if len(s.RegionAnalysis) >= 6 {
-			regionStr = fmt.Sprintf("%.0f%% / %.0f%% / %.0f%% / %.0f%% / %.0f%% / %.0f%%",
-				s.RegionAnalysis[0].Accuracy, s.RegionAnalysis[1].Accuracy,
-				s.RegionAnalysis[2].Accuracy, s.RegionAnalysis[3].Accuracy,
-				s.RegionAnalysis[4].Accuracy, s.RegionAnalysis[5].Accuracy)
-		}
-
-		fmt.Printf("║   %-15s | %6.1f%% | %7.1f%% |    +%5.1f%% |     %s  | %-38s ║\n",
-			s.TaskID[:min(15, len(s.TaskID))], s.BaselineCoverage, s.BestPairCoverage, improvement, solved, regionStr)
-	}
-
-	fmt.Println("╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝")
-
-	if len(newlySolved) > 0 {
-		fmt.Printf("\n🎉 Phase 2 Stitching solved %d NEW tasks: %v\n", len(newlySolved), newlySolved)
-	} else {
-		fmt.Println("\n💡 No new tasks fully solved via stitching, but coverage improved for many tasks.")
-		fmt.Println("   Consider: training more diverse models or increasing ensemble size.")
-	}
-
-	return newlySolved, summaries
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-// ============================================================================
-// PHASE 2 WITH GRIDS OUTPUT (for Phase 3 recursive stitching)
-// ============================================================================
-
-// phase2ComplementaryStitchingWithGrids runs Phase 2 and returns stitched grids for Phase 3
-func phase2ComplementaryStitchingWithGrids(specialists []*NetworkSpecialist, evalTasks []*ARCTask43, alreadySolved map[string]bool) ([]string, []TaskStitchingSummary, map[string]*StitchedGridsPerTask) {
-	fmt.Println("\n🔮 Phase 2: Complementary Model Stitching...")
-	fmt.Println("   Strategy: Find pairs of models that complement each other pixel-by-pixel")
-	fmt.Println("   Goal: Stitch together partial solutions to solve more tasks")
-
-	var newlySolved []string
-	var summaries []TaskStitchingSummary
-	allStitchedGrids := make(map[string]*StitchedGridsPerTask)
-
-	// Track progress
-	unsolvedCount := 0
-	for _, task := range evalTasks {
-		if !alreadySolved[task.ID] {
-			unsolvedCount++
-		}
-	}
-	fmt.Printf("   📊 Analyzing %d unsolved tasks...\n\n", unsolvedCount)
-
-	// Analyze each unsolved task
-	tasksAnalyzed := 0
-	for _, task := range evalTasks {
-		if alreadySolved[task.ID] {
-			continue
-		}
-
-		tasksAnalyzed++
-		analysis := analyzePixelCorrectness(specialists, task)
-		if analysis == nil {
-			continue
-		}
-
-		// Find complementary pairs (get more for phase 3)
-		pairs := findComplementaryPairs(analysis, 15)
-
-		// Create stitched grids for this task
-		taskGrids := &StitchedGridsPerTask{
-			TaskID:       task.ID,
-			Height:       analysis.Height,
-			Width:        analysis.Width,
-			TotalPixels:  analysis.TotalPixels,
-			TargetColors: analysis.TargetColors,
-			Grids:        make([]*StitchedGrid, 0),
-		}
-
-		// Try stitching with each pair
-		var bestResult *StitchResult
-		for i, pair := range pairs {
-			result := stitchPredictions(analysis, pair)
-			if result != nil {
-				// Create a stitched grid for Phase 3
-				correctness := make([]bool, analysis.TotalPixels)
-				for pixelIdx := 0; pixelIdx < analysis.TotalPixels; pixelIdx++ {
-					correctness[pixelIdx] = result.StitchedOutput[pixelIdx] == analysis.TargetColors[pixelIdx]
-				}
-
-				taskGrids.Grids = append(taskGrids.Grids, &StitchedGrid{
-					ID:               i,
-					Output:           result.StitchedOutput,
-					Coverage:         result.StitchedCoverage * 100,
-					PixelCorrectness: correctness,
-					SourceNetworks:   []int{pair.NetworkA, pair.NetworkB},
-				})
-
-				if bestResult == nil || result.StitchedCoverage > bestResult.StitchedCoverage {
-					bestResult = result
-				}
-			}
-		}
-
-		// Also try best-per-pixel stitching
-		bestPerPixelResult := stitchFromBestPerPixel(analysis, specialists)
-		if bestPerPixelResult != nil {
-			correctness := make([]bool, analysis.TotalPixels)
-			for pixelIdx := 0; pixelIdx < analysis.TotalPixels; pixelIdx++ {
-				correctness[pixelIdx] = bestPerPixelResult.StitchedOutput[pixelIdx] == analysis.TargetColors[pixelIdx]
-			}
-			taskGrids.Grids = append(taskGrids.Grids, &StitchedGrid{
-				ID:               len(taskGrids.Grids),
-				Output:           bestPerPixelResult.StitchedOutput,
-				Coverage:         bestPerPixelResult.StitchedCoverage * 100,
-				PixelCorrectness: correctness,
-				SourceNetworks:   []int{-1}, // All networks contributed
-			})
-		}
-
-		// Check which approach is better
-		finalResult := bestResult
-		if bestPerPixelResult != nil && (finalResult == nil || bestPerPixelResult.StitchedCoverage > finalResult.StitchedCoverage) {
-			finalResult = bestPerPixelResult
-		}
-
-		// Build region analysis
-		regionBuckets := buildRegionBuckets(analysis)
-
-		// Create summary
-		summary := TaskStitchingSummary{
-			TaskID:           task.ID,
-			TotalPixels:      analysis.TotalPixels,
-			BaselineCoverage: 0,
-			BestPairCoverage: 0,
-			FullySolved:      false,
-			TopPairs:         pairs,
-			RegionAnalysis:   regionBuckets,
-		}
-
-		// Calculate baseline (best single network)
-		bestSingleCoverage := 0
-		for netIdx := 0; netIdx < analysis.NumNetworks; netIdx++ {
-			correct := 0
-			for pixelIdx := 0; pixelIdx < analysis.TotalPixels; pixelIdx++ {
-				if analysis.PixelCorrectness[netIdx][pixelIdx] {
-					correct++
-				}
-			}
-			if correct > bestSingleCoverage {
-				bestSingleCoverage = correct
-			}
-		}
-		if analysis.TotalPixels > 0 {
-			summary.BaselineCoverage = float64(bestSingleCoverage) / float64(analysis.TotalPixels) * 100
-		}
-
-		if finalResult != nil {
-			summary.BestPairCoverage = finalResult.StitchedCoverage * 100
-			summary.FullySolved = finalResult.FullySolved
-
-			if finalResult.FullySolved {
-				newlySolved = append(newlySolved, task.ID)
-				fmt.Printf("   ✅ SOLVED via stitching: %s (coverage: %.1f%% → 100%%)\n", task.ID, summary.BaselineCoverage)
-			}
-		}
-
-		summaries = append(summaries, summary)
-
-		// Only store grids for unsolved tasks (for Phase 3)
-		if !summary.FullySolved && len(taskGrids.Grids) > 0 {
-			allStitchedGrids[task.ID] = taskGrids
-		}
-
-		// Print progress every 20 tasks
-		if tasksAnalyzed%20 == 0 {
-			fmt.Printf("   🔄 Analyzed %d/%d unsolved tasks...\n", tasksAnalyzed, unsolvedCount)
-		}
-	}
-
-	// Print detailed results
-	fmt.Println("\n╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║                                    🧩 COMPLEMENTARY STITCHING RESULTS                                                        ║")
-	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
+	fmt.Println("╚══════════╩══════════╩════════════════╩═══════════════════╝")
+	fmt.Printf("🧠 Neural Solved Total: %d tasks\n\n", neuralSolvedCount)
 
 	// Summary statistics
 	totalImproved := 0
@@ -1883,7 +1857,7 @@ func phase2ComplementaryStitchingWithGrids(specialists []*NetworkSpecialist, eva
 		fmt.Printf("\n🎉 Phase 2 Stitching solved %d NEW tasks: %v\n", len(newlySolved), newlySolved)
 	} else {
 		fmt.Println("\n💡 No new tasks fully solved via stitching, but coverage improved for many tasks.")
-		fmt.Println("   Phase 3 will attempt recursive stitching on the Frankenstein grids...")
+		fmt.Println("   Consider: training more diverse models or increasing ensemble size.")
 	}
 
 	return newlySolved, summaries, allStitchedGrids
