@@ -716,7 +716,7 @@ func attemptNeuralStitching(specialists []*NetworkSpecialist, task *ARCTask43, p
 	gateOutputSize := InputSize43
 	gateNet := nn.NewNetwork(gateInputSize, 1, 1, 1)
 	gateNet.SetLayer(0, 0, 0, nn.InitDenseLayer(gateInputSize, gateOutputSize, nn.ActivationSigmoid))
-	
+
 	learningRate := float32(0.05)
 
 	// Pre-compute Expert Outputs & Targets
@@ -753,35 +753,37 @@ func attemptNeuralStitching(specialists []*NetworkSpecialist, task *ARCTask43, p
 	for epoch := 0; epoch < maxEpochs; epoch++ {
 		correctPixels := 0
 		totalPixels := 0
-		
+
 		for _, td := range trainData {
 			// Forward
 			gateOut, _ := gateNet.ForwardCPU(td.Input)
-			
+
 			// Backward & Stats
 			grad := make([]float32, len(gateOut))
 			for i := range gateOut {
 				errorVal := gateOut[i] - td.GateTarget[i]
 				grad[i] = errorVal
-				
+
 				// Training Accuracy Check:
 				// If target is 1.0, prediction > 0.5 is correct.
 				// If target is 0.0, prediction < 0.5 is correct.
 				isCorrect := false
-				if td.GateTarget[i] > 0.9 && gateOut[i] > 0.5 { 
-					isCorrect = true 
-				} else if td.GateTarget[i] < 0.1 && gateOut[i] < 0.5 { 
-					isCorrect = true 
-				} else if td.GateTarget[i] >= 0.1 && td.GateTarget[i] <= 0.9 { 
-					isCorrect = true 
-				} 
-				
-				if isCorrect { correctPixels++ }
+				if td.GateTarget[i] > 0.9 && gateOut[i] > 0.5 {
+					isCorrect = true
+				} else if td.GateTarget[i] < 0.1 && gateOut[i] < 0.5 {
+					isCorrect = true
+				} else if td.GateTarget[i] >= 0.1 && td.GateTarget[i] <= 0.9 {
+					isCorrect = true
+				}
+
+				if isCorrect {
+					correctPixels++
+				}
 				totalPixels++
 			}
-			
+
 			// Update Weights
-			layer := gateNet.GetLayer(0,0,0)
+			layer := gateNet.GetLayer(0, 0, 0)
 			for o := 0; o < gateOutputSize; o++ {
 				g := grad[o]
 				actDeriv := gateOut[o] * (1.0 - gateOut[o])
@@ -790,12 +792,12 @@ func attemptNeuralStitching(specialists []*NetworkSpecialist, task *ARCTask43, p
 				startIdx := o * gateInputSize
 				for i := 0; i < gateInputSize; i++ {
 					if td.Input[i] != 0 {
-						layer.Kernel[startIdx + i] -= learningRate * delta * td.Input[i]
+						layer.Kernel[startIdx+i] -= learningRate * delta * td.Input[i]
 					}
 				}
 			}
 		}
-		
+
 		if totalPixels > 0 {
 			trainAcc := float64(correctPixels) / float64(totalPixels) * 100.0
 			if trainAcc > 99.9 {
@@ -805,44 +807,48 @@ func attemptNeuralStitching(specialists []*NetworkSpecialist, task *ARCTask43, p
 	}
 
 	// 3. Test on Test Set
-	if len(task.Test) == 0 { return 0.0 }
+	if len(task.Test) == 0 {
+		return 0.0
+	}
 	testPair := task.Test[0]
 	input := encodeGrid43(testPair.Input)
-	target := encodeGrid43(testPair.Output) 
-	
+	target := encodeGrid43(testPair.Output)
+
 	gateOut, _ := gateNet.ForwardCPU(input)
 	outA, _ := specialists[pair.NetworkA].Network.ForwardCPU(input)
 	outB, _ := specialists[pair.NetworkB].Network.ForwardCPU(input)
-	
+
 	pixelsCorrect := 0
 	totalPixelsTest := len(target)
-	
+
 	for i := 0; i < totalPixelsTest; i++ {
 		valA := outA[i]
 		valB := outB[i]
-		
+
 		var finalVal float32
 		if gateOut[i] > 0.5 {
 			finalVal = valA
 		} else {
 			finalVal = valB
 		}
-		
+
 		predColor := clampInt43(int(math.Round(float64(finalVal)*9.0)), 0, 9)
 		targetC := int(math.Round(float64(target[i]) * 9.0))
-		
+
 		if predColor == targetC {
 			pixelsCorrect++
 		}
 	}
-	
+
 	return float64(pixelsCorrect) / float64(totalPixelsTest) * 100.0
 }
 
 func (p GridPair43) Width() []int {
 	if len(p.Output) > 0 {
 		w := make([]int, len(p.Output))
-		for i := range w { w[i] = len(p.Output[i]) }
+		for i := range w {
+			w[i] = len(p.Output[i])
+		}
 		return w
 	}
 	return []int{0}
@@ -997,7 +1003,6 @@ func trainNetwork43(config AgentConfig43, trainSamples, evalSamples []Sample43, 
 	}
 }
 
-
 // fuseOutputs43 combines outputs from multiple networks using the specified strategy
 func fuseOutputs43(outputs [][]float32, confidences []float64, strategy FusionStrategy, height, width int) []float32 {
 	if len(outputs) == 0 || len(outputs[0]) == 0 {
@@ -1127,7 +1132,6 @@ func calculateCoverage43(outputs [][]float32, target []float32, height, width in
 	}
 	return covered, total
 }
-
 
 // createDiverseNetwork creates a network with configurable CombineMode
 // Now delegates to nn.BuildDiverseNetwork after converting local config to nn.ArchConfig
@@ -1405,7 +1409,7 @@ func findComplementaryPairs(analysis *PixelAnalysis, topN int) []ComplementaryPa
 	for _, m := range matches {
 		idxA, _ := strconv.Atoi(m.ModelA)
 		idxB, _ := strconv.Atoi(m.ModelB)
-		
+
 		// Recalculate discrete counts since nn only gives rates
 		// (or we could trust rates * total, but let's be precise for consistency)
 		var overlap, uniqueA, uniqueB int
@@ -1421,7 +1425,7 @@ func findComplementaryPairs(analysis *PixelAnalysis, topN int) []ComplementaryPa
 				uniqueB++
 			}
 		}
-		
+
 		combinedCoverage := overlap + uniqueA + uniqueB
 		complementScore := 0.0
 		if combinedCoverage > 0 {
@@ -1640,14 +1644,16 @@ func phase2ComplementaryStitchingWithGrids(specialists []*NetworkSpecialist, eva
 	var newlySolved []string
 	var summaries []TaskStitchingSummary
 	allStitchedGrids := make(map[string]*StitchedGridsPerTask)
-	
-	// Track Neural Results
-	type NeuralResult struct {
-		Coverage    float64
-		Solved      bool
-		BaseManual  float64
-	}
-	neuralResults := make(map[string]NeuralResult)
+
+	/*
+		// Track Neural Results
+		type NeuralResult struct {
+			Coverage   float64
+			Solved     bool
+			BaseManual float64
+		}
+		neuralResults := make(map[string]NeuralResult)
+	*/
 
 	// Track progress
 	unsolvedCount := 0
@@ -1733,32 +1739,34 @@ func phase2ComplementaryStitchingWithGrids(specialists []*NetworkSpecialist, eva
 				newlySolved = append(newlySolved, task.ID)
 				fmt.Printf("   ✅ SOLVED via stitching: %s (coverage: %.1f%% → 100%%)\n", task.ID, summary.BaselineCoverage)
 			}
-			
-			// NEURAL STITCHING EXPERIMENT (Comparison)
-			// Only run if we have a valid pair (NetworkA != NetworkB, to avoid BestPerPixel "0+0" results)
-			// BestPerPixel returns Pair{0,0} or {-1,-1} effectively.
-			pair := finalResult.PairUsed
-			if pair.NetworkA != pair.NetworkB && pair.NetworkA >= 0 && pair.NetworkB >= 0 {
-				neuralCoverage := attemptNeuralStitching(specialists, task, pair)
-				diff := neuralCoverage - summary.BestPairCoverage
-				
-				icon := "🟦"
-				if diff > 1.0 { icon = "✅" } 
-				if diff < -1.0 { icon = "🔻" }
-				
-				fmt.Printf("      🧠 Neural vs Manual: %.1f%% vs %.1f%% (%s %+.1f%%) [Pair %d+%d]\n", 
-					neuralCoverage, summary.BestPairCoverage, icon, diff, pair.NetworkA, pair.NetworkB)
-				
-				if neuralCoverage > 99.9 && !summary.FullySolved {
-					fmt.Printf("      🎉 NEURAL STITCHING SOLVED IT (where manual failed)!\n")
+
+			/*
+				// NEURAL STITCHING EXPERIMENT (Comparison)
+				// Only run if we have a valid pair (NetworkA != NetworkB, to avoid BestPerPixel "0+0" results)
+				// BestPerPixel returns Pair{0,0} or {-1,-1} effectively.
+				pair := finalResult.PairUsed
+				if pair.NetworkA != pair.NetworkB && pair.NetworkA >= 0 && pair.NetworkB >= 0 {
+					neuralCoverage := attemptNeuralStitching(specialists, task, pair)
+					diff := neuralCoverage - summary.BestPairCoverage
+
+					icon := "🟦"
+					if diff > 1.0 { icon = "✅" }
+					if diff < -1.0 { icon = "🔻" }
+
+					fmt.Printf("      🧠 Neural vs Manual: %.1f%% vs %.1f%% (%s %+.1f%%) [Pair %d+%d]\n",
+						neuralCoverage, summary.BestPairCoverage, icon, diff, pair.NetworkA, pair.NetworkB)
+
+					if neuralCoverage > 99.9 && !summary.FullySolved {
+						fmt.Printf("      🎉 NEURAL STITCHING SOLVED IT (where manual failed)!\n")
+					}
+
+					neuralResults[task.ID] = NeuralResult{
+						Coverage:   neuralCoverage,
+						Solved:     neuralCoverage > 99.9,
+						BaseManual: summary.BestPairCoverage,
+					}
 				}
-				
-				neuralResults[task.ID] = NeuralResult{
-					Coverage:   neuralCoverage,
-					Solved:     neuralCoverage > 99.9,
-					BaseManual: summary.BestPairCoverage,
-				}
-			}
+			*/
 		}
 
 		summaries = append(summaries, summary)
@@ -1774,30 +1782,32 @@ func phase2ComplementaryStitchingWithGrids(specialists []*NetworkSpecialist, eva
 	fmt.Println("║                                    🧩 COMPLEMENTARY STITCHING RESULTS                                                        ║")
 	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
 
-	// Summary statistics for Neural
-	fmt.Println("\n╔══════════════════════════════════════════════════════════╗")
-	fmt.Println("║ 🧠 NEURAL STITCHING SUMMARY                              ║")
-	fmt.Println("╠══════════╦══════════╦════════════════╦═══════════════════╣")
-	fmt.Println("║ Task ID  | Manual   | Neural         | Status            ║")
-	fmt.Println("╠══════════╬══════════╬════════════════╬═══════════════════╣")
-	
-	neuralSolvedCount := 0
-	for taskID, res := range neuralResults {
-		status := " "
-		if res.Solved { 
-			status = "SOLVED!"
-			neuralSolvedCount++
-		} else if res.Coverage > res.BaseManual {
-			status = "Better"
-		} else if res.Coverage < res.BaseManual {
-			status = "Worse"
+	/*
+		// Summary statistics for Neural
+		fmt.Println("\n╔══════════════════════════════════════════════════════════╗")
+		fmt.Println("║ 🧠 NEURAL STITCHING SUMMARY                              ║")
+		fmt.Println("╠══════════╦══════════╦════════════════╦═══════════════════╣")
+		fmt.Println("║ Task ID  | Manual   | Neural         | Status            ║")
+		fmt.Println("╠══════════╬══════════╬════════════════╬═══════════════════╣")
+
+		neuralSolvedCount := 0
+		for taskID, res := range neuralResults {
+			status := " "
+			if res.Solved {
+				status = "SOLVED!"
+				neuralSolvedCount++
+			} else if res.Coverage > res.BaseManual {
+				status = "Better"
+			} else if res.Coverage < res.BaseManual {
+				status = "Worse"
+			}
+
+			fmt.Printf("║ %-8s | %6.1f%%  | %6.1f%%        | %-17s ║\n",
+				taskID[:min(8, len(taskID))], res.BaseManual, res.Coverage, status)
 		}
-		
-		fmt.Printf("║ %-8s | %6.1f%%  | %6.1f%%        | %-17s ║\n", 
-			taskID[:min(8, len(taskID))], res.BaseManual, res.Coverage, status)
-	}
-	fmt.Println("╚══════════╩══════════╩════════════════╩═══════════════════╝")
-	fmt.Printf("🧠 Neural Solved Total: %d tasks\n\n", neuralSolvedCount)
+		fmt.Println("╚══════════╩══════════╩════════════════╩═══════════════════╝")
+		fmt.Printf("🧠 Neural Solved Total: %d tasks\n\n", neuralSolvedCount)
+	*/
 
 	// Summary statistics
 	totalImproved := 0
@@ -2817,12 +2827,12 @@ func printFusionResults43(output *FusionResults, allResults []EnsembleResult) {
 	fmt.Printf("║   Duration: %s                                                                                                       ║\n",
 		output.Duration)
 	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
-	
+
 	fmt.Println("║                                         📊 ARCHITECTURE DIVERSITY                                                            ║")
 	fmt.Println("╠═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣")
 	fmt.Printf("║   CombineModes: %v                                                                                  ║\n", output.CombineModeStats)
 	fmt.Printf("║   Grid Species: %v                   ║\n", output.SpeciesStats)
-	
+
 	fmt.Println("╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝")
 
 	// Key finding
