@@ -2,6 +2,20 @@
 
 Neural network experiments for the **ARC-AGI (Abstraction and Reasoning Corpus)** benchmark using LOOM's training modes.
 
+## Neural Fountain spectrum (new)
+
+Same specialize → LT peel → Master matrix as `loom_neural_fountain` run **2**, pointed at ARC:
+
+```bash
+cd fountain_spectrum
+./run.sh both          # ARC-AGI-1 logs, then ARC-AGI-2 logs
+./run.sh 1 quick
+```
+
+See [`fountain_spectrum/README.md`](fountain_spectrum/README.md).
+
+---
+
 ## 🎯 What is ARC-AGI?
 
 ARC-AGI is considered one of the hardest AI benchmarks, designed to test **abstract reasoning and generalization** - abilities that current AI systems struggle with. Created by François Chollet (creator of Keras), it features 400 unique visual reasoning tasks.
