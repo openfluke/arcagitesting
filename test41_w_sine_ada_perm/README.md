@@ -177,6 +177,47 @@ Rough full-run time: on the order of tens of minutes at `-duration 2s` with
 
 ---
 
+## Full-sweep results (snapshot)
+
+Run: `-workers 8 -duration 2s` @ SIMD · **10710** cells ·
+**6694** passed / **510** failed / **3506** skipped (resume cache).
+
+Failures are almost entirely **AffinePacked** (layer `cols` not aligned to 8/64).
+
+### Top by Lucy Score
+
+| # | Cell | Score | Acc% | Avail% | RAM |
+|---|------|------:|-----:|-------:|-----|
+| 1 | Bicameral/StepTweenChain/float32/none | 964 | 29.2 | 27.1 | 9.4 KiB |
+| 2 | Bicameral/StepTweenChain/float64/none | 944 | 25.4 | 40.6 | 18.8 KiB |
+| 3 | Bicameral/StepTweenChain/uint64/none | 905 | 26.4 | 44.7 | 18.8 KiB |
+| 4 | Bicameral/StepTweenChain/uint32/none | 884 | 22.8 | 46.5 | 9.4 KiB |
+| 5 | Bicameral/StepTweenChain/int32/none | 846 | 22.3 | 45.6 | 9.4 KiB |
+| 6 | Bicameral/StepTweenChain/int/IQ1_S | 840 | 26.4 | 41.3 | 0.6 KiB |
+| 7 | Bicameral/StepTweenChain/complex128/none | 815 | 21.2 | 51.4 | 37.5 KiB |
+| 8 | Bicameral/StepTweenChain/int/none | 763 | 20.9 | 48.6 | 18.8 KiB |
+| 9 | Bicameral/StepTweenChain/complex64/none | 748 | 18.5 | 50.9 | 18.8 KiB |
+| 10 | Bicameral/StepTweenChain/uint2/Q4_1 | 719 | 32.6 | 24.3 | 1.8 KiB |
+| 11 | Bicameral/StepTweenChain/uintptr/none | 710 | 21.4 | 46.9 | 18.8 KiB |
+| 12 | Bicameral/StepTweenChain/binary/IQ3_XXS | 681 | 28.6 | 32.5 | 1.2 KiB |
+| 13 | Dense/StepBP/float32/none | 675 | 46.5 | 14.0 | 5.4 KiB |
+| 14 | Bicameral/StepTweenChain/uint5/Q8_0 | 649 | 21.1 | 24.9 | 2.6 KiB |
+| 15 | Bicameral/StepTweenChain/int5/Q4_1 | 639 | 29.2 | 24.0 | 1.8 KiB |
+
+### Cost extremes
+
+| Highlight | Cell | Value |
+|-----------|------|-------|
+| Best mobile Score/MiB | Bicameral/StepTweenChain/binary/none | ~2.18e6 |
+| Smallest weights | Dense/StepTweenChain/binary/none | 172 bytes |
+
+Headline: **Bicameral + StepTweenChain** dominates the Score board; unquantized
+wide dtypes win raw Score, while **IQ1_S / Q4_1 / binary** packs sit on the
+cheap end of the same mode. Dense/StepBP/float32 is the Acc king in the top
+15 but pays with low Availability.
+
+---
+
 ## Reading results
 
 After a run, sort / filter `perm_summary.json` (or the per-cell files) for the
