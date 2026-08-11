@@ -1,0 +1,6 @@
+# Per-cell resume cache + run artifacts (huge; regenerate with `go run .`)
+results/
+perm_summary.json
+perm_run.log
+*.log
+/tmp/
