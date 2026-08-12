@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -36,14 +37,16 @@ import (
 //   Bicameral  — Dense in → Hemispheres(n=2, add) → Dense out
 //   Tricameral — Dense in → Hemispheres(n=3, add) → Dense out
 //   Quadcameral— Dense in → Hemispheres(n=4, add) → Dense out
+//   Mix        — Hemispheres(n=6): one of each seq mode (canonical hex)
 //
-// Each Parallel stamps distinct per-hemisphere TrainModes (cycling the 9
-// test41 modes via SetBranchModes).
+// Uniform Bi/Tri/Quad train through the Grid loop (one mode for the whole net).
+// Mix variants: distinct-mode permutations on Bi/Tri/Quad (+ optional hex),
+// trained via Stack + TrainStackMSE. -mix off|bi|tri|quad|all (default all).
 //
-// Protocol defaults match test41_w_sine_ada_perm (short SIMD race):
-//   2s, switch every 500ms, AdaptWindows=4, BackendSIMD, workers=1.
+// Protocol defaults: long sine race (10s / 2.5s switch / AdaptWindows=10).
 // Measuring math is welvet/lucy (same equations as perm/tide/live_mnist).
-// Override with -duration/-switch/-adapt-windows for the old 10s sine_ada race.
+// Short perm-aligned race: -duration 2s -switch 500ms -adapt-windows 4
+// (full dtype×quant matrix lives in test41_w_native_cam_perm).
 //
 const (
 	InputSize  = 10
@@ -59,12 +62,12 @@ const (
 	SinePoints     = 100
 	SineResolution = 0.1
 
-	// Perm-aligned defaults (was 10s / 2.5s / AdaptWindows=10 on CPU tiled).
-	TestDuration   = 2 * time.Second
+	TestDuration   = 10 * time.Second
 	WindowDuration = 50 * time.Millisecond
-	SwitchInterval = 500 * time.Millisecond
+	SwitchInterval = 2500 * time.Millisecond
 	TrainInterval  = 10 * time.Millisecond
-	AdaptWindows   = 4 // 4×50ms = 200ms post-switch (lucy / perm default)
+	// Post-switch adaptation: 500ms = 10×50ms.
+	AdaptWindows = 10
 )
 
 type ArchKind int
@@ -74,6 +77,7 @@ const (
 	ArchBicameral
 	ArchTricameral
 	ArchQuadcameral
+	ArchMix // one hemisphere per sequential train mode
 )
 
 var archNames = map[ArchKind]string{
@@ -81,6 +85,7 @@ var archNames = map[ArchKind]string{
 	ArchBicameral:   "Bicameral",
 	ArchTricameral:  "Tricameral",
 	ArchQuadcameral: "Quadcameral",
+	ArchMix:         "Mix",
 }
 
 func archHemiCount(a ArchKind) int {
@@ -91,13 +96,15 @@ func archHemiCount(a ArchKind) int {
 		return 4
 	case ArchBicameral:
 		return 2
+	case ArchMix:
+		return len(seqParallelModes())
 	default:
 		return 0
 	}
 }
 
 func isCameralArch(a ArchKind) bool {
-	return a == ArchBicameral || a == ArchTricameral || a == ArchQuadcameral
+	return a == ArchBicameral || a == ArchTricameral || a == ArchQuadcameral || a == ArchMix
 }
 
 type TrainingMode int
@@ -197,11 +204,19 @@ var (
 )
 
 type job struct {
-	arch ArchKind
-	mode TrainingMode
+	arch      ArchKind
+	mode      TrainingMode         // uniform Grid jobs
+	hemiModes []parallel.TrainMode // if set: Mix(*) via TrainStackMSE
 }
 
 func labelOf(j job) string {
+	if len(j.hemiModes) > 0 {
+		parts := make([]string, len(j.hemiModes))
+		for i, m := range j.hemiModes {
+			parts[i] = m.String()
+		}
+		return archNames[j.arch] + "/Mix(" + strings.Join(parts, "∥") + ")"
+	}
 	return archNames[j.arch] + "/" + modeNames[j.mode]
 }
 
@@ -211,6 +226,7 @@ func main() {
 	switchEvery := flag.Duration("switch", SwitchInterval, "frequency switch interval")
 	window := flag.Duration("window", WindowDuration, "SoftAcc window")
 	adaptN := flag.Int("adapt-windows", AdaptWindows, "pulse windows after switch folded into AdaptPct")
+	mixScope := flag.String("mix", "all", "Mix distinct-mode perms: off | bi | tri | quad | all (+hex)")
 	flag.Parse()
 
 	testDuration = *dur
@@ -228,11 +244,11 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	fmt.Println("╔═════════════════════════════════════════════════════════════════════════════════════╗")
-	fmt.Println("║   🌊 TEST 41-W NATIVE CAM: sine adaptation — Dense + bi/tri/quad Hemispheres        ║")
+	fmt.Println("║   🌊 TEST 41-W NATIVE CAM: sine adaptation — Dense + bi/tri/quad + Mix perms        ║")
 	fmt.Println("║                                                                                     ║")
 	fmt.Println("║   SoftAcc + AdaptPct | Availability = InferMs/(InferMs+TrainMs) | Lucy Score        ║")
 	fmt.Println("║   Cost: WeightBytes + HeapBytes → MobileScore = Score / WeightMiB                   ║")
-	fmt.Println("║   Arch: Dense | Bicameral(n=2) | Tricameral(n=3) | Quadcameral(n=4)                 ║")
+	fmt.Println("║   Arch: Dense | Bi/Tri/Quad uniform | Mix(distinct modes ∥) via TrainStackMSE       ║")
 	fmt.Println("╚═════════════════════════════════════════════════════════════════════════════════════╝")
 
 	frequencies := []float64{1.0, 2.0, 3.0, 4.0}
@@ -242,8 +258,9 @@ func main() {
 		allInputs[i], allTargets[i] = createSamples(generateSineWave(freq))
 	}
 
-	jobs := buildJobs()
-	fmt.Printf("\n📊 %d samples/freq | %d jobs | SoftAccScale=%.2f\n", SinePoints, len(jobs), lucy.SoftAccScaleSine)
+	jobs := buildJobs(*mixScope)
+	fmt.Printf("\n📊 %d samples/freq | %d jobs | SoftAccScale=%.2f | mix=%s\n",
+		SinePoints, len(jobs), lucy.SoftAccScaleSine, *mixScope)
 	fmt.Printf("⏱️  %s/job | switch every %s | adapt %dms (%d×%dms) | workers=%d | duty=%s\n\n",
 		testDuration, switchInterval,
 		adaptWindows*int(windowDuration.Milliseconds()), adaptWindows, windowDuration.Milliseconds(),
@@ -294,19 +311,75 @@ func main() {
 	printSummary(results)
 }
 
-func buildJobs() []job {
+func seqParallelModes() []parallel.TrainMode {
+	return []parallel.TrainMode{
+		parallel.ModeNormalBP, parallel.ModeStepBP,
+		parallel.ModeTween, parallel.ModeTweenChain,
+		parallel.ModeStepTween, parallel.ModeStepTweenChain,
+	}
+}
+
+// appendMixPerms appends all ordered injections of size n (distinct modes).
+// e.g. n=2 → NormalBP∥StepBP, StepBP∥NormalBP, Tween∥StepBP, …
+func appendMixPerms(out []job, arch ArchKind, n int, modes []parallel.TrainMode) []job {
+	if n < 1 || n > len(modes) {
+		return out
+	}
+	used := make([]bool, len(modes))
+	cur := make([]parallel.TrainMode, n)
+	var walk func(depth int)
+	walk = func(depth int) {
+		if depth == n {
+			cp := append([]parallel.TrainMode(nil), cur...)
+			out = append(out, job{arch: arch, hemiModes: cp})
+			return
+		}
+		for i, m := range modes {
+			if used[i] {
+				continue
+			}
+			used[i] = true
+			cur[depth] = m
+			walk(depth + 1)
+			used[i] = false
+		}
+	}
+	walk(0)
+	return out
+}
+
+func buildJobs(mixScope string) []job {
 	seq := []TrainingMode{ModeNormalBP, ModeStepBP, ModeTween, ModeTweenChain, ModeStepTween, ModeStepTweenChain}
 	mesh := []TrainingMode{ModeMeshBP, ModeMeshTween, ModeMeshTweenChain}
 	arches := []ArchKind{ArchDense, ArchBicameral, ArchTricameral, ArchQuadcameral}
 	var out []job
 	for _, a := range arches {
 		for _, m := range seq {
-			out = append(out, job{a, m})
+			out = append(out, job{arch: a, mode: m})
 		}
 	}
-	// Mesh needs equal-width Dense stack only.
 	for _, m := range mesh {
-		out = append(out, job{ArchDense, m})
+		out = append(out, job{arch: ArchDense, mode: m})
+	}
+
+	// Mix variants: distinct seq modes across Bi/Tri/Quad hemispheres (+ canonical hex).
+	pseq := seqParallelModes()
+	switch strings.ToLower(strings.TrimSpace(mixScope)) {
+	case "off", "none", "0", "false":
+		// uniform + mesh only
+	case "bi":
+		out = appendMixPerms(out, ArchBicameral, 2, pseq)
+	case "tri":
+		out = appendMixPerms(out, ArchTricameral, 3, pseq)
+	case "quad":
+		out = appendMixPerms(out, ArchQuadcameral, 4, pseq)
+	case "hex":
+		out = append(out, job{arch: ArchMix, hemiModes: pseq})
+	default: // all
+		out = appendMixPerms(out, ArchBicameral, 2, pseq)
+		out = appendMixPerms(out, ArchTricameral, 3, pseq)
+		out = appendMixPerms(out, ArchQuadcameral, 4, pseq)
+		out = append(out, job{arch: ArchMix, hemiModes: pseq})
 	}
 	return out
 }
@@ -563,6 +636,14 @@ func modelWeightBytes(g *architecture.Grid) int64 {
 	return n
 }
 
+func stackWeightBytes(s *parallel.Stack) int64 {
+	var n int64
+	for _, st := range dna.CollectStores(s) {
+		n += storeBytes(st)
+	}
+	return n
+}
+
 func heapNow() uint64 {
 	runtime.GC()
 	var m runtime.MemStats
@@ -570,7 +651,178 @@ func heapNow() uint64 {
 	return m.HeapAlloc
 }
 
+// createCameralStack builds Dense→Hemispheres(n)→Dense as a Stack with BranchModes.
+// TrainStackMSE respects per-hemisphere modes (Grid training.Step does not).
+func createCameralStack(nHemi int, modes []parallel.TrainMode) (*parallel.Stack, error) {
+	if nHemi < 2 {
+		return nil, fmt.Errorf("native_cam: cameral stack needs n≥2")
+	}
+	if len(modes) != nHemi {
+		return nil, fmt.Errorf("native_cam: need %d hemi modes, got %d", nHemi, len(modes))
+	}
+	stem, err := dense.NewConfigured[float32](InputSize, HiddenSize, core.ActivationLeakyReLU,
+		core.DTypeFloat32, quant.FormatNone, randWeights(HiddenSize, InputSize, InitScale))
+	if err != nil {
+		return nil, err
+	}
+	hemi, err := parallel.Hemispheres(HiddenSize, HiddenSize, nHemi, parallel.CombineAdd,
+		core.ActivationLeakyReLU, core.DTypeFloat32, quant.FormatNone)
+	if err != nil {
+		return nil, err
+	}
+	for i := 0; i < nHemi; i++ {
+		br, ok := hemi.DenseBranch(i)
+		if !ok || br == nil || br.Weights == nil {
+			return nil, fmt.Errorf("native_cam: hemisphere %d not Dense", i)
+		}
+		if err := br.Weights.SetFromF32(randWeights(HiddenSize, HiddenSize, InitScale)); err != nil {
+			return nil, err
+		}
+	}
+	hemi.SetBranchModes(modes...)
+	head, err := dense.NewConfigured[float32](HiddenSize, OutputSize, core.ActivationSigmoid,
+		core.DTypeFloat32, quant.FormatNone, randWeights(OutputSize, HiddenSize, InitScale))
+	if err != nil {
+		return nil, err
+	}
+	s, err := parallel.Sandwich(stem, hemi, head)
+	if err != nil {
+		return nil, err
+	}
+	s.Exec.Backend = core.BackendSIMD
+	s.Exec.MultiCore = true
+	s.Exec.TileSize = 32
+	s.SyncChildExec()
+	return s, nil
+}
+
 func runBenchmark(j job, allInputs [][][]float32, allTargets [][]float32, frequencies []float64) *ModeResult {
+	if len(j.hemiModes) > 0 {
+		return runMixedBenchmark(j, allInputs, allTargets, frequencies)
+	}
+	return runUniformBenchmark(j, allInputs, allTargets, frequencies)
+}
+
+func runMixedBenchmark(j job, allInputs [][][]float32, allTargets [][]float32, frequencies []float64) *ModeResult {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+
+	nHemi := len(j.hemiModes)
+	if nHemi == 0 {
+		nHemi = archHemiCount(j.arch)
+	}
+	numWindows := int(testDuration / windowDuration)
+	result := &ModeResult{
+		Label:   labelOf(j),
+		Arch:    archNames[j.arch],
+		Mode:    labelOf(j),
+		Windows: make([]TimeWindow, numWindows),
+	}
+	for i := range result.Windows {
+		result.Windows[i].TimeMs = (i + 1) * int(windowDuration.Milliseconds())
+	}
+
+	heapMu.Lock()
+	before := heapNow()
+	stack, err := createCameralStack(nHemi, j.hemiModes)
+	after := heapNow()
+	heapMu.Unlock()
+	if err != nil {
+		fmt.Printf("❌ [%s] createCameralStack: %v\n", result.Label, err)
+		return result
+	}
+	result.Lucy.HeapBytes = int64(after - before)
+	if result.Lucy.HeapBytes < 0 {
+		result.Lucy.HeapBytes = 0
+	}
+	result.Lucy.WeightBytes = stackWeightBytes(stack)
+
+	start := time.Now()
+	currentWindow := 0
+	sampleIdx := 0
+	currentFreqIdx := 0
+	lastSwitchTime := start
+	lastOutputTime := start
+	var totalInfer, totalTrain time.Duration
+	// Parent mode for Resolve(Inherit); BranchModes override each hemi.
+	parent := parallel.ModeStepBP
+
+	for time.Since(start) < testDuration {
+		elapsed := time.Since(start)
+		newWindow := int(elapsed / windowDuration)
+		if newWindow > currentWindow && newWindow < numWindows {
+			currentWindow = newWindow
+		}
+		if time.Since(lastSwitchTime) >= switchInterval && currentFreqIdx < len(frequencies)-1 {
+			currentFreqIdx++
+			lastSwitchTime = time.Now()
+			result.TotalFreqSwitch++
+			if currentWindow < numWindows {
+				result.Windows[currentWindow].FreqSwitches++
+			}
+		}
+
+		input := allInputs[currentFreqIdx][sampleIdx%len(allInputs[currentFreqIdx])]
+		target := allTargets[currentFreqIdx][sampleIdx%len(allTargets[currentFreqIdx])]
+		sampleIdx++
+		result.TotalAttempts++
+
+		x := inputTensor(input, false)
+		y := targetTensor(target, false)
+
+		tInf := startWork()
+		_, post, ferr := parallel.ForwardStack(stack, x)
+		inferDur := tInf.elapsed()
+		if ferr != nil || post == nil {
+			continue
+		}
+		totalInfer += inferDur
+		output := post.Data
+
+		sampleAcc := lucy.SoftAccOne(predFrom(output), target)
+		if currentWindow < numWindows {
+			lat := time.Since(lastOutputTime).Seconds() * 1000
+			if lat > result.Windows[currentWindow].MaxLatencyMs {
+				result.Windows[currentWindow].MaxLatencyMs = lat
+			}
+			lastOutputTime = time.Now()
+			result.Windows[currentWindow].Outputs++
+			result.Windows[currentWindow].TotalAcc += sampleAcc
+			result.Windows[currentWindow].InferMs += inferDur.Seconds() * 1000
+			result.Lucy.TotalOutputs++
+		}
+
+		t0 := startWork()
+		_, _ = parallel.TrainStackMSE(stack, x, y, parent, LearningRate)
+		trainDur := t0.elapsed()
+		if trainDur > 0 {
+			totalTrain += trainDur
+			if currentWindow < numWindows {
+				result.Windows[currentWindow].TrainMs += trainDur.Seconds() * 1000
+			}
+		}
+	}
+
+	for i := range result.Windows {
+		w := &result.Windows[i]
+		if w.Outputs > 0 {
+			acc := w.TotalAcc / float64(w.Outputs)
+			if math.IsNaN(acc) || math.IsInf(acc, 0) {
+				acc = 0
+			}
+			w.Accuracy = acc
+		} else {
+			result.ZeroOutWindows++
+		}
+	}
+	result.Lucy.Duration = time.Since(start)
+	result.Lucy.InferMs = totalInfer.Seconds() * 1000
+	result.Lucy.TrainMs = totalTrain.Seconds() * 1000
+	calculateSummaryMetrics(result)
+	return result
+}
+
+func runUniformBenchmark(j job, allInputs [][][]float32, allTargets [][]float32, frequencies []float64) *ModeResult {
 	// Pin work + duty-cycle measure to one OS thread (RUSAGE_THREAD needs this).
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
