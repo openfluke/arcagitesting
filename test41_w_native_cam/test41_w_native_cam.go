@@ -41,7 +41,7 @@ import (
 //
 // Uniform Bi/Tri/Quad train through the Grid loop (one mode for the whole net).
 // Mix variants: distinct-mode permutations on Bi/Tri/Quad (+ optional hex),
-// trained via Stack + TrainStackMSE. -mix off|bi|tri|quad|all (default all).
+// trained via Stack + TrainStackMSE. -mix off|bi|tri|quad|all (default off).
 //
 // Protocol defaults: long sine race (10s / 2.5s switch / AdaptWindows=10).
 // Measuring math is welvet/lucy (same equations as perm/tide/live_mnist).
@@ -226,7 +226,7 @@ func main() {
 	switchEvery := flag.Duration("switch", SwitchInterval, "frequency switch interval")
 	window := flag.Duration("window", WindowDuration, "SoftAcc window")
 	adaptN := flag.Int("adapt-windows", AdaptWindows, "pulse windows after switch folded into AdaptPct")
-	mixScope := flag.String("mix", "all", "Mix distinct-mode perms: off | bi | tri | quad | all (+hex)")
+	mixScope := flag.String("mix", "off", "Mix distinct-mode perms: off | bi | tri | quad | all (+hex)")
 	flag.Parse()
 
 	testDuration = *dur
@@ -375,11 +375,13 @@ func buildJobs(mixScope string) []job {
 		out = appendMixPerms(out, ArchQuadcameral, 4, pseq)
 	case "hex":
 		out = append(out, job{arch: ArchMix, hemiModes: pseq})
-	default: // all
+	case "all":
 		out = appendMixPerms(out, ArchBicameral, 2, pseq)
 		out = appendMixPerms(out, ArchTricameral, 3, pseq)
 		out = appendMixPerms(out, ArchQuadcameral, 4, pseq)
 		out = append(out, job{arch: ArchMix, hemiModes: pseq})
+	default: // off
+		// uniform + mesh only
 	}
 	return out
 }
